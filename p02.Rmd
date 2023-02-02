@@ -1,5 +1,153 @@
 ---
 title: "Portfolio 2"
+#Goal: to make better plots that might capture interaction (failed), and to make some variations of my models and see if there would be better fit.
 ---
 
-> The projects should be numbered consecutively (i.e., in the order in which you began them), and should include for each project a description of the goal, the product (computer program, hand graph, computer graph, etc.), the data, and some interpretation. Reports must be reproducible and of high quality in terms of writing, grammar, presentation, etc.
+```{r data}
+library(tidyverse)
+library(dplyr)
+library(haven)
+Mother_and_teen_data <- read_sav("Mother_and_teen_data.sav")
+#View(Mother_and_teen_data)
+#Goal is to do make a better graph to show that culture differentiates the level of PSE.
+```
+
+```{r plot}
+Mother_and_teen_data$Race3 <- as.factor(Mother_and_teen_data$Race3)
+  Mother_and_teen_data <- Mother_and_teen_data %>%
+mutate(ad_deviance=CD_1 + CD_2 + CD_3)
+ggplot(Mother_and_teen_data, aes(x=PSE, y=ad_deviance)) +  geom_smooth(size=1, alpha=0.4) +
+ geom_point(aes(color=Race3)) +
+  labs(title="PSE and adolescents' substance use", x="Parental self-efficacy", y="adolescent deviance" ) 
+#in general, higher PSE is associated with lower level of adolescent deviance, but I think I need three lines to represent each racial/ethnic group.
+```
+```{r plot2}
+ Mother_and_teen_data <- Mother_and_teen_data %>%
+mutate(ad_deviance=CD_1 + CD_2 + CD_3)
+ggplot(Mother_and_teen_data, aes(x=PSE, y=ad_deviance)) +  geom_point() + 
+  geom_quantile(quantiles=0.5, aes(group = factor(Race3), color=factor(Race3)))
+  labs(title="PSE and adolescents' substance use", x="Parental self-efficacy", y="adolescent deviance" ) 
+#failed to figure out how to use geom quantile
+```
+
+```{r mutate}
+#delete the NA from Race3
+library(tidyverse)
+library(dplyr)
+library(haven)
+Mother_and_teen_data %>% 
+ filter(!is.na(Race3)) %>% mutate(ad_deviance=CD_1 + CD_2 + CD_3)
+```
+
+
+```{r plot_failed}
+Mother_and_teen_data %>% 
+ mutate(Ethnicity = if_else(Race3 == "1", "2", "3")) %>% mutate(ad_deviance=CD_1 + CD_2 + CD_3)
+#Mother_and_teen_data$Race3 <- as.factor(Mother_and_teen_data$Ethnicity)
+#ggplot(Mother_and_teen_data, aes(x=PSE, y=ad_deviance)) +  geom_point(aes(colour = ethnicity)) +
+  #labs(title="PSE and adolescents' substance use", x="Parental self-efficacy", y="adolescent deviance" ) 
+##having huge trouble with ggplot. 
+```
+
+
+SEM to test the model and its fits
+```{r model1} 
+model1<-"AdolD=~CD_1 +CD_2 +CD_3
+EffectP=~PAPmoni+PAPWARM+PAPsolic+PAPrule
+PSE~EffectP
+AdolD~EffectP + PSE"
+#residual correlations
+PAPmoni~~PAPsoli
+PAPmoni~~PAPrule
+PAPWARM~~PAPsoli
+
+CD_1~~CD_2
+CD_1~~CD_3
+CD_2~~CD_3
+```
+
+```{r test fit model 1} 
+#the model fits.
+library(lavaan)
+library(readxl)
+library(dplyr)
+library(haven)
+teendata<- Mother_and_teen_data %>% filter( !is.na(PerPW)) 
+fit1<- sem(model1, data=Mother_and_teen_data)
+fit1
+summary(fit1, standardized=TRUE, ci=TRUE, fit.measures=TRUE)
+modindices(fit1, sort.=TRUE)
+inspect(fit1, what="std")
+fitmeasures(fit1)
+```
+```{r model2}
+#try to let all the effective parenting factors be able to correlate with each other
+model2<-"AdolD=~CD_1 +CD_2 +CD_3
+EffectP=~PAPmoni+PAPWARM+PAPsolic+PAPrule
+PSE~EffectP
+AdolD~EffectP + PSE"
+#residual correlations
+PAPmoni~~PAPsoli
+PAPmoni~~PAPrule
+PAPWARM~~PAPsoli
+PAPWARM~~PAPmoni
+PAPWARM~~PAPrule
+PAPsoli~~PAPrule
+
+CD_1~~CD_2
+CD_1~~CD_3
+CD_2~~CD_3
+
+library(lavaan)
+library(readxl)
+library(dplyr)
+library(haven)
+teendata<- Mother_and_teen_data %>% filter( !is.na(PerPW)) 
+fit2<- sem(model2, data=Mother_and_teen_data)
+fit2
+summary(fit2, standardized=TRUE, ci=TRUE, fit.measures=TRUE)
+modindices(fit2, sort.=TRUE)
+inspect(fit2, what="std")
+fitmeasures(fit2)
+
+#does not make any noticeable change.
+```
+```{r model3}
+#try to let let monitoring correlates with the rules and solicitation correlates with monitoring
+model3<-"AdolD=~CD_1 +CD_2 +CD_3
+EffectP=~PAPmoni+PAPWARM+PAPsolic+PAPrule
+PSE~EffectP
+AdolD~EffectP + PSE"
+#residual correlations
+PAPmoni~~PAPsoli
+PAPmoni~~PAPrule
+
+
+CD_1~~CD_3
+
+library(semPlot)
+library(lavaan)
+library(readxl)
+library(dplyr)
+library(haven)
+teendata<- Mother_and_teen_data %>% filter( !is.na(PerPW)) 
+fit3<- sem(model3, data=Mother_and_teen_data)
+fit3
+summary(fit3, standardized=TRUE, ci=TRUE, fit.measures=TRUE)
+modindices(fit3, sort.=TRUE)
+inspect(fit3, what="std")
+
+parameterestimates(fit3, standardized = TRUE)
+fitted(fit3)
+residuals(fit3)
+fitmeasures(fit3)
+modificationindices(fit3, sort. = TRUE)
+semPaths(fit3, what="paths", whatLables="par", rotation=2)
+
+fitmeasures(fit3)
+
+#does not make any noticeable change as well.
+#did not find significant better model. all three model seems alike. The fit measure difference is unnoticeable.
+```
+
+

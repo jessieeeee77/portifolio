@@ -13,7 +13,7 @@
 
 <title>Portfolio 2</title>
 
-<script src="site_libs/header-attrs-2.13/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.19/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
@@ -141,11 +141,15 @@ $(document).ready(function () {
     href = "index.html";
   var menuAnchor = $('a[href="' + href + '"]');
 
-  // mark it active
-  menuAnchor.tab('show');
-
-  // if it's got a parent navbar menu mark it active as well
-  menuAnchor.closest('li.dropdown').addClass('active');
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
 
   // Navbar adjustments
   var navHeight = $(".navbar").first().height() + 15;
@@ -174,8 +178,8 @@ $(document).ready(function () {
   border-radius: 4px;
 }
 
-.tabset-dropdown > .nav-tabs > li.active:before {
-  content: "";
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
   font-family: 'Glyphicons Halflings';
   display: inline-block;
   padding: 10px;
@@ -183,16 +187,9 @@ $(document).ready(function () {
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-  content: "&#xe258;";
-  border: none;
-}
-
-.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-  content: "";
+  content: "\e258";
   font-family: 'Glyphicons Halflings';
-  display: inline-block;
-  padding: 10px;
-  border-right: 1px solid #ddd;
+  border: none;
 }
 
 .tabset-dropdown > .nav-tabs > li.active {
@@ -298,13 +295,1036 @@ $(document).ready(function () {
 </div>
 
 
-<blockquote>
-<p>The projects should be numbered consecutively (i.e., in the order in
-which you began them), and should include for each project a description
-of the goal, the product (computer program, hand graph, computer graph,
-etc.), the data, and some interpretation. Reports must be reproducible
-and of high quality in terms of writing, grammar, presentation, etc.</p>
-</blockquote>
+<pre class="r"><code>library(tidyverse)</code></pre>
+<pre><code>## ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.2 ──
+## ✔ ggplot2 3.4.0      ✔ purrr   1.0.0 
+## ✔ tibble  3.1.8      ✔ dplyr   1.0.10
+## ✔ tidyr   1.2.1      ✔ stringr 1.5.0 
+## ✔ readr   2.1.3      ✔ forcats 0.5.2 
+## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+## ✖ dplyr::filter() masks stats::filter()
+## ✖ dplyr::lag()    masks stats::lag()</code></pre>
+<pre class="r"><code>library(dplyr)
+library(haven)
+Mother_and_teen_data &lt;- read_sav(&quot;Mother_and_teen_data.sav&quot;)
+#View(Mother_and_teen_data)
+#Goal is to do make a better graph to show that culture differentiates the level of PSE.</code></pre>
+<pre class="r"><code>Mother_and_teen_data$Race3 &lt;- as.factor(Mother_and_teen_data$Race3)
+  Mother_and_teen_data &lt;- Mother_and_teen_data %&gt;%
+mutate(ad_deviance=CD_1 + CD_2 + CD_3)
+ggplot(Mother_and_teen_data, aes(x=PSE, y=ad_deviance)) +  geom_smooth(size=1, alpha=0.4) +
+ geom_point(aes(color=Race3)) +
+  labs(title=&quot;PSE and adolescents&#39; substance use&quot;, x=&quot;Parental self-efficacy&quot;, y=&quot;adolescent deviance&quot; ) </code></pre>
+<pre><code>## Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
+## ℹ Please use `linewidth` instead.</code></pre>
+<pre><code>## `geom_smooth()` using method = &#39;loess&#39; and formula = &#39;y ~ x&#39;</code></pre>
+<pre><code>## Warning: Removed 52 rows containing non-finite values (`stat_smooth()`).</code></pre>
+<pre><code>## Warning: Removed 52 rows containing missing values (`geom_point()`).</code></pre>
+<p><img src="p02_files/figure-html/plot-1.png" width="672" /></p>
+<pre class="r"><code>#in general, higher PSE is associated with lower level of adolescent deviance, but I think I need three lines to represent each racial/ethnic group.</code></pre>
+<pre class="r"><code> Mother_and_teen_data &lt;- Mother_and_teen_data %&gt;%
+mutate(ad_deviance=CD_1 + CD_2 + CD_3)
+ggplot(Mother_and_teen_data, aes(x=PSE, y=ad_deviance)) +  geom_point() + 
+  geom_quantile(quantiles=0.5, aes(group = factor(Race3), color=factor(Race3)))</code></pre>
+<pre><code>## Warning: Removed 52 rows containing non-finite values (`stat_quantile()`).</code></pre>
+<pre><code>## Smoothing formula not specified. Using: y ~ x
+## Smoothing formula not specified. Using: y ~ x
+## Smoothing formula not specified. Using: y ~ x
+## Smoothing formula not specified. Using: y ~ x</code></pre>
+<pre><code>## Warning: Computation failed in `stat_quantile()`
+## Caused by error in `rq.fit.br()`:
+## ! Singular design matrix</code></pre>
+<pre><code>## Warning: Removed 52 rows containing missing values (`geom_point()`).</code></pre>
+<p><img src="p02_files/figure-html/plot2-1.png" width="672" /></p>
+<pre class="r"><code>  labs(title=&quot;PSE and adolescents&#39; substance use&quot;, x=&quot;Parental self-efficacy&quot;, y=&quot;adolescent deviance&quot; ) </code></pre>
+<pre><code>## $x
+## [1] &quot;Parental self-efficacy&quot;
+## 
+## $y
+## [1] &quot;adolescent deviance&quot;
+## 
+## $title
+## [1] &quot;PSE and adolescents&#39; substance use&quot;
+## 
+## attr(,&quot;class&quot;)
+## [1] &quot;labels&quot;</code></pre>
+<pre class="r"><code>#failed to figure out how to use geom quantile</code></pre>
+<pre class="r"><code>#delete the NA from Race3
+library(tidyverse)
+library(dplyr)
+library(haven)
+Mother_and_teen_data %&gt;% 
+ filter(!is.na(Race3)) %&gt;% mutate(ad_deviance=CD_1 + CD_2 + CD_3)</code></pre>
+<pre><code>## # A tibble: 183 × 857
+##      `ID#` check Date       Bday       Child…¹ Child…² Child…³ Child1…⁴ Child2…⁵
+##      &lt;dbl&gt; &lt;chr&gt; &lt;date&gt;     &lt;date&gt;     &lt;dbl+l&gt;   &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl+lb&gt; &lt;dbl+lb&gt;
+##  1  6.17e6 chec… 2011-06-01 NA         1 [gir…      13       7  0 [bio] NA      
+##  2  7.28e6 chec… 2011-03-16 1941-07-28 1 [gir…      17      11 NA       NA      
+##  3  8.18e6 chec… 2011-04-15 1966-08-18 0 [boy]      13       8  0 [bio] NA      
+##  4  1.03e7 chec… 2011-02-23 1966-10-28 0 [boy]      13       8  0 [bio] NA      
+##  5  1.11e7 chec… 2011-04-28 1955-11-05 0 [boy]      14       8  0 [bio] NA      
+##  6  2.06e6 chec… 2011-03-01 1971-02-06 1 [gir…      13       7  0 [bio]  1 [gir…
+##  7  2.19e6 chec… 2011-03-28 1952-02-19 1 [gir…      13       7  2 [ado… NA      
+##  8  5.23e6 chec… 2011-02-28 1958-05-23 0 [boy]      14       8  2 [ado… NA      
+##  9  8.14e6 chec… 2011-04-14 1959-08-14 1 [gir…      17      11  0 [bio] NA      
+## 10  9.25e6 chec… 2011-03-09 1962-09-25 0 [boy]      16      10  0 [bio] NA      
+## # … with 173 more rows, 848 more variables: Child2_Age &lt;dbl&gt;,
+## #   Child2_Grade &lt;dbl&gt;, Child2_Bio_Step &lt;dbl+lbl&gt;, Child3_Gender &lt;dbl+lbl&gt;,
+## #   Child3_Age &lt;dbl&gt;, Child3_Grade &lt;dbl&gt;, Child3_Bio_Step &lt;dbl+lbl&gt;,
+## #   Child4_Gender &lt;dbl+lbl&gt;, Child4_Age &lt;dbl&gt;, Child4_Grade &lt;dbl&gt;,
+## #   Child4_Bio_Step &lt;dbl+lbl&gt;, Child5_Gender &lt;dbl+lbl&gt;, Child5_Age &lt;dbl&gt;,
+## #   Child5_Grade &lt;dbl&gt;, Child5_Bio_Step &lt;dbl+lbl&gt;, Educationlevel &lt;dbl+lbl&gt;,
+## #   Husbands_educationlevel &lt;dbl+lbl&gt;, Race_or_Ethnicity &lt;dbl+lbl&gt;, …</code></pre>
+<pre class="r"><code>Mother_and_teen_data %&gt;% 
+ mutate(Ethnicity = if_else(Race3 == &quot;1&quot;, &quot;2&quot;, &quot;3&quot;)) %&gt;% mutate(ad_deviance=CD_1 + CD_2 + CD_3)</code></pre>
+<pre><code>## # A tibble: 184 × 858
+##      `ID#` check Date       Bday       Child…¹ Child…² Child…³ Child1…⁴ Child2…⁵
+##      &lt;dbl&gt; &lt;chr&gt; &lt;date&gt;     &lt;date&gt;     &lt;dbl+l&gt;   &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl+lb&gt; &lt;dbl+lb&gt;
+##  1  8.09e6 chec… 2011-05-06 1968-08-09 1 [gir…      13       8  0 [bio]  0 [boy]
+##  2  6.17e6 chec… 2011-06-01 NA         1 [gir…      13       7  0 [bio] NA      
+##  3  7.28e6 chec… 2011-03-16 1941-07-28 1 [gir…      17      11 NA       NA      
+##  4  8.18e6 chec… 2011-04-15 1966-08-18 0 [boy]      13       8  0 [bio] NA      
+##  5  1.03e7 chec… 2011-02-23 1966-10-28 0 [boy]      13       8  0 [bio] NA      
+##  6  1.11e7 chec… 2011-04-28 1955-11-05 0 [boy]      14       8  0 [bio] NA      
+##  7  2.06e6 chec… 2011-03-01 1971-02-06 1 [gir…      13       7  0 [bio]  1 [gir…
+##  8  2.19e6 chec… 2011-03-28 1952-02-19 1 [gir…      13       7  2 [ado… NA      
+##  9  5.23e6 chec… 2011-02-28 1958-05-23 0 [boy]      14       8  2 [ado… NA      
+## 10  8.14e6 chec… 2011-04-14 1959-08-14 1 [gir…      17      11  0 [bio] NA      
+## # … with 174 more rows, 849 more variables: Child2_Age &lt;dbl&gt;,
+## #   Child2_Grade &lt;dbl&gt;, Child2_Bio_Step &lt;dbl+lbl&gt;, Child3_Gender &lt;dbl+lbl&gt;,
+## #   Child3_Age &lt;dbl&gt;, Child3_Grade &lt;dbl&gt;, Child3_Bio_Step &lt;dbl+lbl&gt;,
+## #   Child4_Gender &lt;dbl+lbl&gt;, Child4_Age &lt;dbl&gt;, Child4_Grade &lt;dbl&gt;,
+## #   Child4_Bio_Step &lt;dbl+lbl&gt;, Child5_Gender &lt;dbl+lbl&gt;, Child5_Age &lt;dbl&gt;,
+## #   Child5_Grade &lt;dbl&gt;, Child5_Bio_Step &lt;dbl+lbl&gt;, Educationlevel &lt;dbl+lbl&gt;,
+## #   Husbands_educationlevel &lt;dbl+lbl&gt;, Race_or_Ethnicity &lt;dbl+lbl&gt;, …</code></pre>
+<pre class="r"><code>#Mother_and_teen_data$Race3 &lt;- as.factor(Mother_and_teen_data$Ethnicity)
+#ggplot(Mother_and_teen_data, aes(x=PSE, y=ad_deviance)) +  geom_point(aes(colour = ethnicity)) +
+  #labs(title=&quot;PSE and adolescents&#39; substance use&quot;, x=&quot;Parental self-efficacy&quot;, y=&quot;adolescent deviance&quot; ) 
+##having huge trouble with ggplot. </code></pre>
+<p>SEM to test the model and its fits</p>
+<pre class="r"><code>model1&lt;-&quot;AdolD=~CD_1 +CD_2 +CD_3
+EffectP=~PAPmoni+PAPWARM+PAPsolic+PAPrule
+PSE~EffectP
+AdolD~EffectP + PSE&quot;
+#residual correlations
+PAPmoni~~PAPsoli</code></pre>
+<pre><code>## PAPmoni ~ ~PAPsoli</code></pre>
+<pre class="r"><code>PAPmoni~~PAPrule</code></pre>
+<pre><code>## PAPmoni ~ ~PAPrule</code></pre>
+<pre class="r"><code>PAPWARM~~PAPsoli</code></pre>
+<pre><code>## PAPWARM ~ ~PAPsoli</code></pre>
+<pre class="r"><code>CD_1~~CD_2</code></pre>
+<pre><code>## CD_1 ~ ~CD_2</code></pre>
+<pre class="r"><code>CD_1~~CD_3</code></pre>
+<pre><code>## CD_1 ~ ~CD_3</code></pre>
+<pre class="r"><code>CD_2~~CD_3</code></pre>
+<pre><code>## CD_2 ~ ~CD_3</code></pre>
+<pre class="r"><code>#the model fits.
+library(lavaan)</code></pre>
+<pre><code>## This is lavaan 0.6-13
+## lavaan is FREE software! Please report any bugs.</code></pre>
+<pre class="r"><code>library(readxl)
+library(dplyr)
+library(haven)
+teendata&lt;- Mother_and_teen_data %&gt;% filter( !is.na(PerPW)) 
+fit1&lt;- sem(model1, data=Mother_and_teen_data)
+fit1</code></pre>
+<pre><code>## lavaan 0.6.13 ended normally after 36 iterations
+## 
+##   Estimator                                         ML
+##   Optimization method                           NLMINB
+##   Number of model parameters                        18
+## 
+##                                                   Used       Total
+##   Number of observations                           132         184
+## 
+## Model Test User Model:
+##                                                       
+##   Test statistic                                29.756
+##   Degrees of freedom                                18
+##   P-value (Chi-square)                           0.040</code></pre>
+<pre class="r"><code>summary(fit1, standardized=TRUE, ci=TRUE, fit.measures=TRUE)</code></pre>
+<pre><code>## lavaan 0.6.13 ended normally after 36 iterations
+## 
+##   Estimator                                         ML
+##   Optimization method                           NLMINB
+##   Number of model parameters                        18
+## 
+##                                                   Used       Total
+##   Number of observations                           132         184
+## 
+## Model Test User Model:
+##                                                       
+##   Test statistic                                29.756
+##   Degrees of freedom                                18
+##   P-value (Chi-square)                           0.040
+## 
+## Model Test Baseline Model:
+## 
+##   Test statistic                               306.486
+##   Degrees of freedom                                28
+##   P-value                                        0.000
+## 
+## User Model versus Baseline Model:
+## 
+##   Comparative Fit Index (CFI)                    0.958
+##   Tucker-Lewis Index (TLI)                       0.934
+## 
+## Loglikelihood and Information Criteria:
+## 
+##   Loglikelihood user model (H0)               -736.817
+##   Loglikelihood unrestricted model (H1)       -721.939
+##                                                       
+##   Akaike (AIC)                                1509.634
+##   Bayesian (BIC)                              1561.525
+##   Sample-size adjusted Bayesian (SABIC)       1504.591
+## 
+## Root Mean Square Error of Approximation:
+## 
+##   RMSEA                                          0.070
+##   90 Percent confidence interval - lower         0.015
+##   90 Percent confidence interval - upper         0.114
+##   P-value H_0: RMSEA &lt;= 0.050                    0.211
+##   P-value H_0: RMSEA &gt;= 0.080                    0.393
+## 
+## Standardized Root Mean Square Residual:
+## 
+##   SRMR                                           0.062
+## 
+## Parameter Estimates:
+## 
+##   Standard errors                             Standard
+##   Information                                 Expected
+##   Information saturated (h1) model          Structured
+## 
+## Latent Variables:
+##                    Estimate  Std.Err  z-value  P(&gt;|z|) ci.lower ci.upper
+##   AdolD =~                                                              
+##     CD_1              1.000                               1.000    1.000
+##     CD_2              1.111    0.140    7.955    0.000    0.837    1.385
+##     CD_3              0.598    0.082    7.274    0.000    0.437    0.759
+##   EffectP =~                                                            
+##     PAPmoni           1.000                               1.000    1.000
+##     PAPWARM           0.795    0.167    4.751    0.000    0.467    1.123
+##     PAPsolic          1.147    0.231    4.972    0.000    0.695    1.600
+##     PAPrule           0.620    0.155    3.990    0.000    0.315    0.924
+##    Std.lv  Std.all
+##                   
+##     0.541    0.713
+##     0.601    0.960
+##     0.323    0.654
+##                   
+##     0.335    0.528
+##     0.267    0.592
+##     0.385    0.855
+##     0.208    0.455
+## 
+## Regressions:
+##                    Estimate  Std.Err  z-value  P(&gt;|z|) ci.lower ci.upper
+##   PSE ~                                                                 
+##     EffectP           0.646    0.205    3.143    0.002    0.243    1.049
+##   AdolD ~                                                               
+##     EffectP          -0.298    0.172   -1.730    0.084   -0.636    0.040
+##     PSE              -0.247    0.081   -3.064    0.002   -0.406   -0.089
+##    Std.lv  Std.all
+##                   
+##     0.216    0.335
+##                   
+##    -0.185   -0.185
+##    -0.457   -0.295
+## 
+## Variances:
+##                    Estimate  Std.Err  z-value  P(&gt;|z|) ci.lower ci.upper
+##    .CD_1              0.283    0.044    6.413    0.000    0.197    0.369
+##    .CD_2              0.031    0.033    0.927    0.354   -0.034    0.096
+##    .CD_3              0.139    0.020    7.053    0.000    0.101    0.178
+##    .PAPmoni           0.291    0.041    7.173    0.000    0.211    0.370
+##    .PAPWARM           0.132    0.020    6.691    0.000    0.093    0.170
+##    .PAPsolic          0.054    0.022    2.468    0.014    0.011    0.098
+##    .PAPrule           0.166    0.022    7.524    0.000    0.123    0.209
+##    .PSE               0.370    0.047    7.850    0.000    0.278    0.463
+##    .AdolD             0.246    0.056    4.385    0.000    0.136    0.356
+##     EffectP           0.112    0.039    2.861    0.004    0.035    0.189
+##    Std.lv  Std.all
+##     0.283    0.492
+##     0.031    0.078
+##     0.139    0.572
+##     0.291    0.721
+##     0.132    0.650
+##     0.054    0.269
+##     0.166    0.793
+##     0.370    0.888
+##     0.842    0.842
+##     1.000    1.000</code></pre>
+<pre class="r"><code>modindices(fit1, sort.=TRUE)</code></pre>
+<pre><code>##         lhs op      rhs     mi    epc sepc.lv sepc.all sepc.nox
+## 48  PAPmoni ~~  PAPrule 17.031  0.091   0.091    0.414    0.414
+## 50  PAPWARM ~~ PAPsolic  5.606  0.061   0.061    0.719    0.719
+## 51  PAPWARM ~~  PAPrule  5.538 -0.037  -0.037   -0.251   -0.251
+## 30     CD_1 ~~  PAPmoni  3.035  0.047   0.047    0.164    0.164
+## 46  PAPmoni ~~  PAPWARM  2.681 -0.037  -0.037   -0.191   -0.191
+## 52  PAPWARM ~~      PSE  2.309  0.033   0.033    0.151    0.151
+## 31     CD_1 ~~  PAPWARM  2.081 -0.027  -0.027   -0.138   -0.138
+## 47  PAPmoni ~~ PAPsolic  1.712 -0.041  -0.041   -0.326   -0.326
+## 43     CD_3 ~~ PAPsolic  1.634  0.015   0.015    0.168    0.168
+## 22    AdolD =~  PAPWARM  1.603 -0.090  -0.048   -0.108   -0.108
+## 42     CD_3 ~~  PAPWARM  1.255 -0.014  -0.014   -0.106   -0.106
+## 36     CD_2 ~~  PAPmoni  1.088 -0.020  -0.020   -0.212   -0.212
+## 37     CD_2 ~~  PAPWARM  0.985  0.013   0.013    0.206    0.206
+## 55  PAPrule ~~      PSE  0.823 -0.021  -0.021   -0.084   -0.084
+## 44     CD_3 ~~  PAPrule  0.784 -0.012  -0.012   -0.081   -0.081
+## 35     CD_2 ~~     CD_3  0.676  0.037   0.037    0.561    0.561
+## 24    AdolD =~  PAPrule  0.627  0.059   0.032    0.070    0.070
+## 33     CD_1 ~~  PAPrule  0.603  0.016   0.016    0.072    0.072
+## 32     CD_1 ~~ PAPsolic  0.586 -0.013  -0.013   -0.102   -0.102
+## 29     CD_1 ~~     CD_3  0.518 -0.024  -0.024   -0.123   -0.123
+## 49  PAPmoni ~~      PSE  0.416 -0.020  -0.020   -0.062   -0.062
+## 25  EffectP =~     CD_1  0.409 -0.112  -0.038   -0.050   -0.050
+## 53 PAPsolic ~~  PAPrule  0.355 -0.012  -0.012   -0.124   -0.124
+## 26  EffectP =~     CD_2  0.280  0.083   0.028    0.045    0.045
+## 23    AdolD =~ PAPsolic  0.279  0.042   0.023    0.050    0.050
+## 34     CD_1 ~~      PSE  0.225 -0.015  -0.015   -0.047   -0.047
+## 40     CD_2 ~~      PSE  0.164  0.012   0.012    0.111    0.111
+## 41     CD_3 ~~  PAPmoni  0.137 -0.007  -0.007   -0.034   -0.034
+## 39     CD_2 ~~  PAPrule  0.125  0.005   0.005    0.071    0.071
+## 54 PAPsolic ~~      PSE  0.049 -0.006  -0.006   -0.039   -0.039
+## 38     CD_2 ~~ PAPsolic  0.002  0.000   0.000    0.012    0.012
+## 28     CD_1 ~~     CD_2  0.001  0.003   0.003    0.031    0.031
+## 45     CD_3 ~~      PSE  0.001 -0.001  -0.001   -0.003   -0.003
+## 27  EffectP =~     CD_3  0.000 -0.002  -0.001   -0.002   -0.002
+## 21    AdolD =~  PAPmoni  0.000  0.000   0.000    0.000    0.000</code></pre>
+<pre class="r"><code>inspect(fit1, what=&quot;std&quot;)</code></pre>
+<pre><code>## $lambda
+##          AdolD EffctP PSE
+## CD_1     0.713  0.000   0
+## CD_2     0.960  0.000   0
+## CD_3     0.654  0.000   0
+## PAPmoni  0.000  0.528   0
+## PAPWARM  0.000  0.592   0
+## PAPsolic 0.000  0.855   0
+## PAPrule  0.000  0.455   0
+## PSE      0.000  0.000   1
+## 
+## $theta
+##           CD_1  CD_2  CD_3 PAPmon PAPWAR PAPslc PAPrul   PSE
+## CD_1     0.492                                              
+## CD_2     0.000 0.078                                        
+## CD_3     0.000 0.000 0.572                                  
+## PAPmoni  0.000 0.000 0.000  0.721                           
+## PAPWARM  0.000 0.000 0.000  0.000  0.650                    
+## PAPsolic 0.000 0.000 0.000  0.000  0.000  0.269             
+## PAPrule  0.000 0.000 0.000  0.000  0.000  0.000  0.793      
+## PSE      0.000 0.000 0.000  0.000  0.000  0.000  0.000 0.000
+## 
+## $psi
+##         AdolD EffctP   PSE
+## AdolD   0.842             
+## EffectP 0.000  1.000      
+## PSE     0.000  0.000 0.888
+## 
+## $beta
+##         AdolD EffctP    PSE
+## AdolD       0 -0.185 -0.295
+## EffectP     0  0.000  0.000
+## PSE         0  0.335  0.000</code></pre>
+<pre class="r"><code>fitmeasures(fit1)</code></pre>
+<pre><code>##                  npar                  fmin                 chisq 
+##                18.000                 0.113                29.756 
+##                    df                pvalue        baseline.chisq 
+##                18.000                 0.040               306.486 
+##           baseline.df       baseline.pvalue                   cfi 
+##                28.000                 0.000                 0.958 
+##                   tli                  nnfi                   rfi 
+##                 0.934                 0.934                 0.849 
+##                   nfi                  pnfi                   ifi 
+##                 0.903                 0.580                 0.959 
+##                   rni                  logl     unrestricted.logl 
+##                 0.958              -736.817              -721.939 
+##                   aic                   bic                ntotal 
+##              1509.634              1561.525               132.000 
+##                  bic2                 rmsea        rmsea.ci.lower 
+##              1504.591                 0.070                 0.015 
+##        rmsea.ci.upper        rmsea.ci.level          rmsea.pvalue 
+##                 0.114                 0.900                 0.211 
+##        rmsea.close.h0 rmsea.notclose.pvalue     rmsea.notclose.h0 
+##                 0.050                 0.393                 0.080 
+##                   rmr            rmr_nomean                  srmr 
+##                 0.019                 0.019                 0.062 
+##          srmr_bentler   srmr_bentler_nomean                  crmr 
+##                 0.062                 0.062                 0.070 
+##           crmr_nomean            srmr_mplus     srmr_mplus_nomean 
+##                 0.070                 0.062                 0.062 
+##                 cn_05                 cn_01                   gfi 
+##               129.067               155.400                 0.944 
+##                  agfi                  pgfi                   mfi 
+##                 0.888                 0.472                 0.956 
+##                  ecvi 
+##                 0.498</code></pre>
+<pre class="r"><code>#try to let all the effective parenting factors be able to correlate with each other
+model2&lt;-&quot;AdolD=~CD_1 +CD_2 +CD_3
+EffectP=~PAPmoni+PAPWARM+PAPsolic+PAPrule
+PSE~EffectP
+AdolD~EffectP + PSE&quot;
+#residual correlations
+PAPmoni~~PAPsoli</code></pre>
+<pre><code>## PAPmoni ~ ~PAPsoli</code></pre>
+<pre class="r"><code>PAPmoni~~PAPrule</code></pre>
+<pre><code>## PAPmoni ~ ~PAPrule</code></pre>
+<pre class="r"><code>PAPWARM~~PAPsoli</code></pre>
+<pre><code>## PAPWARM ~ ~PAPsoli</code></pre>
+<pre class="r"><code>PAPWARM~~PAPmoni</code></pre>
+<pre><code>## PAPWARM ~ ~PAPmoni</code></pre>
+<pre class="r"><code>PAPWARM~~PAPrule</code></pre>
+<pre><code>## PAPWARM ~ ~PAPrule</code></pre>
+<pre class="r"><code>PAPsoli~~PAPrule</code></pre>
+<pre><code>## PAPsoli ~ ~PAPrule</code></pre>
+<pre class="r"><code>CD_1~~CD_2</code></pre>
+<pre><code>## CD_1 ~ ~CD_2</code></pre>
+<pre class="r"><code>CD_1~~CD_3</code></pre>
+<pre><code>## CD_1 ~ ~CD_3</code></pre>
+<pre class="r"><code>CD_2~~CD_3</code></pre>
+<pre><code>## CD_2 ~ ~CD_3</code></pre>
+<pre class="r"><code>library(lavaan)
+library(readxl)
+library(dplyr)
+library(haven)
+teendata&lt;- Mother_and_teen_data %&gt;% filter( !is.na(PerPW)) 
+fit2&lt;- sem(model2, data=Mother_and_teen_data)
+fit2</code></pre>
+<pre><code>## lavaan 0.6.13 ended normally after 36 iterations
+## 
+##   Estimator                                         ML
+##   Optimization method                           NLMINB
+##   Number of model parameters                        18
+## 
+##                                                   Used       Total
+##   Number of observations                           132         184
+## 
+## Model Test User Model:
+##                                                       
+##   Test statistic                                29.756
+##   Degrees of freedom                                18
+##   P-value (Chi-square)                           0.040</code></pre>
+<pre class="r"><code>summary(fit2, standardized=TRUE, ci=TRUE, fit.measures=TRUE)</code></pre>
+<pre><code>## lavaan 0.6.13 ended normally after 36 iterations
+## 
+##   Estimator                                         ML
+##   Optimization method                           NLMINB
+##   Number of model parameters                        18
+## 
+##                                                   Used       Total
+##   Number of observations                           132         184
+## 
+## Model Test User Model:
+##                                                       
+##   Test statistic                                29.756
+##   Degrees of freedom                                18
+##   P-value (Chi-square)                           0.040
+## 
+## Model Test Baseline Model:
+## 
+##   Test statistic                               306.486
+##   Degrees of freedom                                28
+##   P-value                                        0.000
+## 
+## User Model versus Baseline Model:
+## 
+##   Comparative Fit Index (CFI)                    0.958
+##   Tucker-Lewis Index (TLI)                       0.934
+## 
+## Loglikelihood and Information Criteria:
+## 
+##   Loglikelihood user model (H0)               -736.817
+##   Loglikelihood unrestricted model (H1)       -721.939
+##                                                       
+##   Akaike (AIC)                                1509.634
+##   Bayesian (BIC)                              1561.525
+##   Sample-size adjusted Bayesian (SABIC)       1504.591
+## 
+## Root Mean Square Error of Approximation:
+## 
+##   RMSEA                                          0.070
+##   90 Percent confidence interval - lower         0.015
+##   90 Percent confidence interval - upper         0.114
+##   P-value H_0: RMSEA &lt;= 0.050                    0.211
+##   P-value H_0: RMSEA &gt;= 0.080                    0.393
+## 
+## Standardized Root Mean Square Residual:
+## 
+##   SRMR                                           0.062
+## 
+## Parameter Estimates:
+## 
+##   Standard errors                             Standard
+##   Information                                 Expected
+##   Information saturated (h1) model          Structured
+## 
+## Latent Variables:
+##                    Estimate  Std.Err  z-value  P(&gt;|z|) ci.lower ci.upper
+##   AdolD =~                                                              
+##     CD_1              1.000                               1.000    1.000
+##     CD_2              1.111    0.140    7.955    0.000    0.837    1.385
+##     CD_3              0.598    0.082    7.274    0.000    0.437    0.759
+##   EffectP =~                                                            
+##     PAPmoni           1.000                               1.000    1.000
+##     PAPWARM           0.795    0.167    4.751    0.000    0.467    1.123
+##     PAPsolic          1.147    0.231    4.972    0.000    0.695    1.600
+##     PAPrule           0.620    0.155    3.990    0.000    0.315    0.924
+##    Std.lv  Std.all
+##                   
+##     0.541    0.713
+##     0.601    0.960
+##     0.323    0.654
+##                   
+##     0.335    0.528
+##     0.267    0.592
+##     0.385    0.855
+##     0.208    0.455
+## 
+## Regressions:
+##                    Estimate  Std.Err  z-value  P(&gt;|z|) ci.lower ci.upper
+##   PSE ~                                                                 
+##     EffectP           0.646    0.205    3.143    0.002    0.243    1.049
+##   AdolD ~                                                               
+##     EffectP          -0.298    0.172   -1.730    0.084   -0.636    0.040
+##     PSE              -0.247    0.081   -3.064    0.002   -0.406   -0.089
+##    Std.lv  Std.all
+##                   
+##     0.216    0.335
+##                   
+##    -0.185   -0.185
+##    -0.457   -0.295
+## 
+## Variances:
+##                    Estimate  Std.Err  z-value  P(&gt;|z|) ci.lower ci.upper
+##    .CD_1              0.283    0.044    6.413    0.000    0.197    0.369
+##    .CD_2              0.031    0.033    0.927    0.354   -0.034    0.096
+##    .CD_3              0.139    0.020    7.053    0.000    0.101    0.178
+##    .PAPmoni           0.291    0.041    7.173    0.000    0.211    0.370
+##    .PAPWARM           0.132    0.020    6.691    0.000    0.093    0.170
+##    .PAPsolic          0.054    0.022    2.468    0.014    0.011    0.098
+##    .PAPrule           0.166    0.022    7.524    0.000    0.123    0.209
+##    .PSE               0.370    0.047    7.850    0.000    0.278    0.463
+##    .AdolD             0.246    0.056    4.385    0.000    0.136    0.356
+##     EffectP           0.112    0.039    2.861    0.004    0.035    0.189
+##    Std.lv  Std.all
+##     0.283    0.492
+##     0.031    0.078
+##     0.139    0.572
+##     0.291    0.721
+##     0.132    0.650
+##     0.054    0.269
+##     0.166    0.793
+##     0.370    0.888
+##     0.842    0.842
+##     1.000    1.000</code></pre>
+<pre class="r"><code>modindices(fit2, sort.=TRUE)</code></pre>
+<pre><code>##         lhs op      rhs     mi    epc sepc.lv sepc.all sepc.nox
+## 48  PAPmoni ~~  PAPrule 17.031  0.091   0.091    0.414    0.414
+## 50  PAPWARM ~~ PAPsolic  5.606  0.061   0.061    0.719    0.719
+## 51  PAPWARM ~~  PAPrule  5.538 -0.037  -0.037   -0.251   -0.251
+## 30     CD_1 ~~  PAPmoni  3.035  0.047   0.047    0.164    0.164
+## 46  PAPmoni ~~  PAPWARM  2.681 -0.037  -0.037   -0.191   -0.191
+## 52  PAPWARM ~~      PSE  2.309  0.033   0.033    0.151    0.151
+## 31     CD_1 ~~  PAPWARM  2.081 -0.027  -0.027   -0.138   -0.138
+## 47  PAPmoni ~~ PAPsolic  1.712 -0.041  -0.041   -0.326   -0.326
+## 43     CD_3 ~~ PAPsolic  1.634  0.015   0.015    0.168    0.168
+## 22    AdolD =~  PAPWARM  1.603 -0.090  -0.048   -0.108   -0.108
+## 42     CD_3 ~~  PAPWARM  1.255 -0.014  -0.014   -0.106   -0.106
+## 36     CD_2 ~~  PAPmoni  1.088 -0.020  -0.020   -0.212   -0.212
+## 37     CD_2 ~~  PAPWARM  0.985  0.013   0.013    0.206    0.206
+## 55  PAPrule ~~      PSE  0.823 -0.021  -0.021   -0.084   -0.084
+## 44     CD_3 ~~  PAPrule  0.784 -0.012  -0.012   -0.081   -0.081
+## 35     CD_2 ~~     CD_3  0.676  0.037   0.037    0.561    0.561
+## 24    AdolD =~  PAPrule  0.627  0.059   0.032    0.070    0.070
+## 33     CD_1 ~~  PAPrule  0.603  0.016   0.016    0.072    0.072
+## 32     CD_1 ~~ PAPsolic  0.586 -0.013  -0.013   -0.102   -0.102
+## 29     CD_1 ~~     CD_3  0.518 -0.024  -0.024   -0.123   -0.123
+## 49  PAPmoni ~~      PSE  0.416 -0.020  -0.020   -0.062   -0.062
+## 25  EffectP =~     CD_1  0.409 -0.112  -0.038   -0.050   -0.050
+## 53 PAPsolic ~~  PAPrule  0.355 -0.012  -0.012   -0.124   -0.124
+## 26  EffectP =~     CD_2  0.280  0.083   0.028    0.045    0.045
+## 23    AdolD =~ PAPsolic  0.279  0.042   0.023    0.050    0.050
+## 34     CD_1 ~~      PSE  0.225 -0.015  -0.015   -0.047   -0.047
+## 40     CD_2 ~~      PSE  0.164  0.012   0.012    0.111    0.111
+## 41     CD_3 ~~  PAPmoni  0.137 -0.007  -0.007   -0.034   -0.034
+## 39     CD_2 ~~  PAPrule  0.125  0.005   0.005    0.071    0.071
+## 54 PAPsolic ~~      PSE  0.049 -0.006  -0.006   -0.039   -0.039
+## 38     CD_2 ~~ PAPsolic  0.002  0.000   0.000    0.012    0.012
+## 28     CD_1 ~~     CD_2  0.001  0.003   0.003    0.031    0.031
+## 45     CD_3 ~~      PSE  0.001 -0.001  -0.001   -0.003   -0.003
+## 27  EffectP =~     CD_3  0.000 -0.002  -0.001   -0.002   -0.002
+## 21    AdolD =~  PAPmoni  0.000  0.000   0.000    0.000    0.000</code></pre>
+<pre class="r"><code>inspect(fit2, what=&quot;std&quot;)</code></pre>
+<pre><code>## $lambda
+##          AdolD EffctP PSE
+## CD_1     0.713  0.000   0
+## CD_2     0.960  0.000   0
+## CD_3     0.654  0.000   0
+## PAPmoni  0.000  0.528   0
+## PAPWARM  0.000  0.592   0
+## PAPsolic 0.000  0.855   0
+## PAPrule  0.000  0.455   0
+## PSE      0.000  0.000   1
+## 
+## $theta
+##           CD_1  CD_2  CD_3 PAPmon PAPWAR PAPslc PAPrul   PSE
+## CD_1     0.492                                              
+## CD_2     0.000 0.078                                        
+## CD_3     0.000 0.000 0.572                                  
+## PAPmoni  0.000 0.000 0.000  0.721                           
+## PAPWARM  0.000 0.000 0.000  0.000  0.650                    
+## PAPsolic 0.000 0.000 0.000  0.000  0.000  0.269             
+## PAPrule  0.000 0.000 0.000  0.000  0.000  0.000  0.793      
+## PSE      0.000 0.000 0.000  0.000  0.000  0.000  0.000 0.000
+## 
+## $psi
+##         AdolD EffctP   PSE
+## AdolD   0.842             
+## EffectP 0.000  1.000      
+## PSE     0.000  0.000 0.888
+## 
+## $beta
+##         AdolD EffctP    PSE
+## AdolD       0 -0.185 -0.295
+## EffectP     0  0.000  0.000
+## PSE         0  0.335  0.000</code></pre>
+<pre class="r"><code>fitmeasures(fit2)</code></pre>
+<pre><code>##                  npar                  fmin                 chisq 
+##                18.000                 0.113                29.756 
+##                    df                pvalue        baseline.chisq 
+##                18.000                 0.040               306.486 
+##           baseline.df       baseline.pvalue                   cfi 
+##                28.000                 0.000                 0.958 
+##                   tli                  nnfi                   rfi 
+##                 0.934                 0.934                 0.849 
+##                   nfi                  pnfi                   ifi 
+##                 0.903                 0.580                 0.959 
+##                   rni                  logl     unrestricted.logl 
+##                 0.958              -736.817              -721.939 
+##                   aic                   bic                ntotal 
+##              1509.634              1561.525               132.000 
+##                  bic2                 rmsea        rmsea.ci.lower 
+##              1504.591                 0.070                 0.015 
+##        rmsea.ci.upper        rmsea.ci.level          rmsea.pvalue 
+##                 0.114                 0.900                 0.211 
+##        rmsea.close.h0 rmsea.notclose.pvalue     rmsea.notclose.h0 
+##                 0.050                 0.393                 0.080 
+##                   rmr            rmr_nomean                  srmr 
+##                 0.019                 0.019                 0.062 
+##          srmr_bentler   srmr_bentler_nomean                  crmr 
+##                 0.062                 0.062                 0.070 
+##           crmr_nomean            srmr_mplus     srmr_mplus_nomean 
+##                 0.070                 0.062                 0.062 
+##                 cn_05                 cn_01                   gfi 
+##               129.067               155.400                 0.944 
+##                  agfi                  pgfi                   mfi 
+##                 0.888                 0.472                 0.956 
+##                  ecvi 
+##                 0.498</code></pre>
+<pre class="r"><code>#does not make any noticeable change.</code></pre>
+<pre class="r"><code>#try to let let monitoring correlates with the rules and solicitation correlates with monitoring
+model3&lt;-&quot;AdolD=~CD_1 +CD_2 +CD_3
+EffectP=~PAPmoni+PAPWARM+PAPsolic+PAPrule
+PSE~EffectP
+AdolD~EffectP + PSE&quot;
+#residual correlations
+PAPmoni~~PAPsoli</code></pre>
+<pre><code>## PAPmoni ~ ~PAPsoli</code></pre>
+<pre class="r"><code>PAPmoni~~PAPrule</code></pre>
+<pre><code>## PAPmoni ~ ~PAPrule</code></pre>
+<pre class="r"><code>CD_1~~CD_3</code></pre>
+<pre><code>## CD_1 ~ ~CD_3</code></pre>
+<pre class="r"><code>library(semPlot)</code></pre>
+<pre><code>## Found more than one class &quot;family&quot; in cache; using the first, from namespace &#39;MatrixModels&#39;</code></pre>
+<pre><code>## Also defined by &#39;lme4&#39;</code></pre>
+<pre><code>## Found more than one class &quot;family&quot; in cache; using the first, from namespace &#39;MatrixModels&#39;</code></pre>
+<pre><code>## Also defined by &#39;lme4&#39;</code></pre>
+<pre><code>## Found more than one class &quot;family&quot; in cache; using the first, from namespace &#39;MatrixModels&#39;</code></pre>
+<pre><code>## Also defined by &#39;lme4&#39;</code></pre>
+<pre class="r"><code>library(lavaan)
+library(readxl)
+library(dplyr)
+library(haven)
+teendata&lt;- Mother_and_teen_data %&gt;% filter( !is.na(PerPW)) 
+fit3&lt;- sem(model3, data=Mother_and_teen_data)
+fit3</code></pre>
+<pre><code>## lavaan 0.6.13 ended normally after 36 iterations
+## 
+##   Estimator                                         ML
+##   Optimization method                           NLMINB
+##   Number of model parameters                        18
+## 
+##                                                   Used       Total
+##   Number of observations                           132         184
+## 
+## Model Test User Model:
+##                                                       
+##   Test statistic                                29.756
+##   Degrees of freedom                                18
+##   P-value (Chi-square)                           0.040</code></pre>
+<pre class="r"><code>summary(fit3, standardized=TRUE, ci=TRUE, fit.measures=TRUE)</code></pre>
+<pre><code>## lavaan 0.6.13 ended normally after 36 iterations
+## 
+##   Estimator                                         ML
+##   Optimization method                           NLMINB
+##   Number of model parameters                        18
+## 
+##                                                   Used       Total
+##   Number of observations                           132         184
+## 
+## Model Test User Model:
+##                                                       
+##   Test statistic                                29.756
+##   Degrees of freedom                                18
+##   P-value (Chi-square)                           0.040
+## 
+## Model Test Baseline Model:
+## 
+##   Test statistic                               306.486
+##   Degrees of freedom                                28
+##   P-value                                        0.000
+## 
+## User Model versus Baseline Model:
+## 
+##   Comparative Fit Index (CFI)                    0.958
+##   Tucker-Lewis Index (TLI)                       0.934
+## 
+## Loglikelihood and Information Criteria:
+## 
+##   Loglikelihood user model (H0)               -736.817
+##   Loglikelihood unrestricted model (H1)       -721.939
+##                                                       
+##   Akaike (AIC)                                1509.634
+##   Bayesian (BIC)                              1561.525
+##   Sample-size adjusted Bayesian (SABIC)       1504.591
+## 
+## Root Mean Square Error of Approximation:
+## 
+##   RMSEA                                          0.070
+##   90 Percent confidence interval - lower         0.015
+##   90 Percent confidence interval - upper         0.114
+##   P-value H_0: RMSEA &lt;= 0.050                    0.211
+##   P-value H_0: RMSEA &gt;= 0.080                    0.393
+## 
+## Standardized Root Mean Square Residual:
+## 
+##   SRMR                                           0.062
+## 
+## Parameter Estimates:
+## 
+##   Standard errors                             Standard
+##   Information                                 Expected
+##   Information saturated (h1) model          Structured
+## 
+## Latent Variables:
+##                    Estimate  Std.Err  z-value  P(&gt;|z|) ci.lower ci.upper
+##   AdolD =~                                                              
+##     CD_1              1.000                               1.000    1.000
+##     CD_2              1.111    0.140    7.955    0.000    0.837    1.385
+##     CD_3              0.598    0.082    7.274    0.000    0.437    0.759
+##   EffectP =~                                                            
+##     PAPmoni           1.000                               1.000    1.000
+##     PAPWARM           0.795    0.167    4.751    0.000    0.467    1.123
+##     PAPsolic          1.147    0.231    4.972    0.000    0.695    1.600
+##     PAPrule           0.620    0.155    3.990    0.000    0.315    0.924
+##    Std.lv  Std.all
+##                   
+##     0.541    0.713
+##     0.601    0.960
+##     0.323    0.654
+##                   
+##     0.335    0.528
+##     0.267    0.592
+##     0.385    0.855
+##     0.208    0.455
+## 
+## Regressions:
+##                    Estimate  Std.Err  z-value  P(&gt;|z|) ci.lower ci.upper
+##   PSE ~                                                                 
+##     EffectP           0.646    0.205    3.143    0.002    0.243    1.049
+##   AdolD ~                                                               
+##     EffectP          -0.298    0.172   -1.730    0.084   -0.636    0.040
+##     PSE              -0.247    0.081   -3.064    0.002   -0.406   -0.089
+##    Std.lv  Std.all
+##                   
+##     0.216    0.335
+##                   
+##    -0.185   -0.185
+##    -0.457   -0.295
+## 
+## Variances:
+##                    Estimate  Std.Err  z-value  P(&gt;|z|) ci.lower ci.upper
+##    .CD_1              0.283    0.044    6.413    0.000    0.197    0.369
+##    .CD_2              0.031    0.033    0.927    0.354   -0.034    0.096
+##    .CD_3              0.139    0.020    7.053    0.000    0.101    0.178
+##    .PAPmoni           0.291    0.041    7.173    0.000    0.211    0.370
+##    .PAPWARM           0.132    0.020    6.691    0.000    0.093    0.170
+##    .PAPsolic          0.054    0.022    2.468    0.014    0.011    0.098
+##    .PAPrule           0.166    0.022    7.524    0.000    0.123    0.209
+##    .PSE               0.370    0.047    7.850    0.000    0.278    0.463
+##    .AdolD             0.246    0.056    4.385    0.000    0.136    0.356
+##     EffectP           0.112    0.039    2.861    0.004    0.035    0.189
+##    Std.lv  Std.all
+##     0.283    0.492
+##     0.031    0.078
+##     0.139    0.572
+##     0.291    0.721
+##     0.132    0.650
+##     0.054    0.269
+##     0.166    0.793
+##     0.370    0.888
+##     0.842    0.842
+##     1.000    1.000</code></pre>
+<pre class="r"><code>modindices(fit3, sort.=TRUE)</code></pre>
+<pre><code>##         lhs op      rhs     mi    epc sepc.lv sepc.all sepc.nox
+## 48  PAPmoni ~~  PAPrule 17.031  0.091   0.091    0.414    0.414
+## 50  PAPWARM ~~ PAPsolic  5.606  0.061   0.061    0.719    0.719
+## 51  PAPWARM ~~  PAPrule  5.538 -0.037  -0.037   -0.251   -0.251
+## 30     CD_1 ~~  PAPmoni  3.035  0.047   0.047    0.164    0.164
+## 46  PAPmoni ~~  PAPWARM  2.681 -0.037  -0.037   -0.191   -0.191
+## 52  PAPWARM ~~      PSE  2.309  0.033   0.033    0.151    0.151
+## 31     CD_1 ~~  PAPWARM  2.081 -0.027  -0.027   -0.138   -0.138
+## 47  PAPmoni ~~ PAPsolic  1.712 -0.041  -0.041   -0.326   -0.326
+## 43     CD_3 ~~ PAPsolic  1.634  0.015   0.015    0.168    0.168
+## 22    AdolD =~  PAPWARM  1.603 -0.090  -0.048   -0.108   -0.108
+## 42     CD_3 ~~  PAPWARM  1.255 -0.014  -0.014   -0.106   -0.106
+## 36     CD_2 ~~  PAPmoni  1.088 -0.020  -0.020   -0.212   -0.212
+## 37     CD_2 ~~  PAPWARM  0.985  0.013   0.013    0.206    0.206
+## 55  PAPrule ~~      PSE  0.823 -0.021  -0.021   -0.084   -0.084
+## 44     CD_3 ~~  PAPrule  0.784 -0.012  -0.012   -0.081   -0.081
+## 35     CD_2 ~~     CD_3  0.676  0.037   0.037    0.561    0.561
+## 24    AdolD =~  PAPrule  0.627  0.059   0.032    0.070    0.070
+## 33     CD_1 ~~  PAPrule  0.603  0.016   0.016    0.072    0.072
+## 32     CD_1 ~~ PAPsolic  0.586 -0.013  -0.013   -0.102   -0.102
+## 29     CD_1 ~~     CD_3  0.518 -0.024  -0.024   -0.123   -0.123
+## 49  PAPmoni ~~      PSE  0.416 -0.020  -0.020   -0.062   -0.062
+## 25  EffectP =~     CD_1  0.409 -0.112  -0.038   -0.050   -0.050
+## 53 PAPsolic ~~  PAPrule  0.355 -0.012  -0.012   -0.124   -0.124
+## 26  EffectP =~     CD_2  0.280  0.083   0.028    0.045    0.045
+## 23    AdolD =~ PAPsolic  0.279  0.042   0.023    0.050    0.050
+## 34     CD_1 ~~      PSE  0.225 -0.015  -0.015   -0.047   -0.047
+## 40     CD_2 ~~      PSE  0.164  0.012   0.012    0.111    0.111
+## 41     CD_3 ~~  PAPmoni  0.137 -0.007  -0.007   -0.034   -0.034
+## 39     CD_2 ~~  PAPrule  0.125  0.005   0.005    0.071    0.071
+## 54 PAPsolic ~~      PSE  0.049 -0.006  -0.006   -0.039   -0.039
+## 38     CD_2 ~~ PAPsolic  0.002  0.000   0.000    0.012    0.012
+## 28     CD_1 ~~     CD_2  0.001  0.003   0.003    0.031    0.031
+## 45     CD_3 ~~      PSE  0.001 -0.001  -0.001   -0.003   -0.003
+## 27  EffectP =~     CD_3  0.000 -0.002  -0.001   -0.002   -0.002
+## 21    AdolD =~  PAPmoni  0.000  0.000   0.000    0.000    0.000</code></pre>
+<pre class="r"><code>inspect(fit3, what=&quot;std&quot;)</code></pre>
+<pre><code>## $lambda
+##          AdolD EffctP PSE
+## CD_1     0.713  0.000   0
+## CD_2     0.960  0.000   0
+## CD_3     0.654  0.000   0
+## PAPmoni  0.000  0.528   0
+## PAPWARM  0.000  0.592   0
+## PAPsolic 0.000  0.855   0
+## PAPrule  0.000  0.455   0
+## PSE      0.000  0.000   1
+## 
+## $theta
+##           CD_1  CD_2  CD_3 PAPmon PAPWAR PAPslc PAPrul   PSE
+## CD_1     0.492                                              
+## CD_2     0.000 0.078                                        
+## CD_3     0.000 0.000 0.572                                  
+## PAPmoni  0.000 0.000 0.000  0.721                           
+## PAPWARM  0.000 0.000 0.000  0.000  0.650                    
+## PAPsolic 0.000 0.000 0.000  0.000  0.000  0.269             
+## PAPrule  0.000 0.000 0.000  0.000  0.000  0.000  0.793      
+## PSE      0.000 0.000 0.000  0.000  0.000  0.000  0.000 0.000
+## 
+## $psi
+##         AdolD EffctP   PSE
+## AdolD   0.842             
+## EffectP 0.000  1.000      
+## PSE     0.000  0.000 0.888
+## 
+## $beta
+##         AdolD EffctP    PSE
+## AdolD       0 -0.185 -0.295
+## EffectP     0  0.000  0.000
+## PSE         0  0.335  0.000</code></pre>
+<pre class="r"><code>parameterestimates(fit3, standardized = TRUE)</code></pre>
+<pre><code>##         lhs op      rhs    est    se      z pvalue ci.lower ci.upper std.lv
+## 1     AdolD =~     CD_1  1.000 0.000     NA     NA    1.000    1.000  0.541
+## 2     AdolD =~     CD_2  1.111 0.140  7.955  0.000    0.837    1.385  0.601
+## 3     AdolD =~     CD_3  0.598 0.082  7.274  0.000    0.437    0.759  0.323
+## 4   EffectP =~  PAPmoni  1.000 0.000     NA     NA    1.000    1.000  0.335
+## 5   EffectP =~  PAPWARM  0.795 0.167  4.751  0.000    0.467    1.123  0.267
+## 6   EffectP =~ PAPsolic  1.147 0.231  4.972  0.000    0.695    1.600  0.385
+## 7   EffectP =~  PAPrule  0.620 0.155  3.990  0.000    0.315    0.924  0.208
+## 8       PSE  ~  EffectP  0.646 0.205  3.143  0.002    0.243    1.049  0.216
+## 9     AdolD  ~  EffectP -0.298 0.172 -1.730  0.084   -0.636    0.040 -0.185
+## 10    AdolD  ~      PSE -0.247 0.081 -3.064  0.002   -0.406   -0.089 -0.457
+## 11     CD_1 ~~     CD_1  0.283 0.044  6.413  0.000    0.197    0.369  0.283
+## 12     CD_2 ~~     CD_2  0.031 0.033  0.927  0.354   -0.034    0.096  0.031
+## 13     CD_3 ~~     CD_3  0.139 0.020  7.053  0.000    0.101    0.178  0.139
+## 14  PAPmoni ~~  PAPmoni  0.291 0.041  7.173  0.000    0.211    0.370  0.291
+## 15  PAPWARM ~~  PAPWARM  0.132 0.020  6.691  0.000    0.093    0.170  0.132
+## 16 PAPsolic ~~ PAPsolic  0.054 0.022  2.468  0.014    0.011    0.098  0.054
+## 17  PAPrule ~~  PAPrule  0.166 0.022  7.524  0.000    0.123    0.209  0.166
+## 18      PSE ~~      PSE  0.370 0.047  7.850  0.000    0.278    0.463  0.370
+## 19    AdolD ~~    AdolD  0.246 0.056  4.385  0.000    0.136    0.356  0.842
+## 20  EffectP ~~  EffectP  0.112 0.039  2.861  0.004    0.035    0.189  1.000
+##    std.all std.nox
+## 1    0.713   0.713
+## 2    0.960   0.960
+## 3    0.654   0.654
+## 4    0.528   0.528
+## 5    0.592   0.592
+## 6    0.855   0.855
+## 7    0.455   0.455
+## 8    0.335   0.335
+## 9   -0.185  -0.185
+## 10  -0.295  -0.295
+## 11   0.492   0.492
+## 12   0.078   0.078
+## 13   0.572   0.572
+## 14   0.721   0.721
+## 15   0.650   0.650
+## 16   0.269   0.269
+## 17   0.793   0.793
+## 18   0.888   0.888
+## 19   0.842   0.842
+## 20   1.000   1.000</code></pre>
+<pre class="r"><code>fitted(fit3)</code></pre>
+<pre><code>## $cov
+##            CD_1   CD_2   CD_3 PAPmon PAPWAR PAPslc PAPrul    PSE
+## CD_1      0.575                                                 
+## CD_2      0.325  0.392                                          
+## CD_3      0.175  0.194  0.244                                   
+## PAPmoni  -0.051 -0.057 -0.031  0.403                            
+## PAPWARM  -0.041 -0.045 -0.024  0.089  0.203                     
+## PAPsolic -0.059 -0.066 -0.035  0.129  0.103  0.202              
+## PAPrule  -0.032 -0.035 -0.019  0.070  0.055  0.080  0.209       
+## PSE      -0.125 -0.139 -0.075  0.073  0.058  0.083  0.045  0.417</code></pre>
+<pre class="r"><code>residuals(fit3)</code></pre>
+<pre><code>## $type
+## [1] &quot;raw&quot;
+## 
+## $cov
+##            CD_1   CD_2   CD_3 PAPmon PAPWAR PAPslc PAPrul    PSE
+## CD_1      0.000                                                 
+## CD_2      0.000  0.000                                          
+## CD_3     -0.006  0.001  0.000                                   
+## PAPmoni   0.033 -0.003 -0.006  0.000                            
+## PAPWARM  -0.046 -0.017 -0.023 -0.021  0.000                     
+## PAPsolic -0.012  0.004  0.008 -0.005  0.005  0.000              
+## PAPrule   0.022  0.016 -0.003  0.068 -0.025 -0.002  0.000       
+## PSE      -0.017  0.002 -0.001 -0.017  0.026 -0.001 -0.018  0.000</code></pre>
+<pre class="r"><code>fitmeasures(fit3)</code></pre>
+<pre><code>##                  npar                  fmin                 chisq 
+##                18.000                 0.113                29.756 
+##                    df                pvalue        baseline.chisq 
+##                18.000                 0.040               306.486 
+##           baseline.df       baseline.pvalue                   cfi 
+##                28.000                 0.000                 0.958 
+##                   tli                  nnfi                   rfi 
+##                 0.934                 0.934                 0.849 
+##                   nfi                  pnfi                   ifi 
+##                 0.903                 0.580                 0.959 
+##                   rni                  logl     unrestricted.logl 
+##                 0.958              -736.817              -721.939 
+##                   aic                   bic                ntotal 
+##              1509.634              1561.525               132.000 
+##                  bic2                 rmsea        rmsea.ci.lower 
+##              1504.591                 0.070                 0.015 
+##        rmsea.ci.upper        rmsea.ci.level          rmsea.pvalue 
+##                 0.114                 0.900                 0.211 
+##        rmsea.close.h0 rmsea.notclose.pvalue     rmsea.notclose.h0 
+##                 0.050                 0.393                 0.080 
+##                   rmr            rmr_nomean                  srmr 
+##                 0.019                 0.019                 0.062 
+##          srmr_bentler   srmr_bentler_nomean                  crmr 
+##                 0.062                 0.062                 0.070 
+##           crmr_nomean            srmr_mplus     srmr_mplus_nomean 
+##                 0.070                 0.062                 0.062 
+##                 cn_05                 cn_01                   gfi 
+##               129.067               155.400                 0.944 
+##                  agfi                  pgfi                   mfi 
+##                 0.888                 0.472                 0.956 
+##                  ecvi 
+##                 0.498</code></pre>
+<pre class="r"><code>modificationindices(fit3, sort. = TRUE)</code></pre>
+<pre><code>##         lhs op      rhs     mi    epc sepc.lv sepc.all sepc.nox
+## 48  PAPmoni ~~  PAPrule 17.031  0.091   0.091    0.414    0.414
+## 50  PAPWARM ~~ PAPsolic  5.606  0.061   0.061    0.719    0.719
+## 51  PAPWARM ~~  PAPrule  5.538 -0.037  -0.037   -0.251   -0.251
+## 30     CD_1 ~~  PAPmoni  3.035  0.047   0.047    0.164    0.164
+## 46  PAPmoni ~~  PAPWARM  2.681 -0.037  -0.037   -0.191   -0.191
+## 52  PAPWARM ~~      PSE  2.309  0.033   0.033    0.151    0.151
+## 31     CD_1 ~~  PAPWARM  2.081 -0.027  -0.027   -0.138   -0.138
+## 47  PAPmoni ~~ PAPsolic  1.712 -0.041  -0.041   -0.326   -0.326
+## 43     CD_3 ~~ PAPsolic  1.634  0.015   0.015    0.168    0.168
+## 22    AdolD =~  PAPWARM  1.603 -0.090  -0.048   -0.108   -0.108
+## 42     CD_3 ~~  PAPWARM  1.255 -0.014  -0.014   -0.106   -0.106
+## 36     CD_2 ~~  PAPmoni  1.088 -0.020  -0.020   -0.212   -0.212
+## 37     CD_2 ~~  PAPWARM  0.985  0.013   0.013    0.206    0.206
+## 55  PAPrule ~~      PSE  0.823 -0.021  -0.021   -0.084   -0.084
+## 44     CD_3 ~~  PAPrule  0.784 -0.012  -0.012   -0.081   -0.081
+## 35     CD_2 ~~     CD_3  0.676  0.037   0.037    0.561    0.561
+## 24    AdolD =~  PAPrule  0.627  0.059   0.032    0.070    0.070
+## 33     CD_1 ~~  PAPrule  0.603  0.016   0.016    0.072    0.072
+## 32     CD_1 ~~ PAPsolic  0.586 -0.013  -0.013   -0.102   -0.102
+## 29     CD_1 ~~     CD_3  0.518 -0.024  -0.024   -0.123   -0.123
+## 49  PAPmoni ~~      PSE  0.416 -0.020  -0.020   -0.062   -0.062
+## 25  EffectP =~     CD_1  0.409 -0.112  -0.038   -0.050   -0.050
+## 53 PAPsolic ~~  PAPrule  0.355 -0.012  -0.012   -0.124   -0.124
+## 26  EffectP =~     CD_2  0.280  0.083   0.028    0.045    0.045
+## 23    AdolD =~ PAPsolic  0.279  0.042   0.023    0.050    0.050
+## 34     CD_1 ~~      PSE  0.225 -0.015  -0.015   -0.047   -0.047
+## 40     CD_2 ~~      PSE  0.164  0.012   0.012    0.111    0.111
+## 41     CD_3 ~~  PAPmoni  0.137 -0.007  -0.007   -0.034   -0.034
+## 39     CD_2 ~~  PAPrule  0.125  0.005   0.005    0.071    0.071
+## 54 PAPsolic ~~      PSE  0.049 -0.006  -0.006   -0.039   -0.039
+## 38     CD_2 ~~ PAPsolic  0.002  0.000   0.000    0.012    0.012
+## 28     CD_1 ~~     CD_2  0.001  0.003   0.003    0.031    0.031
+## 45     CD_3 ~~      PSE  0.001 -0.001  -0.001   -0.003   -0.003
+## 27  EffectP =~     CD_3  0.000 -0.002  -0.001   -0.002   -0.002
+## 21    AdolD =~  PAPmoni  0.000  0.000   0.000    0.000    0.000</code></pre>
+<pre class="r"><code>semPaths(fit3, what=&quot;paths&quot;, whatLables=&quot;par&quot;, rotation=2)</code></pre>
+<pre><code>## Warning in qgraph::qgraph(Edgelist, labels = nLab, bidirectional = Bidir, : The
+## following arguments are not documented and likely not arguments of qgraph and
+## thus ignored: whatLables</code></pre>
+<p><img src="p02_files/figure-html/model3-1.png" width="672" /></p>
+<pre class="r"><code>fitmeasures(fit3)</code></pre>
+<pre><code>##                  npar                  fmin                 chisq 
+##                18.000                 0.113                29.756 
+##                    df                pvalue        baseline.chisq 
+##                18.000                 0.040               306.486 
+##           baseline.df       baseline.pvalue                   cfi 
+##                28.000                 0.000                 0.958 
+##                   tli                  nnfi                   rfi 
+##                 0.934                 0.934                 0.849 
+##                   nfi                  pnfi                   ifi 
+##                 0.903                 0.580                 0.959 
+##                   rni                  logl     unrestricted.logl 
+##                 0.958              -736.817              -721.939 
+##                   aic                   bic                ntotal 
+##              1509.634              1561.525               132.000 
+##                  bic2                 rmsea        rmsea.ci.lower 
+##              1504.591                 0.070                 0.015 
+##        rmsea.ci.upper        rmsea.ci.level          rmsea.pvalue 
+##                 0.114                 0.900                 0.211 
+##        rmsea.close.h0 rmsea.notclose.pvalue     rmsea.notclose.h0 
+##                 0.050                 0.393                 0.080 
+##                   rmr            rmr_nomean                  srmr 
+##                 0.019                 0.019                 0.062 
+##          srmr_bentler   srmr_bentler_nomean                  crmr 
+##                 0.062                 0.062                 0.070 
+##           crmr_nomean            srmr_mplus     srmr_mplus_nomean 
+##                 0.070                 0.062                 0.062 
+##                 cn_05                 cn_01                   gfi 
+##               129.067               155.400                 0.944 
+##                  agfi                  pgfi                   mfi 
+##                 0.888                 0.472                 0.956 
+##                  ecvi 
+##                 0.498</code></pre>
+<pre class="r"><code>#does not make any noticeable change as well.
+#did not find significant better model. all three model seems alike. The fit measure difference is unnoticeable.</code></pre>
 
 
 
