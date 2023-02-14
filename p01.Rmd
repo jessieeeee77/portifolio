@@ -9,41 +9,65 @@ library(tidyverse)
 library(tidyr)
 ```
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum eget nibh vel est aliquet iaculis at placerat sem. Aenean faucibus iaculis ultricies. Nullam consequat odio in ultricies ullamcorper. Etiam venenatis in est vitae ullamcorper. Nam vitae urna ut dolor rhoncus aliquet at vel neque. Quisque tristique leo finibus nisi interdum, sit amet tempor risus viverra. Donec mollis vulputate sodales. Nunc ornare, leo quis euismod eleifend, eros mi maximus felis, vel varius lacus dui eget nibh. Duis vitae nunc nisl. Donec accumsan aliquam elit, eu fringilla quam pulvinar eget.
-
-Mauris in ligula mauris. Curabitur facilisis pharetra metus eget lobortis. In egestas nibh sit amet faucibus eleifend. Suspendisse imperdiet viverra blandit. Phasellus consectetur tincidunt eros eu facilisis. Quisque maximus, orci eget sodales aliquam, velit lorem semper dolor, nec convallis erat ipsum mattis velit. Pellentesque porttitor, mauris vitae aliquam mattis, metus nisl viverra turpis, vel convallis metus sapien et ex. Nunc consequat ipsum id dolor eleifend, sit amet semper eros sodales. Pellentesque consectetur, dui quis venenatis malesuada, nunc lorem lacinia libero, vitae malesuada dui arcu in augue. Aliquam id sagittis libero. Vestibulum aliquet sagittis libero, non posuere odio molestie ut. Curabitur lacus enim, viverra vel odio non, pretium efficitur elit. Mauris posuere efficitur interdum. Nunc sed bibendum turpis, quis fringilla velit. Phasellus eu lorem lobortis eros molestie laoreet.
-
-
-
 ```{r}
-# Create a barplot of the number of fish encounters by species
-ggplot(data = fish_encounters, aes(x = species, y = count)) +
-  geom_bar(stat = "identity") +
-  labs(x = "Species", y = "Number of Fish Encounters")
+library(tidyverse)
+library(dplyr)
+library(haven)
+Mother_and_teen_data <- read_sav("Mother_and_teen_data.sav")
+#View(Mother_and_teen_data)
+Mother_and_teen_data$Race3 <- as.factor(Mother_and_teen_data$Race3)
+select(Mother_and_teen_data, PSE, CD_1, CD_2, CD_3, PAPWARM, PAPmoni, PAPsolic, PAPrule, Race3)
+ggplot(Mother_and_teen_data, aes(x=PSE, y=CD_1, fill = Race3)) +  geom_smooth(size=1, alpha=0.4) +
+ geom_point(aes(color=Race3))+
+  labs(title="PSE and adolescents' disobeying parents", x="Parental self-efficacy", y="Disobeying parents among adolescents" ) 
   
 ```
 
-
-Sed mollis purus faucibus leo finibus, ut pharetra nibh elementum. Nulla id orci lorem. Mauris sollicitudin mi eget tellus vehicula, ut convallis lorem mollis. In blandit nulla diam, a malesuada sem volutpat interdum. Ut elementum elit at velit maximus, ac tempor odio porttitor. Suspendisse lobortis sollicitudin tortor, ut pharetra libero luctus a. Sed hendrerit faucibus metus. Sed rutrum purus vel pellentesque euismod.
-
-
 ```{r}
-# Create a barplot of the number of fish encounters by species
-ggplot(data = fish_encounters, aes(x = species, y = count)) +
-  geom_bar(stat = "identity") +
-  labs(x = "Species", y = "Number of Fish Encounters")
+ggplot(Mother_and_teen_data, aes(x=PSE, y=CD_2, fill = Race3)) +  geom_smooth(size=1, alpha=0.4) +
+ geom_point(aes(color=Race3))+
+  labs(title="PSE and adolescents' school misconduct", x="Parental self-efficacy", y="school misconduct among adolescents" ) 
   
 ```
 
-Mauris placerat in velit a pharetra. Nulla viverra bibendum lectus, ut lobortis nibh. Aenean malesuada, orci vitae dictum placerat, enim justo aliquet leo, ac tincidunt augue ipsum et mi. Nullam in pharetra metus, nec molestie felis. Duis varius rhoncus pulvinar. Integer semper urna sed tellus rhoncus, vel suscipit odio iaculis. Mauris iaculis neque pellentesque ex convallis venenatis. Sed ultrices euismod fermentum. Ut feugiat risus at turpis tincidunt viverra.
-
-
 ```{r}
-# Create a barplot of the number of fish encounters by species
-ggplot(data = fish_encounters, aes(x = species, y = count)) +
-  geom_bar(stat = "identity") +
-  labs(x = "Species", y = "Number of Fish Encounters")
-  
+ggplot(Mother_and_teen_data, aes(x=PSE, y=CD_3, fill = Race3)) +  geom_smooth(size=1, alpha=0.4) +
+ geom_point(aes(color=Race3))+
+  labs(title="PSE and adolescents' substance use", x="Parental self-efficacy", y="substance use among adolescents" ) 
 ```
-
-Donec sagittis suscipit orci in ultrices. Vivamus iaculis eleifend est et dictum. Fusce non urna at lacus dapibus tincidunt ac sed nibh. Donec luctus lectus elit, ac ultrices tortor mollis sit amet. Nulla finibus lacinia arcu. Proin sollicitudin non odio et pulvinar. Maecenas finibus faucibus finibus. Ut elementum metus velit, a sodales sapien commodo et. Vivamus pulvinar, sapien et porta cursus, elit est luctus nisi, eget fringilla odio diam et enim. Sed sodales suscipit bibendum. Morbi ut metus semper, laoreet felis sodales, consequat dolor.
+Trying to combine three type of adolescent deviance
+```{r}
+Mother_and_teen_data$Race3 <- as.factor(Mother_and_teen_data$Race3) 
+Mother_and_teen_data <- Mother_and_teen_data %>%
+mutate(ad_deviance=CD_1 + CD_2 + CD_3)
+ggplot(Mother_and_teen_data, aes(x=PSE, y=ad_deviance)) +  geom_smooth(size=1, alpha=0.4) +
+ geom_point(aes(color=Race3)) +
+  labs(title="PSE and adolescents' substance use", x="Parental self-efficacy", y="adolescent deviance" ) 
+```
+SEM to test the model and its fits
+```{r} 
+model1<-"AdolD=~CD_1 +CD_2 +CD_3
+EffectP=~PAPmoni+PAPWARM+PAPsolic+PAPrule
+PSE~EffectP
+AdolD~EffectP + PSE"
+#residual correlations
+PAPmoni~~PAPsoli
+PAPmoni~~PAPrule
+PAPWARM~~PAPsoli
+CD_1~~CD_2
+CD_1~~CD_3
+CD_2~~CD_3
+```
+the model fits.
+```{r} 
+library(lavaan)
+library(readxl)
+library(dplyr)
+library(haven)
+teendata<- Mother_and_teen_data %>% filter( !is.na(PerPW)) 
+fit1<- sem(model1, data=Mother_and_teen_data)
+fit1
+summary(fit1, standardized=TRUE, ci=TRUE, fit.measures=TRUE)
+modindices(fit1, sort.=TRUE)
+inspect(fit1, what="std")
+```
