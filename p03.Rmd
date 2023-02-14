@@ -1,5 +1,77 @@
 ---
 title: "Portfolio 3"
+
+#try to make prettier plots
+#& finalize the model
 ---
 
-> The projects should be numbered consecutively (i.e., in the order in which you began them), and should include for each project a description of the goal, the product (computer program, hand graph, computer graph, etc.), the data, and some interpretation. Reports must be reproducible and of high quality in terms of writing, grammar, presentation, etc.
+```{r data}
+library(tidyverse)
+library(dplyr)
+library(haven)
+Mother_and_teen_data <- read_sav("Mother_and_teen_data.sav")
+#View(Mother_and_teen_data)
+#Goal is to do make a better graph to show that culture differentiates the level of PSE.
+```
+```{r mutate}
+#delete the NA from Race3
+library(tidyverse)
+library(dplyr)
+library(haven)
+mt <- Mother_and_teen_data %>% 
+ filter(!is.na(Race3)) %>% 
+  mutate(ad_deviance=CD_1 + CD_2 + CD_3)
+```
+
+
+```{r plot0}
+mt$Race3 <- as.factor(mt$Race3)
+ggplot(data=mt, mapping = aes(x = PSE, y = ad_deviance)) + 
+  geom_smooth(size=1, alpha=0.4) +
+ geom_point(aes(color=Race3)) +
+  theme_bw()
+```
+```{r plot-facet}
+ggplot(data=mt, mapping = aes(x = PSE, y = ad_deviance)) + 
+  geom_smooth(size=1, alpha=0.4) +
+  geom_point(aes(color=Race3)) + 
+  facet_wrap(~Race3) +
+  theme_bw() +
+  labs(y="adolescent_deviance", fill="race/ethnicity")
+```
+```{r plot0.1}
+ggplot(data=mt, mapping = aes(x = PSE, y = ad_deviance)) + 
+  geom_smooth() +
+  geom_point(aes(color=Race3)) +
+  theme_light() +
+  theme(legend.position = "bottom", legend.title=element_blank()) +
+  scale_color_discrete(labels = c("White", "Latina", "African American")) 
+```
+
+
+```{r plot1}
+#create a new variable that defined by high PSE, medium PSE, and low PSE.
+mt<-mt %>% 
+  mutate(PSE_cat = dplyr::case_when(
+      PSE <= 3 ~ "low PSE",
+      PSE > 3  & PSE <= 5 ~ "medium PSE",
+      PSE > 5 ~ "high PSE"),
+    PSE_cat = factor(PSE_cat,
+      level = c("low PSE", "medium PSE","high PSE")
+    )
+  )
+mt$PSE_cat <- as.factor(mt$PSE_cat)
+```
+
+
+```{r plot1.1}
+#failure
+ggplot(mt, aes(y = PSE_cat, fill = ad_deviance)) +
+  geom_bar(aes(color=Race3), position = "fill") +
+  facet_wrap(. ~ Race3) +
+ 
+  labs(title = "Adolescent deviance by parental self-efficacy and race",
+       x = NULL, y = NULL, fill = NULL) +
+  theme(legend.position = "bottom")
+```
+
