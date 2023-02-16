@@ -69,9 +69,83 @@ mt$PSE_cat <- as.factor(mt$PSE_cat)
 ggplot(mt, aes(y = PSE_cat, fill = ad_deviance)) +
   geom_bar(aes(color=Race3), position = "fill") +
   facet_wrap(. ~ Race3) +
- 
+  scale_x_continuous() +
   labs(title = "Adolescent deviance by parental self-efficacy and race",
        x = NULL, y = NULL, fill = NULL) +
   theme(legend.position = "bottom")
 ```
+```{r plot 1.2}
+
+ggplot(mt, aes(x=Race3, y=PSE, color=Race3)) +
+  geom_boxplot() +
+  labs(title="PSE by Race/Ethnicity", x="Race/Ethnicity", y="PSE", fill="Race/Ethnicity")
+
+```
+```{r plot2.2}
+#try to show the significant difference among ethnic groups in the plot
+
+library(ggpubr)
+
+
+compare_means(PSE ~ Race3,  data = mt, method = "anova")
+
+
+ggboxplot(mt, x = "Race3", y = "PSE",
+          color = "Race3", palette = "jco")+
+  stat_compare_means(method = "anova")
+
+```
+
+
+
+
+```{r comparison}
+compare_means(PSE ~ Race3,  data = mt)
+my_comparisons <- list( c("1", "2"), c("1", "3"), c("2", "3") )
+ggboxplot(mt, x = "Race3", y = "PSE",
+          color = "Race3", palette = "jco")+ 
+  scale_x_discrete(labels=c('White', 'Latina', 'African American'))+
+  stat_compare_means(comparisons = my_comparisons)+ 
+  stat_compare_means(label.y = 7)    
+
+#VERY SATISFIED WITH THIS PLOT!
+```
+```{r model}
+model1<-"AdolD=~CD_1 +CD_2 +CD_3
+EffectP=~PAPmoni+PAPWARM+PAPsolic+PAPrule
+PSE~EffectP
+AdolD~EffectP + PSE"
+#residual correlations
+PAPmoni~~PAPsoli
+PAPmoni~~PAPrule
+PAPWARM~~PAPsoli
+
+CD_1~~CD_2
+CD_1~~CD_3
+CD_2~~CD_3
+library(semPlot)
+library(lavaan)
+library(readxl)
+library(dplyr)
+library(haven)
+teendata<- Mother_and_teen_data %>% filter( !is.na(PerPW)) 
+fit1<- sem(model1, data=Mother_and_teen_data)
+fit1
+summary(fit1, standardized=TRUE, ci=TRUE, fit.measures=TRUE)
+modindices(fit1, sort.=TRUE)
+inspect(fit1, what="std")
+
+parameterestimates(fit1, standardized = TRUE)
+fitted(fit1)
+residuals(fit1)
+fitmeasures(fit1)
+modificationindices(fit1, sort. = TRUE)
+semPaths(fit1, what="paths", whatLables="par", rotation=2)
+
+fitmeasures(fit1)
+
+#looks like the model made by r is uglier than what I got from Amos. I might be stuck with Amos output.
+```
+
+
 
