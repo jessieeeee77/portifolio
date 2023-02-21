@@ -104,6 +104,7 @@ compare_means(PSE ~ Race3,  data = mt)
 my_comparisons <- list( c("1", "2"), c("1", "3"), c("2", "3") )
 ggboxplot(mt, x = "Race3", y = "PSE",
           color = "Race3", palette = "jco")+ 
+  labs(title= "Cultural Difference in PSE", x="Race/Ethnicity", y="PSE", color="Race/Ethnicity") + 
   scale_x_discrete(labels=c('White', 'Latina', 'African American'))+
   stat_compare_means(comparisons = my_comparisons)+ 
   stat_compare_means(label.y = 7)    
@@ -145,6 +146,22 @@ semPaths(fit1, what="paths", whatLables="par", rotation=2)
 fitmeasures(fit1)
 
 #looks like the model made by r is uglier than what I got from Amos. I might be stuck with Amos output.
+```
+```{r result}
+semPaths(fit1,"std",layout = 'tree', edge.label.cex=.9, curvePivot = TRUE)
+library(tidyverse)
+library(knitr)
+library(lavaan)
+library(psych)
+library(MBESS)
+```
+```{r mediation}
+#library(manymome)
+#boot_out_fit1 <- do_boot(fit1,
+                        #R = 100,
+                        #seed = 98171,
+                        #ncores = 1)
+#could not download manymome.
 ```
 
 

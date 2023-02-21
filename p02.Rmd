@@ -36,7 +36,12 @@ library(tidyverse)
 library(dplyr)
 library(haven)
 Mother_and_teen_data %>% 
- filter(!is.na(Race3)) %>% mutate(ad_deviance=CD_1 + CD_2 + CD_3)
+ filter(!is.na(Race3)) %>% 
+  mutate(ad_deviance=CD_1 + CD_2 + CD_3)
+ggplot(Mother_and_teen_data,aes(PSE,ad_deviance)) +
+  geom_point(aes(color=Race3)) + 
+  stat_smooth(method="lm",se=F) 
+
 ```
 
 

@@ -13,7 +13,7 @@
 
 <title>Portfolio 1</title>
 
-<script src="site_libs/header-attrs-2.13/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.19/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
@@ -141,11 +141,15 @@ $(document).ready(function () {
     href = "index.html";
   var menuAnchor = $('a[href="' + href + '"]');
 
-  // mark it active
-  menuAnchor.tab('show');
-
-  // if it's got a parent navbar menu mark it active as well
-  menuAnchor.closest('li.dropdown').addClass('active');
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
 
   // Navbar adjustments
   var navHeight = $(".navbar").first().height() + 15;
@@ -174,8 +178,8 @@ $(document).ready(function () {
   border-radius: 4px;
 }
 
-.tabset-dropdown > .nav-tabs > li.active:before {
-  content: "";
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
   font-family: 'Glyphicons Halflings';
   display: inline-block;
   padding: 10px;
@@ -183,16 +187,9 @@ $(document).ready(function () {
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-  content: "&#xe258;";
-  border: none;
-}
-
-.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-  content: "";
+  content: "\e258";
   font-family: 'Glyphicons Halflings';
-  display: inline-block;
-  padding: 10px;
-  border-right: 1px solid #ddd;
+  border: none;
 }
 
 .tabset-dropdown > .nav-tabs > li.active {
@@ -306,7 +303,288 @@ etc.), the data, and some interpretation. Reports must be reproducible
 and of high quality in terms of writing, grammar, presentation, etc.</p>
 </blockquote>
 <pre class="r"><code>library(tidyverse) 
-library(datasauRus)</code></pre>
+library(tidyr)</code></pre>
+<pre class="r"><code>library(tidyverse)
+library(dplyr)
+library(haven)
+Mother_and_teen_data &lt;- read_sav(&quot;Mother_and_teen_data.sav&quot;)
+#View(Mother_and_teen_data)
+Mother_and_teen_data$Race3 &lt;- as.factor(Mother_and_teen_data$Race3)
+select(Mother_and_teen_data, PSE, CD_1, CD_2, CD_3, PAPWARM, PAPmoni, PAPsolic, PAPrule, Race3)</code></pre>
+<pre><code>## # A tibble: 184 × 9
+##      PSE  CD_1  CD_2  CD_3 PAPWARM PAPmoni PAPsolic PAPrule Race3
+##    &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt;   &lt;dbl&gt; &lt;fct&gt;
+##  1  4.31  2     1.29  1       4.17    2.88     3.75    3.5  &lt;NA&gt; 
+##  2  5.69  1.33  1.14  1       4.79    3.29     4.58    3.62 1    
+##  3  5    NA    NA    NA       4.8     1.71     4.83    4.22 1    
+##  4  4.44 NA    NA    NA       4.83    4.33     5       4.33 1    
+##  5  6    NA    NA    NA       4.36    3.86     4.33    4.89 1    
+##  6  5     1.83  2.14  1       3.79    2.43     2.92    3.78 1    
+##  7  4.81 NA    NA    NA       4.33    4.43     4       4.78 1    
+##  8  5     1.67  1.29  1       4.14    1.75     3.67    3.02 1    
+##  9  4.94  2.17  1.29  1.14    4.17    3.71     4.5     4.39 1    
+## 10  3.69  3     1.86  1       3.54    4        3.92    4.78 1    
+## # … with 174 more rows</code></pre>
+<pre class="r"><code>ggplot(Mother_and_teen_data, aes(x=PSE, y=CD_1, fill = Race3)) +  geom_smooth(size=1, alpha=0.4) +
+ geom_point(aes(color=Race3))+
+  labs(title=&quot;PSE and adolescents&#39; disobeying parents&quot;, x=&quot;Parental self-efficacy&quot;, y=&quot;Disobeying parents among adolescents&quot; ) </code></pre>
+<pre><code>## Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
+## ℹ Please use `linewidth` instead.</code></pre>
+<pre><code>## `geom_smooth()` using method = &#39;loess&#39; and formula = &#39;y ~ x&#39;</code></pre>
+<pre><code>## Warning: Removed 52 rows containing non-finite values (`stat_smooth()`).</code></pre>
+<pre><code>## Warning: Removed 52 rows containing missing values (`geom_point()`).</code></pre>
+<p><img src="p01_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
+<pre class="r"><code>ggplot(Mother_and_teen_data, aes(x=PSE, y=CD_2, fill = Race3)) +  geom_smooth(size=1, alpha=0.4) +
+ geom_point(aes(color=Race3))+
+  labs(title=&quot;PSE and adolescents&#39; school misconduct&quot;, x=&quot;Parental self-efficacy&quot;, y=&quot;school misconduct among adolescents&quot; ) </code></pre>
+<pre><code>## `geom_smooth()` using method = &#39;loess&#39; and formula = &#39;y ~ x&#39;</code></pre>
+<pre><code>## Warning: Removed 52 rows containing non-finite values (`stat_smooth()`).</code></pre>
+<pre><code>## Warning: Removed 52 rows containing missing values (`geom_point()`).</code></pre>
+<p><img src="p01_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<pre class="r"><code>ggplot(Mother_and_teen_data, aes(x=PSE, y=CD_3, fill = Race3)) +  geom_smooth(size=1, alpha=0.4) +
+ geom_point(aes(color=Race3))+
+  labs(title=&quot;PSE and adolescents&#39; substance use&quot;, x=&quot;Parental self-efficacy&quot;, y=&quot;substance use among adolescents&quot; ) </code></pre>
+<pre><code>## `geom_smooth()` using method = &#39;loess&#39; and formula = &#39;y ~ x&#39;</code></pre>
+<pre><code>## Warning: Removed 52 rows containing non-finite values (`stat_smooth()`).</code></pre>
+<pre><code>## Warning: Removed 52 rows containing missing values (`geom_point()`).</code></pre>
+<p><img src="p01_files/figure-html/unnamed-chunk-3-1.png" width="672" />
+Trying to combine three type of adolescent deviance</p>
+<pre class="r"><code>Mother_and_teen_data$Race3 &lt;- as.factor(Mother_and_teen_data$Race3) 
+Mother_and_teen_data &lt;- Mother_and_teen_data %&gt;%
+mutate(ad_deviance=CD_1 + CD_2 + CD_3)
+ggplot(Mother_and_teen_data, aes(x=PSE, y=ad_deviance)) +  geom_smooth(size=1, alpha=0.4) +
+ geom_point(aes(color=Race3)) +
+  labs(title=&quot;PSE and adolescents&#39; substance use&quot;, x=&quot;Parental self-efficacy&quot;, y=&quot;adolescent deviance&quot; ) </code></pre>
+<pre><code>## `geom_smooth()` using method = &#39;loess&#39; and formula = &#39;y ~ x&#39;</code></pre>
+<pre><code>## Warning: Removed 52 rows containing non-finite values (`stat_smooth()`).</code></pre>
+<pre><code>## Warning: Removed 52 rows containing missing values (`geom_point()`).</code></pre>
+<p><img src="p01_files/figure-html/unnamed-chunk-4-1.png" width="672" />
+SEM to test the model and its fits</p>
+<pre class="r"><code>model1&lt;-&quot;AdolD=~CD_1 +CD_2 +CD_3
+EffectP=~PAPmoni+PAPWARM+PAPsolic+PAPrule
+PSE~EffectP
+AdolD~EffectP + PSE&quot;
+#residual correlations
+PAPmoni~~PAPsoli</code></pre>
+<pre><code>## PAPmoni ~ ~PAPsoli</code></pre>
+<pre class="r"><code>PAPmoni~~PAPrule</code></pre>
+<pre><code>## PAPmoni ~ ~PAPrule</code></pre>
+<pre class="r"><code>PAPWARM~~PAPsoli</code></pre>
+<pre><code>## PAPWARM ~ ~PAPsoli</code></pre>
+<pre class="r"><code>CD_1~~CD_2</code></pre>
+<pre><code>## CD_1 ~ ~CD_2</code></pre>
+<pre class="r"><code>CD_1~~CD_3</code></pre>
+<pre><code>## CD_1 ~ ~CD_3</code></pre>
+<pre class="r"><code>CD_2~~CD_3</code></pre>
+<pre><code>## CD_2 ~ ~CD_3</code></pre>
+<p>the model fits.</p>
+<pre class="r"><code>library(lavaan)</code></pre>
+<pre><code>## This is lavaan 0.6-13
+## lavaan is FREE software! Please report any bugs.</code></pre>
+<pre class="r"><code>library(readxl)
+library(dplyr)
+library(haven)
+teendata&lt;- Mother_and_teen_data %&gt;% filter( !is.na(PerPW)) 
+fit1&lt;- sem(model1, data=Mother_and_teen_data)
+fit1</code></pre>
+<pre><code>## lavaan 0.6.13 ended normally after 36 iterations
+## 
+##   Estimator                                         ML
+##   Optimization method                           NLMINB
+##   Number of model parameters                        18
+## 
+##                                                   Used       Total
+##   Number of observations                           132         184
+## 
+## Model Test User Model:
+##                                                       
+##   Test statistic                                29.756
+##   Degrees of freedom                                18
+##   P-value (Chi-square)                           0.040</code></pre>
+<pre class="r"><code>summary(fit1, standardized=TRUE, ci=TRUE, fit.measures=TRUE)</code></pre>
+<pre><code>## lavaan 0.6.13 ended normally after 36 iterations
+## 
+##   Estimator                                         ML
+##   Optimization method                           NLMINB
+##   Number of model parameters                        18
+## 
+##                                                   Used       Total
+##   Number of observations                           132         184
+## 
+## Model Test User Model:
+##                                                       
+##   Test statistic                                29.756
+##   Degrees of freedom                                18
+##   P-value (Chi-square)                           0.040
+## 
+## Model Test Baseline Model:
+## 
+##   Test statistic                               306.486
+##   Degrees of freedom                                28
+##   P-value                                        0.000
+## 
+## User Model versus Baseline Model:
+## 
+##   Comparative Fit Index (CFI)                    0.958
+##   Tucker-Lewis Index (TLI)                       0.934
+## 
+## Loglikelihood and Information Criteria:
+## 
+##   Loglikelihood user model (H0)               -736.817
+##   Loglikelihood unrestricted model (H1)       -721.939
+##                                                       
+##   Akaike (AIC)                                1509.634
+##   Bayesian (BIC)                              1561.525
+##   Sample-size adjusted Bayesian (SABIC)       1504.591
+## 
+## Root Mean Square Error of Approximation:
+## 
+##   RMSEA                                          0.070
+##   90 Percent confidence interval - lower         0.015
+##   90 Percent confidence interval - upper         0.114
+##   P-value H_0: RMSEA &lt;= 0.050                    0.211
+##   P-value H_0: RMSEA &gt;= 0.080                    0.393
+## 
+## Standardized Root Mean Square Residual:
+## 
+##   SRMR                                           0.062
+## 
+## Parameter Estimates:
+## 
+##   Standard errors                             Standard
+##   Information                                 Expected
+##   Information saturated (h1) model          Structured
+## 
+## Latent Variables:
+##                    Estimate  Std.Err  z-value  P(&gt;|z|) ci.lower ci.upper
+##   AdolD =~                                                              
+##     CD_1              1.000                               1.000    1.000
+##     CD_2              1.111    0.140    7.955    0.000    0.837    1.385
+##     CD_3              0.598    0.082    7.274    0.000    0.437    0.759
+##   EffectP =~                                                            
+##     PAPmoni           1.000                               1.000    1.000
+##     PAPWARM           0.795    0.167    4.751    0.000    0.467    1.123
+##     PAPsolic          1.147    0.231    4.972    0.000    0.695    1.600
+##     PAPrule           0.620    0.155    3.990    0.000    0.315    0.924
+##    Std.lv  Std.all
+##                   
+##     0.541    0.713
+##     0.601    0.960
+##     0.323    0.654
+##                   
+##     0.335    0.528
+##     0.267    0.592
+##     0.385    0.855
+##     0.208    0.455
+## 
+## Regressions:
+##                    Estimate  Std.Err  z-value  P(&gt;|z|) ci.lower ci.upper
+##   PSE ~                                                                 
+##     EffectP           0.646    0.205    3.143    0.002    0.243    1.049
+##   AdolD ~                                                               
+##     EffectP          -0.298    0.172   -1.730    0.084   -0.636    0.040
+##     PSE              -0.247    0.081   -3.064    0.002   -0.406   -0.089
+##    Std.lv  Std.all
+##                   
+##     0.216    0.335
+##                   
+##    -0.185   -0.185
+##    -0.457   -0.295
+## 
+## Variances:
+##                    Estimate  Std.Err  z-value  P(&gt;|z|) ci.lower ci.upper
+##    .CD_1              0.283    0.044    6.413    0.000    0.197    0.369
+##    .CD_2              0.031    0.033    0.927    0.354   -0.034    0.096
+##    .CD_3              0.139    0.020    7.053    0.000    0.101    0.178
+##    .PAPmoni           0.291    0.041    7.173    0.000    0.211    0.370
+##    .PAPWARM           0.132    0.020    6.691    0.000    0.093    0.170
+##    .PAPsolic          0.054    0.022    2.468    0.014    0.011    0.098
+##    .PAPrule           0.166    0.022    7.524    0.000    0.123    0.209
+##    .PSE               0.370    0.047    7.850    0.000    0.278    0.463
+##    .AdolD             0.246    0.056    4.385    0.000    0.136    0.356
+##     EffectP           0.112    0.039    2.861    0.004    0.035    0.189
+##    Std.lv  Std.all
+##     0.283    0.492
+##     0.031    0.078
+##     0.139    0.572
+##     0.291    0.721
+##     0.132    0.650
+##     0.054    0.269
+##     0.166    0.793
+##     0.370    0.888
+##     0.842    0.842
+##     1.000    1.000</code></pre>
+<pre class="r"><code>modindices(fit1, sort.=TRUE)</code></pre>
+<pre><code>##         lhs op      rhs     mi    epc sepc.lv sepc.all sepc.nox
+## 48  PAPmoni ~~  PAPrule 17.031  0.091   0.091    0.414    0.414
+## 50  PAPWARM ~~ PAPsolic  5.606  0.061   0.061    0.719    0.719
+## 51  PAPWARM ~~  PAPrule  5.538 -0.037  -0.037   -0.251   -0.251
+## 30     CD_1 ~~  PAPmoni  3.035  0.047   0.047    0.164    0.164
+## 46  PAPmoni ~~  PAPWARM  2.681 -0.037  -0.037   -0.191   -0.191
+## 52  PAPWARM ~~      PSE  2.309  0.033   0.033    0.151    0.151
+## 31     CD_1 ~~  PAPWARM  2.081 -0.027  -0.027   -0.138   -0.138
+## 47  PAPmoni ~~ PAPsolic  1.712 -0.041  -0.041   -0.326   -0.326
+## 43     CD_3 ~~ PAPsolic  1.634  0.015   0.015    0.168    0.168
+## 22    AdolD =~  PAPWARM  1.603 -0.090  -0.048   -0.108   -0.108
+## 42     CD_3 ~~  PAPWARM  1.255 -0.014  -0.014   -0.106   -0.106
+## 36     CD_2 ~~  PAPmoni  1.088 -0.020  -0.020   -0.212   -0.212
+## 37     CD_2 ~~  PAPWARM  0.985  0.013   0.013    0.206    0.206
+## 55  PAPrule ~~      PSE  0.823 -0.021  -0.021   -0.084   -0.084
+## 44     CD_3 ~~  PAPrule  0.784 -0.012  -0.012   -0.081   -0.081
+## 35     CD_2 ~~     CD_3  0.676  0.037   0.037    0.561    0.561
+## 24    AdolD =~  PAPrule  0.627  0.059   0.032    0.070    0.070
+## 33     CD_1 ~~  PAPrule  0.603  0.016   0.016    0.072    0.072
+## 32     CD_1 ~~ PAPsolic  0.586 -0.013  -0.013   -0.102   -0.102
+## 29     CD_1 ~~     CD_3  0.518 -0.024  -0.024   -0.123   -0.123
+## 49  PAPmoni ~~      PSE  0.416 -0.020  -0.020   -0.062   -0.062
+## 25  EffectP =~     CD_1  0.409 -0.112  -0.038   -0.050   -0.050
+## 53 PAPsolic ~~  PAPrule  0.355 -0.012  -0.012   -0.124   -0.124
+## 26  EffectP =~     CD_2  0.280  0.083   0.028    0.045    0.045
+## 23    AdolD =~ PAPsolic  0.279  0.042   0.023    0.050    0.050
+## 34     CD_1 ~~      PSE  0.225 -0.015  -0.015   -0.047   -0.047
+## 40     CD_2 ~~      PSE  0.164  0.012   0.012    0.111    0.111
+## 41     CD_3 ~~  PAPmoni  0.137 -0.007  -0.007   -0.034   -0.034
+## 39     CD_2 ~~  PAPrule  0.125  0.005   0.005    0.071    0.071
+## 54 PAPsolic ~~      PSE  0.049 -0.006  -0.006   -0.039   -0.039
+## 38     CD_2 ~~ PAPsolic  0.002  0.000   0.000    0.012    0.012
+## 28     CD_1 ~~     CD_2  0.001  0.003   0.003    0.031    0.031
+## 45     CD_3 ~~      PSE  0.001 -0.001  -0.001   -0.003   -0.003
+## 27  EffectP =~     CD_3  0.000 -0.002  -0.001   -0.002   -0.002
+## 21    AdolD =~  PAPmoni  0.000  0.000   0.000    0.000    0.000</code></pre>
+<pre class="r"><code>inspect(fit1, what=&quot;std&quot;)</code></pre>
+<pre><code>## $lambda
+##          AdolD EffctP PSE
+## CD_1     0.713  0.000   0
+## CD_2     0.960  0.000   0
+## CD_3     0.654  0.000   0
+## PAPmoni  0.000  0.528   0
+## PAPWARM  0.000  0.592   0
+## PAPsolic 0.000  0.855   0
+## PAPrule  0.000  0.455   0
+## PSE      0.000  0.000   1
+## 
+## $theta
+##           CD_1  CD_2  CD_3 PAPmon PAPWAR PAPslc PAPrul   PSE
+## CD_1     0.492                                              
+## CD_2     0.000 0.078                                        
+## CD_3     0.000 0.000 0.572                                  
+## PAPmoni  0.000 0.000 0.000  0.721                           
+## PAPWARM  0.000 0.000 0.000  0.000  0.650                    
+## PAPsolic 0.000 0.000 0.000  0.000  0.000  0.269             
+## PAPrule  0.000 0.000 0.000  0.000  0.000  0.000  0.793      
+## PSE      0.000 0.000 0.000  0.000  0.000  0.000  0.000 0.000
+## 
+## $psi
+##         AdolD EffctP   PSE
+## AdolD   0.842             
+## EffectP 0.000  1.000      
+## PSE     0.000  0.000 0.888
+## 
+## $beta
+##         AdolD EffctP    PSE
+## AdolD       0 -0.185 -0.295
+## EffectP     0  0.000  0.000
+## PSE         0  0.335  0.000</code></pre>
 
 
 
