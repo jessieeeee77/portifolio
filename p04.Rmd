@@ -2,4 +2,122 @@
 title: "Portfolio 4"
 ---
 
-> The projects should be numbered consecutively (i.e., in the order in which you began them), and should include for each project a description of the goal, the product (computer program, hand graph, computer graph, etc.), the data, and some interpretation. Reports must be reproducible and of high quality in terms of writing, grammar, presentation, etc.
+test moderation in this piece of portfolio.
+
+```{r data}
+library(tidyverse)
+library(dplyr)
+library(haven)
+Mother_and_teen_data <- read_sav("Mother_and_teen_data.sav")
+#View(Mother_and_teen_data)
+mt <- Mother_and_teen_data %>% 
+ filter(!is.na(Race3)) %>% 
+  mutate(ad_deviance=CD_1 + CD_2 + CD_3)
+mt$Race3 <- as.factor(mt$Race3)
+```
+
+```{r 1}
+moderation <- lm(ad_deviance ~ PSE * Race3, mt)
+summary(moderation)
+```
+```{r graph}
+
+#RACE AND ETHNICITY DOES NOT MODERATE BETWEEN PSE AND ADOLESCENT DEVIANCE.
+#TRY TO PLOT IT.
+ggplot(mt, aes(PSE, ad_deviance, color = factor(Race3))) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  scale_color_manual(name = "Race/Ethnicity", labels = c("European Americans", "Latinx", "African Americans"), values = c("#FF6666", "#6666FF", "green")) +
+  theme_classic()
+```
+
+```{r disobeying parents}
+# try to test whether race/ethnicity moderates the association between PSE and Disobeying parents (CD_1)
+moddp <- lm(CD_1 ~ Race3 * PSE, mt)
+summary(moddp)
+
+ggplot(mt, aes(PSE, CD_1, color = factor(Race3))) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  scale_color_manual(name = "Race/Ethnicity", labels = c("European Americans", "Latinx", "African Americans"), values = c("#FF6666", "#6666FF", "green")) + 
+  labs(x="PSE", y="Disobeying Parents") +
+  theme_classic()
+
+#non-significant as well.
+```
+```{r school misconduct}
+# try to test whether race/ethnicity moderates the association between PSE and school misconduct (CD_2)
+modsm <- lm(CD_2 ~ Race3 * PSE, mt)
+summary(modsm)
+
+ggplot(mt, aes(PSE, CD_2, color = factor(Race3))) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  scale_color_manual(name = "Race/Ethnicity", labels = c("European Americans", "Latinx", "African Americans"), values = c("#FF6666", "#6666FF", "green")) + 
+  labs(x="PSE", y="School Misconduct") +
+  theme_classic()
+
+#non-significant as well.
+```
+```{r substance use}
+# try to test whether race/ethnicity moderates the association between PSE and substance uses (CD_3)
+modsu <- lm(CD_3 ~ PSE * Race3, mt)
+summary(modsu)
+
+ggplot(mt, aes(PSE, CD_3, color = factor(Race3))) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  scale_color_manual(name = "Race/Ethnicity", labels = c("European Americans", "Latinx", "African Americans"), values = c("#FF6666", "#6666FF", "green")) + 
+  labs(x="PSE", y="Substance Use") +
+  theme_classic()
+
+#Race/ethnicity significantly moderates the association between PSE and substance use. PSE negatively associates with substance use for European Americans, but not for the Latinx.
+#same results as what I got from SPSS.
+```
+```{r test model}
+testmod<-'IV=~PSE
+MOD=~Race3
+DV=~Adolescent_deviance=~CD_1 +CD_2 +CD_3'
+
+library(lavaan)
+#testfit<-cfa(testmod, data=mt, estimator='MLM')
+
+#unable to conduct in this model because the race/ethnicity factor is a non-numerical factor.
+```
+
+
+```{r test model2}
+#mt$Race12 <- recode(mt$Race3, "c('1')='0'; c('2')='1'")
+
+
+#mt$Race12 <- as.numeric(levels(mt$Race3))[mt$Race3]
+
+#mt$Race13 <- recode(mt$Race3, "c('1')='1'; c('3')='0'")
+#mt$Race13 <- as.numeric(levels(mt$Race13))[mt$Race3]
+
+#mt$Race23 <- recode(mt$Race3, "c('2')='0';c('3')='1'")
+#mt$Race23 <- as.numeric(levels(mt$Race23))[mt$Race3]
+
+contrasts(mt$Race3) <- contr.treatment(3)
+
+
+mt$dummy1 <- ifelse(mt$Race3 == "1", 1, 0)
+mt$dummy2 <- ifelse(mt$Race3 == "2", 1, 0)
+### SEM Model One: ###
+testmod<-'IV=~PSE
+MOD=~dummy1+dummy2
+Adolescent_deviance=~CD_1 +CD_2 +CD_3
+'
+CD_1~~CD_2
+CD_1~~CD_3
+CD_2~~CD_3
+
+testmod <- sem(testmod, mt, estimator="MLM", effect.coding=TRUE, meanstructure=TRUE) 
+testfit<-cfa(testmod, data=mt, estimator='MLM')
+summary(testmod)
+
+#confused. check later.
+
+
+```
+

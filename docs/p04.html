@@ -13,7 +13,7 @@
 
 <title>Portfolio 4</title>
 
-<script src="site_libs/header-attrs-2.13/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
@@ -141,11 +141,15 @@ $(document).ready(function () {
     href = "index.html";
   var menuAnchor = $('a[href="' + href + '"]');
 
-  // mark it active
-  menuAnchor.tab('show');
-
-  // if it's got a parent navbar menu mark it active as well
-  menuAnchor.closest('li.dropdown').addClass('active');
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
 
   // Navbar adjustments
   var navHeight = $(".navbar").first().height() + 15;
@@ -174,8 +178,8 @@ $(document).ready(function () {
   border-radius: 4px;
 }
 
-.tabset-dropdown > .nav-tabs > li.active:before {
-  content: "";
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
   font-family: 'Glyphicons Halflings';
   display: inline-block;
   padding: 10px;
@@ -183,16 +187,9 @@ $(document).ready(function () {
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-  content: "&#xe258;";
-  border: none;
-}
-
-.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-  content: "";
+  content: "\e258";
   font-family: 'Glyphicons Halflings';
-  display: inline-block;
-  padding: 10px;
-  border-right: 1px solid #ddd;
+  border: none;
 }
 
 .tabset-dropdown > .nav-tabs > li.active {
@@ -298,13 +295,278 @@ $(document).ready(function () {
 </div>
 
 
-<blockquote>
-<p>The projects should be numbered consecutively (i.e., in the order in
-which you began them), and should include for each project a description
-of the goal, the product (computer program, hand graph, computer graph,
-etc.), the data, and some interpretation. Reports must be reproducible
-and of high quality in terms of writing, grammar, presentation, etc.</p>
-</blockquote>
+<p>test moderation in this piece of portfolio.</p>
+<pre class="r"><code>library(tidyverse)</code></pre>
+<pre><code>## ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.2 ──
+## ✔ ggplot2 3.4.1     ✔ purrr   1.0.1
+## ✔ tibble  3.1.8     ✔ dplyr   1.1.0
+## ✔ tidyr   1.3.0     ✔ stringr 1.5.0
+## ✔ readr   2.1.4     ✔ forcats 1.0.0
+## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+## ✖ dplyr::filter() masks stats::filter()
+## ✖ dplyr::lag()    masks stats::lag()</code></pre>
+<pre class="r"><code>library(dplyr)
+library(haven)
+Mother_and_teen_data &lt;- read_sav(&quot;Mother_and_teen_data.sav&quot;)
+#View(Mother_and_teen_data)
+mt &lt;- Mother_and_teen_data %&gt;% 
+ filter(!is.na(Race3)) %&gt;% 
+  mutate(ad_deviance=CD_1 + CD_2 + CD_3)
+mt$Race3 &lt;- as.factor(mt$Race3)</code></pre>
+<pre class="r"><code>moderation &lt;- lm(ad_deviance ~ PSE * Race3, mt)
+summary(moderation)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = ad_deviance ~ PSE * Race3, data = mt)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -2.3398 -0.9696 -0.2310  0.6918  7.0565 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)   7.7566     2.1481   3.611  0.00044 ***
+## PSE          -0.4696     0.4435  -1.059  0.29165    
+## Race32        2.7934     2.9562   0.945  0.34652    
+## Race33        1.6139     2.6591   0.607  0.54499    
+## PSE:Race32   -0.6151     0.5891  -1.044  0.29841    
+## PSE:Race33   -0.3032     0.5458  -0.556  0.57955    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 1.53 on 125 degrees of freedom
+##   (52 observations deleted due to missingness)
+## Multiple R-squared:  0.1408, Adjusted R-squared:  0.1065 
+## F-statistic: 4.098 on 5 and 125 DF,  p-value: 0.001765</code></pre>
+<pre class="r"><code>#RACE AND ETHNICITY DOES NOT MODERATE BETWEEN PSE AND ADOLESCENT DEVIANCE.
+#TRY TO PLOT IT.
+ggplot(mt, aes(PSE, ad_deviance, color = factor(Race3))) +
+  geom_point() +
+  geom_smooth(method = &quot;lm&quot;, se = FALSE) +
+  scale_color_manual(name = &quot;Race/Ethnicity&quot;, labels = c(&quot;European Americans&quot;, &quot;Latinx&quot;, &quot;African Americans&quot;), values = c(&quot;#FF6666&quot;, &quot;#6666FF&quot;, &quot;green&quot;)) +
+  theme_classic()</code></pre>
+<pre><code>## `geom_smooth()` using formula = &#39;y ~ x&#39;</code></pre>
+<pre><code>## Warning: Removed 52 rows containing non-finite values (`stat_smooth()`).</code></pre>
+<pre><code>## Warning: Removed 52 rows containing missing values (`geom_point()`).</code></pre>
+<p><img src="p04_files/figure-html/graph-1.png" width="672" /></p>
+<pre class="r"><code># try to test whether race/ethnicity moderates the association between PSE and Disobeying parents (CD_1)
+moddp &lt;- lm(CD_1 ~ Race3 * PSE, mt)
+summary(moddp)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = CD_1 ~ Race3 * PSE, data = mt)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -1.4832 -0.4889 -0.0706  0.4223  2.2039 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)   3.9224     1.0317   3.802 0.000223 ***
+## Race32       -1.0402     1.4198  -0.733 0.465161    
+## Race33        0.6142     1.2771   0.481 0.631406    
+## PSE          -0.2994     0.2130  -1.406 0.162273    
+## Race32:PSE    0.1618     0.2829   0.572 0.568389    
+## Race33:PSE   -0.1277     0.2621  -0.487 0.627054    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.7348 on 125 degrees of freedom
+##   (52 observations deleted due to missingness)
+## Multiple R-squared:  0.1101, Adjusted R-squared:  0.0745 
+## F-statistic: 3.093 on 5 and 125 DF,  p-value: 0.01147</code></pre>
+<pre class="r"><code>ggplot(mt, aes(PSE, CD_1, color = factor(Race3))) +
+  geom_point() +
+  geom_smooth(method = &quot;lm&quot;, se = FALSE) +
+  scale_color_manual(name = &quot;Race/Ethnicity&quot;, labels = c(&quot;European Americans&quot;, &quot;Latinx&quot;, &quot;African Americans&quot;), values = c(&quot;#FF6666&quot;, &quot;#6666FF&quot;, &quot;green&quot;)) + 
+  labs(x=&quot;PSE&quot;, y=&quot;Disobeying Parents&quot;) +
+  theme_classic()</code></pre>
+<pre><code>## `geom_smooth()` using formula = &#39;y ~ x&#39;</code></pre>
+<pre><code>## Warning: Removed 52 rows containing non-finite values (`stat_smooth()`).</code></pre>
+<pre><code>## Warning: Removed 52 rows containing missing values (`geom_point()`).</code></pre>
+<p><img src="p04_files/figure-html/disobeying%20parents-1.png" width="672" /></p>
+<pre class="r"><code>#non-significant as well.</code></pre>
+<pre class="r"><code># try to test whether race/ethnicity moderates the association between PSE and school misconduct (CD_2)
+modsm &lt;- lm(CD_2 ~ Race3 * PSE, mt)
+summary(modsm)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = CD_2 ~ Race3 * PSE, data = mt)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -0.8499 -0.4243 -0.1060  0.3152  2.2752 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)   
+## (Intercept)  2.68600    0.82911   3.240  0.00153 **
+## Race32       1.52259    1.14099   1.334  0.18448   
+## Race33       0.43258    1.02631   0.421  0.67412   
+## PSE         -0.19717    0.17116  -1.152  0.25153   
+## Race32:PSE  -0.30618    0.22738  -1.347  0.18055   
+## Race33:PSE  -0.05656    0.21067  -0.268  0.78877   
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.5905 on 125 degrees of freedom
+##   (52 observations deleted due to missingness)
+## Multiple R-squared:  0.1538, Adjusted R-squared:  0.1199 
+## F-statistic: 4.543 on 5 and 125 DF,  p-value: 0.0007695</code></pre>
+<pre class="r"><code>ggplot(mt, aes(PSE, CD_2, color = factor(Race3))) +
+  geom_point() +
+  geom_smooth(method = &quot;lm&quot;, se = FALSE) +
+  scale_color_manual(name = &quot;Race/Ethnicity&quot;, labels = c(&quot;European Americans&quot;, &quot;Latinx&quot;, &quot;African Americans&quot;), values = c(&quot;#FF6666&quot;, &quot;#6666FF&quot;, &quot;green&quot;)) + 
+  labs(x=&quot;PSE&quot;, y=&quot;School Misconduct&quot;) +
+  theme_classic()</code></pre>
+<pre><code>## `geom_smooth()` using formula = &#39;y ~ x&#39;</code></pre>
+<pre><code>## Warning: Removed 52 rows containing non-finite values (`stat_smooth()`).</code></pre>
+<pre><code>## Warning: Removed 52 rows containing missing values (`geom_point()`).</code></pre>
+<p><img src="p04_files/figure-html/school%20misconduct-1.png" width="672" /></p>
+<pre class="r"><code>#non-significant as well.</code></pre>
+<pre class="r"><code># try to test whether race/ethnicity moderates the association between PSE and substance uses (CD_3)
+modsu &lt;- lm(CD_3 ~ PSE * Race3, mt)
+summary(modsu)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = CD_3 ~ PSE * Race3, data = mt)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -0.6562 -0.2679 -0.1750  0.0590  2.5774 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)  
+## (Intercept)  1.14827    0.66957   1.715   0.0888 .
+## PSE          0.02697    0.13822   0.195   0.8456  
+## Race32       2.31101    0.92143   2.508   0.0134 *
+## Race33       0.56714    0.82882   0.684   0.4951  
+## PSE:Race32  -0.47080    0.18362  -2.564   0.0115 *
+## PSE:Race33  -0.11895    0.17013  -0.699   0.4857  
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.4769 on 125 degrees of freedom
+##   (52 observations deleted due to missingness)
+## Multiple R-squared:  0.1161, Adjusted R-squared:  0.08074 
+## F-statistic: 3.284 on 5 and 125 DF,  p-value: 0.008057</code></pre>
+<pre class="r"><code>ggplot(mt, aes(PSE, CD_3, color = factor(Race3))) +
+  geom_point() +
+  geom_smooth(method = &quot;lm&quot;, se = FALSE) +
+  scale_color_manual(name = &quot;Race/Ethnicity&quot;, labels = c(&quot;European Americans&quot;, &quot;Latinx&quot;, &quot;African Americans&quot;), values = c(&quot;#FF6666&quot;, &quot;#6666FF&quot;, &quot;green&quot;)) + 
+  labs(x=&quot;PSE&quot;, y=&quot;Substance Use&quot;) +
+  theme_classic()</code></pre>
+<pre><code>## `geom_smooth()` using formula = &#39;y ~ x&#39;</code></pre>
+<pre><code>## Warning: Removed 52 rows containing non-finite values (`stat_smooth()`).</code></pre>
+<pre><code>## Warning: Removed 52 rows containing missing values (`geom_point()`).</code></pre>
+<p><img src="p04_files/figure-html/substance%20use-1.png" width="672" /></p>
+<pre class="r"><code>#Race/ethnicity significantly moderates the association between PSE and substance use. PSE negatively associates with substance use for European Americans, but not for the Latinx.
+#same results as what I got from SPSS.</code></pre>
+<pre class="r"><code>testmod&lt;-&#39;IV=~PSE
+MOD=~Race3
+DV=~Adolescent_deviance=~CD_1 +CD_2 +CD_3&#39;
+
+library(lavaan)</code></pre>
+<pre><code>## This is lavaan 0.6-14
+## lavaan is FREE software! Please report any bugs.</code></pre>
+<pre class="r"><code>#testfit&lt;-cfa(testmod, data=mt, estimator=&#39;MLM&#39;)
+
+#unable to conduct in this model because the race/ethnicity factor is a non-numerical factor.</code></pre>
+<pre class="r"><code>#mt$Race12 &lt;- recode(mt$Race3, &quot;c(&#39;1&#39;)=&#39;0&#39;; c(&#39;2&#39;)=&#39;1&#39;&quot;)
+
+
+#mt$Race12 &lt;- as.numeric(levels(mt$Race3))[mt$Race3]
+
+#mt$Race13 &lt;- recode(mt$Race3, &quot;c(&#39;1&#39;)=&#39;1&#39;; c(&#39;3&#39;)=&#39;0&#39;&quot;)
+#mt$Race13 &lt;- as.numeric(levels(mt$Race13))[mt$Race3]
+
+#mt$Race23 &lt;- recode(mt$Race3, &quot;c(&#39;2&#39;)=&#39;0&#39;;c(&#39;3&#39;)=&#39;1&#39;&quot;)
+#mt$Race23 &lt;- as.numeric(levels(mt$Race23))[mt$Race3]
+
+contrasts(mt$Race3) &lt;- contr.treatment(3)
+
+
+mt$dummy1 &lt;- ifelse(mt$Race3 == &quot;1&quot;, 1, 0)
+mt$dummy2 &lt;- ifelse(mt$Race3 == &quot;2&quot;, 1, 0)
+### SEM Model One: ###
+testmod&lt;-&#39;IV=~PSE
+MOD=~dummy1+dummy2
+Adolescent_deviance=~CD_1 +CD_2 +CD_3
+&#39;
+CD_1~~CD_2</code></pre>
+<pre><code>## CD_1 ~ ~CD_2</code></pre>
+<pre class="r"><code>CD_1~~CD_3</code></pre>
+<pre><code>## CD_1 ~ ~CD_3</code></pre>
+<pre class="r"><code>CD_2~~CD_3</code></pre>
+<pre><code>## CD_2 ~ ~CD_3</code></pre>
+<pre class="r"><code>testmod &lt;- sem(testmod, mt, estimator=&quot;MLM&quot;, effect.coding=TRUE, meanstructure=TRUE) </code></pre>
+<pre><code>## Warning in lavaan::lavaan(model = testmod, data = mt, estimator = &quot;MLM&quot;, : lavaan WARNING:
+##     Model estimation FAILED! Returning starting values.</code></pre>
+<pre class="r"><code>testfit&lt;-cfa(testmod, data=mt, estimator=&#39;MLM&#39;)</code></pre>
+<pre><code>## Warning in lavaan::lavaan(model = testmod, data = mt, estimator = &quot;MLM&quot;, : lavaan WARNING:
+##     Model estimation FAILED! Returning starting values.</code></pre>
+<pre class="r"><code>summary(testmod)</code></pre>
+<pre><code>## lavaan 0.6.14 did not run (perhaps do.fit = FALSE)?
+## ** WARNING ** Estimates below are simply the starting values
+## 
+##   Estimator                                         ML
+##   Optimization method                           NLMINB
+##   Number of model parameters                        26
+##   Number of equality constraints                     6
+## 
+##                                                   Used       Total
+##   Number of observations                           131         183
+## 
+## 
+## Parameter Estimates:
+## 
+##   Standard errors                           Robust.sem
+##   Information                                 Expected
+##   Information saturated (h1) model          Structured
+## 
+## Latent Variables:
+##                          Estimate  Std.Err  z-value  P(&gt;|z|)
+##   IV =~                                                     
+##     PSE                     1.000       NA                  
+##   MOD =~                                                    
+##     dummy1                  1.000       NA                  
+##     dummy2                 -0.476       NA                  
+##   Adolescent_deviance =~                                    
+##     CD_1                    1.000       NA                  
+##     CD_2                    1.156       NA                  
+##     CD_3                    0.599       NA                  
+## 
+## Covariances:
+##                    Estimate  Std.Err  z-value  P(&gt;|z|)
+##   IV ~~                                               
+##     MOD               0.000       NA                  
+##     Adolescnt_dvnc    0.000       NA                  
+##   MOD ~~                                              
+##     Adolescnt_dvnc    0.000       NA                  
+## 
+## Intercepts:
+##                    Estimate  Std.Err  z-value  P(&gt;|z|)
+##    .PSE               4.978       NA                  
+##    .dummy1            0.282       NA                  
+##    .dummy2            0.366       NA                  
+##    .CD_1              2.357       NA                  
+##    .CD_2              1.734       NA                  
+##    .CD_3              1.227       NA                  
+##     IV                0.000       NA                  
+##     MOD               0.000       NA                  
+##     Adolescnt_dvnc    0.000       NA                  
+## 
+## Variances:
+##                    Estimate  Std.Err  z-value  P(&gt;|z|)
+##    .PSE               0.000                           
+##    .dummy1            0.101       NA                  
+##    .dummy2            0.116       NA                  
+##    .CD_1              0.289       NA                  
+##    .CD_2              0.197       NA                  
+##    .CD_3              0.123       NA                  
+##     IV                0.417       NA                  
+##     MOD               0.050       NA                  
+##     Adolescnt_dvnc    0.050       NA</code></pre>
+<pre class="r"><code>#confused. check later.</code></pre>
 
 
 
