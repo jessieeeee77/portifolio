@@ -103,9 +103,12 @@ contrasts(mt$Race3) <- contr.treatment(3)
 
 mt$dummy1 <- ifelse(mt$Race3 == "1", 1, 0)
 mt$dummy2 <- ifelse(mt$Race3 == "2", 1, 0)
+mt$dummy3 <- ifelse(mt$Race3 == "3", 1, 0)
+
 ### SEM Model One: ###
+library(lavaan)
 testmod<-'IV=~PSE
-MOD=~dummy1+dummy2
+MOD=~dummy1+dummy2+dummy3
 Adolescent_deviance=~CD_1 +CD_2 +CD_3
 '
 CD_1~~CD_2
