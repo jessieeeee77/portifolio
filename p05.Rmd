@@ -2,4 +2,113 @@
 title: "Portfolio 5"
 ---
 
-> The projects should be numbered consecutively (i.e., in the order in which you began them), and should include for each project a description of the goal, the product (computer program, hand graph, computer graph, etc.), the data, and some interpretation. Reports must be reproducible and of high quality in terms of writing, grammar, presentation, etc.
+```{r data}
+library(tidyverse)
+library(dplyr)
+library(haven)
+teen_survey <- read_sav("teen_survey.sav")
+```
+
+```{r create composites}
+teen_survey$exter<- rowMeans(teen_survey[,c("Q8_1", "Q8_2", "Q8_3", "Q8_4", "Q8_5", "Q8_6", "Q8_7", "Q8_8", "Q8_9")],
+                             na.rm = TRUE)
+teen_survey$inter<- rowMeans(teen_survey[,c("Q9_1", "Q9_2", "Q9_3", "Q9_4", "Q9_5", "Q9_6", "Q9_7", "Q9_8", "Q9_9", "Q9_10", "Q9_11", "Q9_12", "Q9_13", "Q9_14")],
+                             na.rm = TRUE)
+teen_survey$stem<- rowMeans(teen_survey[,c("Q10_1", "Q10_2", "Q10_3", "Q10_4", "Q10_5", "Q10_6", "Q10_7", "Q10_8", "Q10_9", "Q10_10", "Q10_11")],
+                             na.rm = TRUE)
+teen_survey$pros<- rowMeans(teen_survey[,c("Q12_1", "Q12_2", "Q12_3", "Q12_4", "Q12_5", "Q12_6", "Q12_7", "Q12_8")],
+                             na.rm = TRUE)
+teen_survey$girl<- rowMeans(teen_survey[,c("Q14_1", "Q14_2", "Q14_3", "Q14_4", "Q14_5")],
+                             na.rm = TRUE)
+teen_survey$boy<- rowMeans(teen_survey[,c("Q18_1", "Q18_2", "Q18_3", "Q18_4", "Q18_5")],
+                             na.rm = TRUE)
+teen_survey$ex<- rowMeans(teen_survey[,c("Q20_1", "Q20_2", "Q20_3", "Q20_4", "Q20_5", "Q20_6", "Q20_7", "Q20_8", "Q20_9")],
+                             na.rm = TRUE)
+teen_survey$int<- rowMeans(teen_survey[,c("Q21_1", "Q21_2", "Q21_3", "Q21_4", "Q21_5", "Q21_6", "Q21_7", "Q21_8", "Q21_9", "Q21_10", "Q21_11", "Q21_12", "Q21_13", "Q21_14")],
+                            na.rm = TRUE)
+teen_survey$st<- rowMeans(teen_survey[,c("Q22_1", "Q22_2", "Q22_3", "Q22_4", "Q22_5", "Q22_6", "Q22_7", "Q22_8", "Q22_9", "Q22_10", "Q22_11")],
+                             na.rm = TRUE)
+teen_survey$pr<- rowMeans(teen_survey[,c("Q24_1", "Q24_2", "Q24_3", "Q24_4", "Q24_5", "Q24_6", "Q24_7", "Q24_8")],
+                             na.rm = TRUE)
+teen_survey$appe<- rowMeans(teen_survey[,c("Q25_1", "Q25_2", "Q25_3", "Q25_4", "Q25_5", "Q25_6", "Q25_7", "Q25_8", "Q25_9", "Q25_10")],
+                             na.rm = TRUE)
+teen_survey$ind<- rowMeans(teen_survey[,c("Q26_1", "Q26_2", "Q26_3", "Q26_4", "Q26_5", "Q26_6")],
+                             na.rm = TRUE)
+teen_survey$dep<- rowMeans(teen_survey[,c("Q27_1", "Q27_2", "Q27_3", "Q27_4", "Q27_5", "Q27_6")],
+                             na.rm = TRUE)
+teen_survey$fam<- rowMeans(teen_survey[,c("Q30_1", "Q30_2", "Q30_3", "Q30_4", "Q30_5", "Q30_6")],
+                             na.rm = TRUE)
+teen_survey$piety<- rowMeans(teen_survey[,c("Q31_1", "Q31_2", "Q31_3", "Q31_4", "Q31_5", "Q31_6", "Q31_7")],
+                             na.rm = TRUE)
+teen_survey$gen<- rowMeans(teen_survey[,c("Q32_1", "Q32_2", "Q32_3", "Q32_4", "Q32_5", "Q32_6", "Q32_7", "Q32_8", "Q32_9")],
+                             na.rm = TRUE)
+
+```
+
+```{r factor}
+teen_survey$country <- as.factor(teen_survey$country)
+teen_survey$Gender <- as.factor(teen_survey$Gender)
+```
+```{r t_package}
+
+library(lessR)
+```
+```{r mutate}
+ts <- teen_survey %>%
+  filter(Gender %in% c("1", "2"))
+```
+
+
+```{r t-test}
+#fail to do the t-test, due to variable names.
+#teen_survey %>%
+# t.test( exter ~ country, mu = 0, alternative = "two.sided", conf=.95, #var.equal = F, paired = F)
+```
+
+```{r anova}
+
+modex<-lm(ex~country*exter, ts)
+summary(modex)
+modext<-lm(ex~Gender*exter, ts)
+summary(modext)
+```
+```{r in}
+modin<-lm(int~country*inter, ts)
+summary(modin)
+moding<-lm(int~Gender*inter, ts)
+summary(moding)
+```
+```{r stem}
+modstem<-lm(st~country*stem, ts)
+summary(modstem)
+modstemg<-lm(st~Gender*stem, ts)
+summary(modstemg)
+```
+```{r prosocial}
+modpro<-lm(pr~country*pros, ts)
+summary(modpro)
+modprog<-lm(pr~Gender*pros, ts)
+summary(modprog)
+```
+```{r country*gender}
+modpcg<-lm(pr~country*Gender, ts)
+summary(modpcg)
+modscg<-lm(st~country*Gender, ts)
+summary(modscg)
+modecg<-lm(ex~country*Gender, ts)
+summary(modecg)
+modicg<-lm(int~country*Gender, ts)
+summary(modicg)
+modprcg<-lm(pros~country*Gender, ts)
+summary(modprcg)
+modstcg<-lm(stem~country*Gender, ts)
+summary(modstcg)
+modexcg<-lm(exter~country*Gender, ts)
+summary(modexcg)
+modincg<-lm(inter~country*Gender, ts)
+summary(modincg)
+```
+
+
+
+
