@@ -2,4 +2,86 @@
 title: "Portfolio 6"
 ---
 
-> The projects should be numbered consecutively (i.e., in the order in which you began them), and should include for each project a description of the goal, the product (computer program, hand graph, computer graph, etc.), the data, and some interpretation. Reports must be reproducible and of high quality in terms of writing, grammar, presentation, etc.
+```{r data}
+library(tidyverse)
+library(dplyr)
+library(haven)
+teen_survey<- read_sav("teen_survey.sav")
+tss<- read_sav("tss.sav")
+```
+```{r pc}
+library(lme4)
+library(merTools)
+library(semPlot)
+library(lavaan)
+library(readxl)
+library(dplyr)
+library(haven)
+```
+
+
+```{r multilevel ex}
+model1<-lmer(ex~1+(1|exter),REML = FALSE, data=tss)
+summary(model1)
+confint(model1)
+
+ICC(outcome = "ex", group="exter",data=tss)
+```
+
+
+```{r multilevel2 ex}
+#add level 1 predictor
+model2<-lmer(ex~1+Gender+(1|exter), REML= FALSE, data= tss)
+summary(model2)
+anova(model1, model2)
+confint(model2)
+```
+```{r multilevel3 ex}
+model3<-lmer(ex~1+Gender+(1|exter)+country, REML= FALSE, data= tss)
+summary(model3)
+anova(model2, model3)
+confint(model3)
+#does not think it make any sense statistically.
+```
+```{r model}
+model<-"Parents_expectations=~exter +inter+Rpro
+Adolescents_behaviors=~int+ex+Rpr
+Parents_expectations~Adolescents_behaviors"
+#residual correlations
+exter~~inter
+inter~~Rpro
+exter~~Rpro
+
+int~~ex
+Rpr~~ex
+Rpr~~int
+
+
+
+
+library(lavaan)
+library(readxl)
+library(dplyr)
+library(haven)
+
+fit<- sem(model, data=teen_survey)
+
+summary(fit, standardized=TRUE, ci=TRUE, fit.measures=TRUE)
+modindices(fit, sort.=TRUE)
+inspect(fit, what="std")
+fitmeasures(fit)
+
+
+parameterestimates(fit, standardized = TRUE)
+fitted(fit)
+residuals(fit)
+fitmeasures(fit)
+modificationindices(fit, sort. = TRUE)
+semPaths(fit, what="paths", whatLables="par", rotation=2)
+
+fitmeasures(fit)
+
+#not a good fit.
+```
+
+
