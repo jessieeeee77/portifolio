@@ -83,5 +83,47 @@ fitmeasures(fit)
 
 #not a good fit.
 ```
+```{r model retry}
+model2<-"Parents_expectations=~exter +inter+ pros+ stem
+Adolescents_behaviors=~int+ex+pr+st
+Parents_expectations~Adolescents_behaviors"
+#residual correlations
+exter~~inter
+pros~~stem
+
+int~~ex
+pr~~int
+pr~~ex
+st~~pr
+st~~ex
+st~~int
+
+
+
+
+library(lavaan)
+library(readxl)
+library(dplyr)
+library(haven)
+
+fit2<- sem(model2, data=teen_survey)
+
+summary(fit2, standardized=TRUE, ci=TRUE, fit.measures=TRUE)
+modindices(fit2, sort.=TRUE)
+inspect(fit2, what="std")
+fitmeasures(fit2)
+
+
+parameterestimates(fit2, standardized = TRUE)
+fitted(fit2)
+residuals(fit2)
+fitmeasures(fit2)
+modificationindices(fit2, sort. = TRUE)
+semPaths(fit2, what="paths", whatLables="par", rotation=2)
+
+fitmeasures(fit2)
+
+#poor fit.
+```
 
 
