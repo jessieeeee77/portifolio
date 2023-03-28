@@ -2,4 +2,197 @@
 title: "Portfolio 7"
 ---
 
-> The projects should be numbered consecutively (i.e., in the order in which you began them), and should include for each project a description of the goal, the product (computer program, hand graph, computer graph, etc.), the data, and some interpretation. Reports must be reproducible and of high quality in terms of writing, grammar, presentation, etc.
+```{r data}
+library(tidyverse)
+library(dplyr)
+library(haven)
+teen_survey<- read_sav("teen_survey.sav")
+tss<- read_sav("tss.sav")
+```
+```{r pc}
+library(lme4)
+library(merTools)
+library(semPlot)
+library(lavaan)
+library(readxl)
+library(dplyr)
+library(haven)
+```
+
+```{r}
+library(haven)
+teen_survey_1 <- read_sav("teen_survey_1.sav")
+```
+
+```{r 1}
+#rerun model with the updated dataset
+model4<-"Parents_expectations=~exter +inter+ pros+ stem
+Adolescents_behaviors=~int+ex+pr+st
+Parents_expectations~Adolescents_behaviors"
+#residual correlations
+exter~~inter
+pros~~stem
+
+int~~ex
+pr~~int
+pr~~ex
+st~~pr
+st~~ex
+st~~int
+
+
+
+
+library(lavaan)
+library(readxl)
+library(dplyr)
+library(haven)
+
+fit4<- sem(model4, data=teen_survey_1)
+
+summary(fit4, standardized=TRUE, ci=TRUE, fit.measures=TRUE)
+modindices(fit4, sort.=TRUE)
+inspect(fit4, what="std")
+fitmeasures(fit4)
+
+
+parameterestimates(fit4, standardized = TRUE)
+fitted(fit4)
+residuals(fit4)
+fitmeasures(fit4)
+modificationindices(fit4, sort. = TRUE)
+semPaths(fit4, what="paths", whatLables="par", rotation=2)
+
+fitmeasures(fit4)
+
+#still not a good fit
+```
+
+
+Loading Required Packages
+Now, let's load the required packages.
+
+```{r s7}
+library(tidyverse)
+library(lme4)
+library(lmerTest)
+```
+Loading the Dataset
+For this lab, we will use a built-in dataset from the lme4 package called sleepstudy. This dataset contains information about the reaction times of subjects who participated in a sleep deprivation study.
+
+```{r m7}
+data("sleepstudy")
+head(sleepstudy)
+```
+Data Exploration
+Let's explore the structure of the dataset.
+
+```{r m6}
+glimpse(sleepstudy)
+```
+Visualizing the Data
+Before building the multilevel model, it's helpful to visualize the data. Let's plot the reaction times against the days of sleep deprivation, with each subject represented by a different color.
+
+```{r m3}
+sleepstudy %>%
+  ggplot(aes(x = Days, y = Reaction, group = Subject, color = factor(Subject))) +
+  geom_line() +
+  labs(title = "Reaction Time vs Days of Sleep Deprivation",
+       x = "Days of Sleep Deprivation",
+       y = "Reaction Time (ms)",
+       color = "Subject")
+```
+       
+Building the Multilevel Model
+Now we will build a multilevel model using the lmer() function from the lme4 package. The model will predict the reaction time based on the number of days of sleep deprivation, while accounting for the random effects of subjects.
+
+```{r m5}
+multilevel_model <- lmer(Reaction ~ Days + (1|Subject), data = sleepstudy)
+summary(multilevel_model)
+```
+
+Model Interpretation
+The output provides information on the fixed effects, random effects, and model fit. We can interpret the fixed effects coefficients and significance levels to understand the relationship between reaction time and days of sleep deprivation.
+
+Model Diagnostics
+We can perform model diagnostics using the plot() function, which will generate residual plots.
+
+```{r 4}
+plot(multilevel_model)
+```
+
+Conclusion
+In this lab, you learned how to perform multilevel modeling using R and the Tidyverse package. You explored a real dataset, visualized the data, built a multilevel model, and interpreted the results.
+
+
+```{r 3}
+#does not feel like my data can conduct a multilevel modeling test.
+teen_survey_1$country <- as.factor(teen_survey_1$country)
+```
+
+```{r model}
+modex <- lm(ex ~ exter * country, teen_survey_1)
+summary(modex)
+```
+
+
+```{r plot}
+#ggplot(teen_survey_1, aes(ex ~ exter * country, color = factor(country))) +
+#  geom_point() +
+#  geom_smooth(method = "lm", se = FALSE) +
+#  scale_color_manual(name = "Country", labels = c("Americans", "Chineses"), values = c("#FF6666", "#6666FF")) + 
+#  labs(x="Perceived Expectations for Externalizing", y="Externalizing") +
+#  theme_classic()
+
+# warning showed: Did you mistype the name of a data column or forget to add `after_stat()`? --don't know how to solve it.
+```
+
+```{r test}
+teen_survey_1 %>% group_by(country) %>%
+summarize(n = n()) %>%
+ggplot(aes(n)) +
+geom_histogram(fill = "rosybrown2", color = "black", bins = 10) +
+scale_x_log10() +
+ggtitle("total number of participants in two countries")
+
+#okay, kind of weird but the "country can use as a factor)
+```
+```{r test 2}
+ggplot(teen_survey_1, aes(x=exter, y=ex, color = factor(country))) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  scale_color_manual(name = "Country", labels = c("Americans", "Chineses"), values = c("#FF6666", "#6666FF")) + 
+  labs(x="Perceived Expectations for Externalizing", y="Externalizing") +
+  theme_classic()
+
+#yeah pretty stupid mistake...
+```
+```{r inter}
+ggplot(teen_survey_1, aes(x=inter, y=int, color = factor(country))) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  scale_color_manual(name = "Country", labels = c("Americans", "Chineses"), values = c("#FF6666", "#6666FF")) + 
+  labs(x="Perceived Expectations for Internalizing", y="Internalizing") +
+  theme_classic()
+#looks like the perceived parents' expectations for internalizing predict actual internalizing for Chinese more compared to U.S. adolescents.
+```
+
+```{r stem}
+ggplot(teen_survey_1, aes(x=stem, y=st, color = factor(country))) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  scale_color_manual(name = "Country", labels = c("Americans", "Chineses"), values = c("#FF6666", "#6666FF")) + 
+  labs(x="Perceived Expectations for STEM", y="STEM") +
+  theme_classic()
+#looks like the perceived parents' expectations for STEM motivations predict actual STEM motivations for Chinese more compared to U.S. adolescents.
+#also, the Chinese reported lower perceived expectations for STEM motivations and adolescents' actual STEM motivations.
+```
+```{r prosocial}
+ggplot(teen_survey_1, aes(x=pros, y=pr, color = factor(country))) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  scale_color_manual(name = "Country", labels = c("Americans", "Chineses"), values = c("#FF6666", "#6666FF")) + 
+  labs(x="Perceived Expectations for prosocial behaviors", y="Prosocial behaviors") +
+  theme_classic()
+```
+
