@@ -2,4 +2,110 @@
 title: "Portfolio 8"
 ---
 
-> The projects should be numbered consecutively (i.e., in the order in which you began them), and should include for each project a description of the goal, the product (computer program, hand graph, computer graph, etc.), the data, and some interpretation. Reports must be reproducible and of high quality in terms of writing, grammar, presentation, etc.
+```{r data}
+library(tidyverse)
+library(dplyr)
+library(haven)
+teen_survey_1<- read_sav("teen_survey_1.sav")
+gender<-read_sav("gender.sav")
+library(lme4)
+library(merTools)
+library(semPlot)
+library(lavaan)
+library(readxl)
+library(dplyr)
+library(haven)
+```
+```{r ex}
+#visualize gender difference
+ggplot(gender, aes(x=exter, y=ex, color = factor(Gender))) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  scale_color_manual(name = "Gender", labels = c("Girls", "Boys"), values = c("#FF6666", "#6666FF")) + 
+  labs(x="Perceived Expectations for externalizing", y="externalizing") +
+  theme_classic()
+```
+```{r internalizing}
+ggplot(gender, aes(x=inter, y=int, color = factor(Gender))) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  scale_color_manual(name = "Gender", labels = c("Girls", "Boys"), values = c("#FF6666", "#6666FF")) + 
+  labs(x="Perceived Expectations for internalizing", y="internalizing") +
+  theme_classic()
+```
+```{r prosocial}
+ggplot(gender, aes(x=pros, y=pr, color = factor(Gender))) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  scale_color_manual(name = "Gender", labels = c("Girls", "Boys"), values = c("#FF6666", "#6666FF")) + 
+  labs(x="Perceived Expectations for prosocial behaviors", y="prosocial behaviors") +
+  theme_classic()
+```
+
+
+```{r stem}
+ggplot(gender, aes(x=stem, y=st, color = factor(Gender))) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  scale_color_manual(name = "Gender", labels = c("Females", "Males"), values = c("#FF6666", "#6666FF")) + 
+  labs(x="Perceived Expectations for STEM", y="STEM") +
+  theme_classic()
+
+```
+```{r viausalize appe}
+ggplot(gender, aes(x=APPE, y=st, color = factor(Gender))) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  scale_color_manual(name = "Gender", labels = c("Females", "Males"), values = c("#FF6666", "#6666FF")) + 
+  labs(x="Perceived parental efficacy", y="STEM motivations") +
+  theme_classic()
+ggplot(gender, aes(x=APPE, y=ex, color = factor(Gender))) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  scale_color_manual(name = "Gender", labels = c("Females", "Males"), values = c("#FF6666", "#6666FF")) + 
+  labs(x="Perceived parental efficacy", y="externalizing") +
+  theme_classic()
+ggplot(gender, aes(x=APPE, y=int, color = factor(Gender))) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  scale_color_manual(name = "Gender", labels = c("Females", "Males"), values = c("#FF6666", "#6666FF")) + 
+  labs(x="Perceived parental efficacy", y="internalizing") +
+  theme_classic()
+ggplot(gender, aes(x=APPE, y=pr, color = factor(Gender))) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  scale_color_manual(name = "Gender", labels = c("Females", "Males"), values = c("#FF6666", "#6666FF")) + 
+  labs(x="Perceived parental efficacy", y="prosocial behaviors") +
+  theme_classic()
+
+#seems like there were interactions between APPE and gender in intenalizing, externalizing, and prosocial behaviors. 
+#girls internalizing and prosocial behavirs were all negatively impacted by APPE, which is interesting. I wonder why that is the case.
+
+```
+```{r test}
+library(ggpubr)
+
+compare_means(APPE ~ Gender,  data = gender)
+my_comparisons <- list( c("1", "2") )
+ggboxplot(gender, x = "Gender", y = "APPE",
+          color = "Gender", palette = "jco")+ 
+  labs(title= "Gender difference in APPE", x="Gender", y="APPE", color="Gender") + 
+  scale_x_discrete(labels=c('Females', 'Males'))+
+  stat_compare_means(comparisons = my_comparisons)+ 
+  stat_compare_means(label.y = 7)   
+#significant gender difference in APPE
+compare_means(APPE ~ country,  data = teen_survey_1)
+my_comparisons <- list( c("0", "1") )
+ggboxplot(gender, x = "country", y = "APPE",
+          color = "country", palette = "jco")+ 
+  labs(title= "country difference in APPE", x="country", y="APPE", color="country") + 
+  scale_x_discrete(labels=c('U.S.', 'China'))+
+  stat_compare_means(comparisons = my_comparisons)+ 
+  stat_compare_means(label.y = 7) 
+#significant country difference in APPE
+```
+
+
+
+
+
