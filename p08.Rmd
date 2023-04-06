@@ -104,6 +104,44 @@ ggboxplot(gender, x = "country", y = "APPE",
   stat_compare_means(label.y = 7) 
 #significant country difference in APPE
 ```
+```{r fix the lable}
+compare_means(APPE ~ Gender,  data = gender)
+my_comparisons <- list( c("1", "2") )
+ggboxplot(gender, x = "Gender", y = "APPE",
+          color = "Gender", palette = "jco")+ 
+  labs(title= "Gender difference in APPE", x="Gender", y="APPE", color="Gender") + 
+  scale_x_discrete(labels=c('Females', 'Males'))+
+  stat_compare_means(comparisons = my_comparisons)+ 
+  stat_compare_means(label.y = 7)+
+  scale_color_manual(name = "Gender", labels = c("Females", "Males"), values = c("#FF6666", "#6666FF")) 
+```
+```{r mt}
+library(tidyverse)
+library(dplyr)
+library(haven)
+Mother_and_teen_data <- read_sav("Mother_and_teen_data.sav")
+#delete the NA from Race3
+library(tidyverse)
+library(dplyr)
+library(haven)
+mt <- Mother_and_teen_data %>% 
+ filter(!is.na(Race3)) %>% 
+  mutate(ad_deviance=CD_1 + CD_2 + CD_3)
+```
+
+```{r fix the graph of previous graph}
+compare_means(PSE ~ Race3,  data = mt)
+my_comparisons <- list( c("1", "2"), c("1", "3"), c("2", "3") )
+ggboxplot(mt, x = "Race3", y = "PSE",
+          color = "Race3", palette = "jco")+ 
+  labs(title= "Cultural Difference in PSE", x="Race/Ethnicity", y="PSE", color="Race/Ethnicity") + 
+  scale_x_discrete(labels=c('White', 'Latina', 'African American'))+
+  stat_compare_means(comparisons = my_comparisons)+ 
+  stat_compare_means(label.y = 7)+
+  scale_color_manual(name = "Race/Ethnicity", labels = c("European American", "Latinx", "African American"), values = c("#FF6666", "#6666FF", "#137735")) 
+```
+
+
 
 
 
