@@ -2,4 +2,23 @@
 title: "Portfolio 9"
 ---
 
-> The projects should be numbered consecutively (i.e., in the order in which you began them), and should include for each project a description of the goal, the product (computer program, hand graph, computer graph, etc.), the data, and some interpretation. Reports must be reproducible and of high quality in terms of writing, grammar, presentation, etc.
+```{r data}
+library(tidyverse)
+library(dplyr)
+library(haven)
+teen_survey_1<- read_sav("teen_survey_1.sav")
+gender<-read_sav("gender.sav")
+library(lme4)
+library(merTools)
+library(semPlot)
+library(lavaan)
+library(readxl)
+library(dplyr)
+library(haven)
+```
+```{r}
+table(gender$Gender,gender$country)
+chisq.test(gender$Gender, gender$country, correct=FALSE)
+```
+#two variables are in fact dependent.
+

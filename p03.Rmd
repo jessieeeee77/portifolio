@@ -100,6 +100,7 @@ ggboxplot(mt, x = "Race3", y = "PSE",
 
 
 ```{r comparison}
+
 compare_means(PSE ~ Race3,  data = mt)
 my_comparisons <- list( c("1", "2"), c("1", "3"), c("2", "3") )
 ggboxplot(mt, x = "Race3", y = "PSE",
@@ -112,7 +113,7 @@ ggboxplot(mt, x = "Race3", y = "PSE",
 #VERY SATISFIED WITH THIS PLOT!
 ```
 ```{r model}
-model1<-"AdolD=~CD_1 +CD_2 +CD_3
+test_model1<-"AdolD=~CD_1 +CD_2 +CD_3
 EffectP=~PAPmoni+PAPWARM+PAPsolic+PAPrule
 PSE~EffectP
 AdolD~EffectP + PSE"
