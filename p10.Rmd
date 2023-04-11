@@ -4,17 +4,525 @@ title: "Portfolio 10"
 
 > The projects should be numbered consecutively (i.e., in the order in which you began them), and should include for each project a description of the goal, the product (computer program, hand graph, computer graph, etc.), the data, and some interpretation. Reports must be reproducible and of high quality in terms of writing, grammar, presentation, etc.
 
+#descriptives:
+#the ten portifolios concentrated on building up graphs and data analyses for my first year and thesis project. I used SEM, ggplot, multigroup modeling, t-test, and ANOVA tests, chisq test. Basically I try to redo the data analyses that I used in SPSS for my first year project, and then do some data analyses for my thesis. R did a great job at visualizing the associations and interactions that I aimed to investigate in my thesis.
+#the following codes represent the major task or accomplished goals of each of my portifolio.
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed hendrerit purus ut dapibus vestibulum. Suspendisse potenti. Cras faucibus mauris in leo condimentum lobortis. Cras euismod sollicitudin augue, ut venenatis quam placerat eu. Maecenas vulputate rhoncus odio, in interdum risus malesuada gravida. Maecenas cursus sed dui sit amet lacinia. Nunc dignissim metus nec ex mattis, non rutrum urna cursus. Morbi pretium elementum purus, in aliquet libero eleifend ac. Nam finibus, ligula sed ultrices pharetra, tellus risus consequat tortor, facilisis maximus elit lectus a metus. Sed vel dictum nulla, vitae blandit turpis. Integer pulvinar tempor diam ac venenatis. Vestibulum est lacus, suscipit et ipsum nec, consectetur iaculis leo. Morbi libero lacus, scelerisque non sollicitudin vitae, accumsan sed tellus. Suspendisse quis orci tellus.
+
+```{r make graphs}
+#for the poster presentation, make a graph that show the effect
+library(tidyverse)
+library(dplyr)
+library(haven)
+Mother_and_teen_data <- read_sav("Mother_and_teen_data.sav")
+#View(Mother_and_teen_data)
+Mother_and_teen_data$Race3 <- as.factor(Mother_and_teen_data$Race3)
+```
+```{r build models}
+library(tidyverse)
+library(dplyr)
+library(haven)
+mt <- Mother_and_teen_data %>% 
+ filter(!is.na(Race3)) %>% 
+  mutate(ad_deviance=CD_1 + CD_2 + CD_3)
+model1<-"AdolD=~CD_1 +CD_2 +CD_3
+EffectP=~PAPmoni+PAPWARM+PAPsolic+PAPrule
+PSE~EffectP
+AdolD~EffectP + PSE"
+#residual correlations
+PAPmoni~~PAPsoli
+PAPmoni~~PAPrule
+PAPWARM~~PAPsoli
+CD_1~~CD_2
+CD_1~~CD_3
+CD_2~~CD_3
+```
+the model fits.
+```{r model..} 
+library(lavaan)
+library(readxl)
+library(dplyr)
+library(haven)
+teendata<- Mother_and_teen_data %>% filter( !is.na(PerPW)) 
+fit1<- sem(model1, data=Mother_and_teen_data)
+fit1
+summary(fit1, standardized=TRUE, ci=TRUE, fit.measures=TRUE)
+modindices(fit1, sort.=TRUE)
+inspect(fit1, what="std")
+
+```
+#Then I tested multiple models with different intervariable correlations.
+#try to let all the effective parenting factors be able to correlate with each other
+```{r test model}
+model2<-"AdolD=~CD_1 +CD_2 +CD_3
+EffectP=~PAPmoni+PAPWARM+PAPsolic+PAPrule
+PSE~EffectP
+AdolD~EffectP + PSE"
+#residual correlations
+PAPmoni~~PAPsoli
+PAPmoni~~PAPrule
+PAPWARM~~PAPsoli
+PAPWARM~~PAPmoni
+PAPWARM~~PAPrule
+PAPsoli~~PAPrule
+
+CD_1~~CD_2
+CD_1~~CD_3
+CD_2~~CD_3
+
+library(lavaan)
+library(readxl)
+library(dplyr)
+library(haven)
+teendata<- Mother_and_teen_data %>% filter( !is.na(PerPW)) 
+fit2<- sem(model2, data=Mother_and_teen_data)
+fit2
+summary(fit2, standardized=TRUE, ci=TRUE, fit.measures=TRUE)
+modindices(fit2, sort.=TRUE)
+inspect(fit2, what="std")
+fitmeasures(fit2)
+
+#does not make any noticeable change.
+```
+```{r test model 3 }
+#try to let let monitoring correlates with the rules and solicitation correlates with monitoring
+model3<-"AdolD=~CD_1 +CD_2 +CD_3
+EffectP=~PAPmoni+PAPWARM+PAPsolic+PAPrule
+PSE~EffectP
+AdolD~EffectP + PSE"
+#residual correlations
+PAPmoni~~PAPsoli
+PAPmoni~~PAPrule
 
 
-```{r, child='p10/demo.Rmd'}
+CD_1~~CD_3
+
+library(semPlot)
+library(lavaan)
+library(readxl)
+library(dplyr)
+library(haven)
+teendata<- Mother_and_teen_data %>% filter( !is.na(PerPW)) 
+fit3<- sem(model3, data=Mother_and_teen_data)
+fit3
+summary(fit3, standardized=TRUE, ci=TRUE, fit.measures=TRUE)
+modindices(fit3, sort.=TRUE)
+inspect(fit3, what="std")
+
+parameterestimates(fit3, standardized = TRUE)
+fitted(fit3)
+residuals(fit3)
+fitmeasures(fit3)
+modificationindices(fit3, sort. = TRUE)
+semPaths(fit3, what="paths", whatLables="par", rotation=2)
+
+fitmeasures(fit3)
+
+#does not make any noticeable change as well.
+#did not find significant better model. all three model seems alike. The fit measure difference is unnoticeable.
+```
+```{r comparison}
+
+library(ggpubr)
+
+compare_means(PSE ~ Race3,  data = mt)
+my_comparisons <- list( c("1", "2"), c("1", "3"), c("2", "3") )
+ggboxplot(mt, x = "Race3", y = "PSE",
+          color = "Race3", palette = "jco")+ 
+  labs(title= "Cultural Difference in PSE", x="Race/Ethnicity", y="PSE", color="Race/Ethnicity") + 
+  scale_x_discrete(labels=c('White', 'Latina', 'African American'))+
+  stat_compare_means(comparisons = my_comparisons)+ 
+  stat_compare_means(label.y = 7)    
+
+#VERY SATISFIED WITH THIS PLOT!
 ```
 
+```{r model greenish}
+test_model1<-"AdolD=~CD_1 +CD_2 +CD_3
+EffectP=~PAPmoni+PAPWARM+PAPsolic+PAPrule
+PSE~EffectP
+AdolD~EffectP + PSE"
+#residual correlations
+PAPmoni~~PAPsoli
+PAPmoni~~PAPrule
+PAPWARM~~PAPsoli
 
-Aliquam sed ex et lorem consequat feugiat at porta leo. Fusce id hendrerit tellus. Maecenas dictum felis neque, quis dictum metus tristique eu. Vivamus sed blandit nisl. Integer ut urna dolor. Cras in egestas eros, in aliquam nisi. Duis vitae elementum quam. Vivamus vel turpis commodo, porttitor urna vitae, viverra sem. Nam nec dignissim erat, id viverra libero. Integer vel lectus pellentesque tortor fringilla posuere. Vivamus quis magna accumsan, porta tortor at, aliquam urna. Aliquam vestibulum ante massa, ut gravida lectus sagittis vitae.
+CD_1~~CD_2
+CD_1~~CD_3
+CD_2~~CD_3
+library(semPlot)
+library(lavaan)
+library(readxl)
+library(dplyr)
+library(haven)
+teendata<- Mother_and_teen_data %>% filter( !is.na(PerPW)) 
+fit1<- sem(model1, data=Mother_and_teen_data)
+fit1
+summary(fit1, standardized=TRUE, ci=TRUE, fit.measures=TRUE)
+modindices(fit1, sort.=TRUE)
+inspect(fit1, what="std")
 
-Sed eget ipsum auctor, gravida magna sit amet, tincidunt mi. Nulla erat ante, volutpat nec sem eget, luctus posuere est. Praesent convallis nunc ac turpis bibendum, in maximus magna convallis. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Sed sit amet nulla ante. Sed elit sem, lobortis nec nisi a, rhoncus ornare nunc. Curabitur ultrices neque feugiat, facilisis magna eu, consectetur magna. Mauris id eleifend ex.
+parameterestimates(fit1, standardized = TRUE)
+fitted(fit1)
+residuals(fit1)
+fitmeasures(fit1)
+modificationindices(fit1, sort. = TRUE)
+semPaths(fit1, what="paths", whatLables="par", rotation=2)
 
-Morbi tincidunt mollis odio sit amet feugiat. Ut vel risus eu ante dictum consequat. Integer et luctus mauris. Donec nec faucibus urna, sed commodo risus. Nam elementum pulvinar erat, eget convallis est blandit vel. Etiam gravida sapien eu massa hendrerit maximus. Proin dolor quam, porta vitae libero non, venenatis porta tellus. Vivamus et elit a est aliquet consequat. Proin tempus, purus quis suscipit placerat, dui nunc euismod dui, sit amet luctus leo lectus in risus. Phasellus consectetur eleifend arcu. Nullam venenatis blandit nulla ut ullamcorper. Vestibulum eu arcu quis massa scelerisque sodales in ac augue. Quisque dapibus fringilla turpis, ut cursus tortor cursus sed. Sed facilisis quam eget neque viverra venenatis. Suspendisse ut lorem nec erat elementum bibendum. Curabitur lobortis purus in cursus blandit.
+fitmeasures(fit1)
 
+#looks like the model made by r is uglier than what I got from Amos. I might be stuck with Amos output.
+```
+```{r result}
+semPaths(fit1,"std",layout = 'tree', edge.label.cex=.9, curvePivot = TRUE)
+library(tidyverse)
+library(knitr)
+library(lavaan)
+library(psych)
+library(MBESS)
+```
+```{r}
+library(tidyverse)
+library(dplyr)
+library(haven)
+Mother_and_teen_data <- read_sav("Mother_and_teen_data.sav")
+#View(Mother_and_teen_data)
+mt <- Mother_and_teen_data %>% 
+ filter(!is.na(Race3)) %>% 
+  mutate(ad_deviance=CD_1 + CD_2 + CD_3)
+mt$Race3 <- as.factor(mt$Race3)
+moderation <- lm(ad_deviance ~ PSE * Race3, mt)
+summary(moderation)
+moddp <- lm(CD_1 ~ Race3 * PSE, mt)
+summary(moddp)
+
+ggplot(mt, aes(PSE, CD_1, color = factor(Race3))) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  scale_color_manual(name = "Race/Ethnicity", labels = c("European Americans", "Latinx", "African Americans"), values = c("#FF6666", "#6666FF", "green")) + 
+  labs(x="PSE", y="Disobeying Parents") +
+  theme_classic()
+
+```
+```{r disobeying parents}
+# try to test whether race/ethnicity moderates the association between PSE and Disobeying parents (CD_1)
+moddp <- lm(CD_1 ~ Race3 * PSE, mt)
+summary(moddp)
+
+ggplot(mt, aes(PSE, CD_1, color = factor(Race3))) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  scale_color_manual(name = "Race/Ethnicity", labels = c("European Americans", "Latinx", "African Americans"), values = c("#FF6666", "#6666FF", "green")) + 
+  labs(x="PSE", y="Disobeying Parents") +
+  theme_classic()
+
+#non-significant as well.
+```
+```{r school misconduct}
+# try to test whether race/ethnicity moderates the association between PSE and school misconduct (CD_2)
+modsm <- lm(CD_2 ~ Race3 * PSE, mt)
+summary(modsm)
+
+ggplot(mt, aes(PSE, CD_2, color = factor(Race3))) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  scale_color_manual(name = "Race/Ethnicity", labels = c("European Americans", "Latinx", "African Americans"), values = c("#FF6666", "#6666FF", "green")) + 
+  labs(x="PSE", y="School Misconduct") +
+  theme_classic()
+
+#non-significant as well.
+```
+```{r substance use}
+# try to test whether race/ethnicity moderates the association between PSE and substance uses (CD_3)
+modsu <- lm(CD_3 ~ PSE * Race3, mt)
+summary(modsu)
+
+ggplot(mt, aes(PSE, CD_3, color = factor(Race3))) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  scale_color_manual(name = "Race/Ethnicity", labels = c("European Americans", "Latinx", "African Americans"), values = c("#FF6666", "#6666FF", "green")) + 
+  labs(x="PSE", y="Substance Use") +
+  theme_classic()
+
+#Race/ethnicity significantly moderates the association between PSE and substance use. PSE negatively associates with substance use for European Americans, but not for the Latinx.
+#same results as what I got from SPSS.
+```
+```{r data}
+library(tidyverse)
+library(dplyr)
+library(haven)
+teen_survey <- read_sav("teen_survey.sav")
+```
+#use my thesis data. 
+```{r create composites}
+teen_survey$exter<- rowMeans(teen_survey[,c("Q8_1", "Q8_2", "Q8_3", "Q8_4", "Q8_5", "Q8_6", "Q8_7", "Q8_8", "Q8_9")],
+                             na.rm = TRUE)
+teen_survey$inter<- rowMeans(teen_survey[,c("Q9_1", "Q9_2", "Q9_3", "Q9_4", "Q9_5", "Q9_6", "Q9_7", "Q9_8", "Q9_9", "Q9_10", "Q9_11", "Q9_12", "Q9_13", "Q9_14")],
+                             na.rm = TRUE)
+teen_survey$stem<- rowMeans(teen_survey[,c("Q10_1", "Q10_2", "Q10_3", "Q10_4", "Q10_5", "Q10_6", "Q10_7", "Q10_8", "Q10_9", "Q10_10", "Q10_11")],
+                             na.rm = TRUE)
+teen_survey$pros<- rowMeans(teen_survey[,c("Q12_1", "Q12_2", "Q12_3", "Q12_4", "Q12_5", "Q12_6", "Q12_7", "Q12_8")],
+                             na.rm = TRUE)
+teen_survey$girl<- rowMeans(teen_survey[,c("Q14_1", "Q14_2", "Q14_3", "Q14_4", "Q14_5")],
+                             na.rm = TRUE)
+teen_survey$boy<- rowMeans(teen_survey[,c("Q18_1", "Q18_2", "Q18_3", "Q18_4", "Q18_5")],
+                             na.rm = TRUE)
+teen_survey$ex<- rowMeans(teen_survey[,c("Q20_1", "Q20_2", "Q20_3", "Q20_4", "Q20_5", "Q20_6", "Q20_7", "Q20_8", "Q20_9")],
+                             na.rm = TRUE)
+teen_survey$int<- rowMeans(teen_survey[,c("Q21_1", "Q21_2", "Q21_3", "Q21_4", "Q21_5", "Q21_6", "Q21_7", "Q21_8", "Q21_9", "Q21_10", "Q21_11", "Q21_12", "Q21_13", "Q21_14")],
+                            na.rm = TRUE)
+teen_survey$st<- rowMeans(teen_survey[,c("Q22_1", "Q22_2", "Q22_3", "Q22_4", "Q22_5", "Q22_6", "Q22_7", "Q22_8", "Q22_9", "Q22_10", "Q22_11")],
+                             na.rm = TRUE)
+teen_survey$pr<- rowMeans(teen_survey[,c("Q24_1", "Q24_2", "Q24_3", "Q24_4", "Q24_5", "Q24_6", "Q24_7", "Q24_8")],
+                             na.rm = TRUE)
+teen_survey$appe<- rowMeans(teen_survey[,c("Q25_1", "Q25_2", "Q25_3", "Q25_4", "Q25_5", "Q25_6", "Q25_7", "Q25_8", "Q25_9", "Q25_10")],
+                             na.rm = TRUE)
+teen_survey$ind<- rowMeans(teen_survey[,c("Q26_1", "Q26_2", "Q26_3", "Q26_4", "Q26_5", "Q26_6")],
+                             na.rm = TRUE)
+teen_survey$dep<- rowMeans(teen_survey[,c("Q27_1", "Q27_2", "Q27_3", "Q27_4", "Q27_5", "Q27_6")],
+                             na.rm = TRUE)
+teen_survey$fam<- rowMeans(teen_survey[,c("Q30_1", "Q30_2", "Q30_3", "Q30_4", "Q30_5", "Q30_6")],
+                             na.rm = TRUE)
+teen_survey$piety<- rowMeans(teen_survey[,c("Q31_1", "Q31_2", "Q31_3", "Q31_4", "Q31_5", "Q31_6", "Q31_7")],
+                             na.rm = TRUE)
+teen_survey$gen<- rowMeans(teen_survey[,c("Q32_1", "Q32_2", "Q32_3", "Q32_4", "Q32_5", "Q32_6", "Q32_7", "Q32_8", "Q32_9")],
+                             na.rm = TRUE)
+
+```
+
+```{r factor}
+teen_survey$country <- as.factor(teen_survey$country)
+teen_survey$Gender <- as.factor(teen_survey$Gender)
+```
+```{r t_package}
+
+library(lessR)
+```
+```{r mutate}
+ts <- teen_survey %>%
+  filter(Gender %in% c("1", "2"))
+```
+#try to use multilevel but it was not correct. the coding was correct for the function though.
+```{r multilevel ex}
+library(tidyverse)
+library(dplyr)
+library(haven)
+teen_survey<- read_sav("teen_survey.sav")
+tss<- read_sav("tss.sav")
+library(lme4)
+library(merTools)
+library(semPlot)
+library(lavaan)
+library(readxl)
+library(dplyr)
+library(haven)
+model1<-lmer(ex~1+(1|exter),REML = FALSE, data=tss)
+summary(model1)
+confint(model1)
+
+ICC(outcome = "ex", group="exter",data=tss)
+#add level 1 predictor
+model2<-lmer(ex~1+Gender+(1|exter), REML= FALSE, data= tss)
+summary(model2)
+anova(model1, model2)
+confint(model2)
+model3<-lmer(ex~1+Gender+(1|exter)+country, REML= FALSE, data= tss)
+summary(model3)
+anova(model2, model3)
+confint(model3)
+#does not think it make any sense statistically.
+```
+```{r build sem model for thesis}
+
+model2<-"Parents_expectations=~exter +inter+ pros+ stem
+Adolescents_behaviors=~int+ex+pr+st
+Parents_expectations~Adolescents_behaviors"
+#residual correlations
+exter~~inter
+pros~~stem
+
+int~~ex
+pr~~int
+pr~~ex
+st~~pr
+st~~ex
+st~~int
+
+
+
+
+library(lavaan)
+library(readxl)
+library(dplyr)
+library(haven)
+
+fit2<- sem(model2, data=teen_survey)
+
+summary(fit2, standardized=TRUE, ci=TRUE, fit.measures=TRUE)
+modindices(fit2, sort.=TRUE)
+inspect(fit2, what="std")
+fitmeasures(fit2)
+
+
+parameterestimates(fit2, standardized = TRUE)
+fitted(fit2)
+residuals(fit2)
+fitmeasures(fit2)
+modificationindices(fit2, sort. = TRUE)
+semPaths(fit2, what="paths", whatLables="par", rotation=2)
+
+fitmeasures(fit2)
+
+#poor fit.
+```
+```{r third try of sem}
+teen_survey_1<- read_sav("teen_survey_1.sav")
+gender<-read_sav("gender.sav")
+#rerun model with the updated dataset
+model4<-"Parents_expectations=~exter +inter+ pros+ stem
+Adolescents_behaviors=~int+ex+pr+st
+Parents_expectations~Adolescents_behaviors"
+#residual correlations
+exter~~inter
+pros~~stem
+
+int~~ex
+pr~~int
+pr~~ex
+st~~pr
+st~~ex
+st~~int
+
+
+
+
+library(lavaan)
+library(readxl)
+library(dplyr)
+library(haven)
+
+fit4<- sem(model4, data=teen_survey_1)
+
+summary(fit4, standardized=TRUE, ci=TRUE, fit.measures=TRUE)
+modindices(fit4, sort.=TRUE)
+inspect(fit4, what="std")
+fitmeasures(fit4)
+
+
+parameterestimates(fit4, standardized = TRUE)
+fitted(fit4)
+residuals(fit4)
+fitmeasures(fit4)
+modificationindices(fit4, sort. = TRUE)
+semPaths(fit4, what="paths", whatLables="par", rotation=2)
+
+fitmeasures(fit4)
+
+#still not a good fit
+```
+
+```{r data new}
+teen_survey_1<- read_sav("teen_survey_1.sav")
+```
+```{r graphs}
+ggplot(teen_survey_1, aes(x=exter, y=ex, color = factor(country))) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  scale_color_manual(name = "Country", labels = c("Americans", "Chineses"), values = c("#FF6666", "#6666FF")) + 
+  labs(x="Perceived Expectations for Externalizing", y="Externalizing") +
+  theme_classic()
+ggplot(teen_survey_1, aes(x=inter, y=int, color = factor(country))) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  scale_color_manual(name = "Country", labels = c("Americans", "Chineses"), values = c("#FF6666", "#6666FF")) + 
+  labs(x="Perceived Expectations for Internalizing", y="Internalizing") +
+  theme_classic()
+#looks like the perceived parents' expectations for internalizing predict actual internalizing for Chinese more compared to U.S. adolescents.
+ggplot(teen_survey_1, aes(x=stem, y=st, color = factor(country))) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  scale_color_manual(name = "Country", labels = c("Americans", "Chineses"), values = c("#FF6666", "#6666FF")) + 
+  labs(x="Perceived Expectations for STEM", y="STEM") +
+  theme_classic()
+#looks like the perceived parents' expectations for STEM motivations predict actual STEM motivations for Chinese more compared to U.S. adolescents.
+#also, the Chinese reported lower perceived expectations for STEM motivations and adolescents' actual STEM motivations.
+
+```
+
+```{r prosocial}
+ggplot(teen_survey_1, aes(x=pros, y=pr, color = factor(country))) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  scale_color_manual(name = "Country", labels = c("Americans", "Chineses"), values = c("#FF6666", "#6666FF")) + 
+  labs(x="Perceived Expectations for prosocial behaviors", y="Prosocial behaviors") +
+  theme_classic()
+```
+```{r ex}
+#visualize gender difference
+ggplot(gender, aes(x=exter, y=ex, color = factor(Gender))) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  scale_color_manual(name = "Gender", labels = c("Girls", "Boys"), values = c("#FF6666", "#6666FF")) + 
+  labs(x="Perceived Expectations for externalizing", y="externalizing") +
+  theme_classic()
+```
+```{r internalizing}
+ggplot(gender, aes(x=inter, y=int, color = factor(Gender))) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  scale_color_manual(name = "Gender", labels = c("Girls", "Boys"), values = c("#FF6666", "#6666FF")) + 
+  labs(x="Perceived Expectations for internalizing", y="internalizing") +
+  theme_classic()
+```
+```{r prosocial..}
+ggplot(gender, aes(x=pros, y=pr, color = factor(Gender))) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  scale_color_manual(name = "Gender", labels = c("Girls", "Boys"), values = c("#FF6666", "#6666FF")) + 
+  labs(x="Perceived Expectations for prosocial behaviors", y="prosocial behaviors") +
+  theme_classic()
+```
+```{r stem.}
+ggplot(gender, aes(x=stem, y=st, color = factor(Gender))) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  scale_color_manual(name = "Gender", labels = c("Females", "Males"), values = c("#FF6666", "#6666FF")) + 
+  labs(x="Perceived Expectations for STEM", y="STEM") +
+  theme_classic()
+
+```
+```{r viausalize appe}
+ggplot(gender, aes(x=APPE, y=st, color = factor(Gender))) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  scale_color_manual(name = "Gender", labels = c("Females", "Males"), values = c("#FF6666", "#6666FF")) + 
+  labs(x="Perceived parental efficacy", y="STEM motivations") +
+  theme_classic()
+ggplot(gender, aes(x=APPE, y=ex, color = factor(Gender))) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  scale_color_manual(name = "Gender", labels = c("Females", "Males"), values = c("#FF6666", "#6666FF")) + 
+  labs(x="Perceived parental efficacy", y="externalizing") +
+  theme_classic()
+ggplot(gender, aes(x=APPE, y=int, color = factor(Gender))) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  scale_color_manual(name = "Gender", labels = c("Females", "Males"), values = c("#FF6666", "#6666FF")) + 
+  labs(x="Perceived parental efficacy", y="internalizing") +
+  theme_classic()
+ggplot(gender, aes(x=APPE, y=pr, color = factor(Gender))) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  scale_color_manual(name = "Gender", labels = c("Females", "Males"), values = c("#FF6666", "#6666FF")) + 
+  labs(x="Perceived parental efficacy", y="prosocial behaviors") +
+  theme_classic()
+
+#seems like there were interactions between APPE and gender in intenalizing, externalizing, and prosocial behaviors. 
+#girls internalizing and prosocial behavirs were all negatively impacted by APPE, which is interesting. I wonder why that is the case.
+
+```
+#miss the fact that gender and country are dependent of each other and it was hard to tell that the effects were from gender or country difference without controlling.
+```{r}
+table(gender$Gender,gender$country)
+chisq.test(gender$Gender, gender$country, correct=FALSE)
+```
