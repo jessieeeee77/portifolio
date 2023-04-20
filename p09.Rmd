@@ -21,4 +21,35 @@ table(gender$Gender,gender$country)
 chisq.test(gender$Gender, gender$country, correct=FALSE)
 ```
 #two variables are in fact dependent.
+```{r ancova}
+#try to figure out whether gender covariates with country.
+ancova_model <- lm(ex ~ country*exter + Gender, gender)
+summary(ancova_model)
 
+modex<-lm(ex~country*exter, gender)
+summary(modex)
+```
+```{r stem}
+modstemg<-lm(st~Gender*stem, gender)
+summary(modstemg)
+modstem<-lm(st~Gender*stem + country, gender)
+summary(modstem)
+```
+#seems like gender is no longer significantly interacting with expectations for stem motivations to predict stem motivations after controlling for the country.
+
+```{r pros}
+modpro<-lm(pr~country*pros, gender)
+summary(modpro)
+
+modpr<-lm(pr~country*pros + Gender, gender)
+summary(modpr)
+```
+#expectations for prosocial behaviors still interact with country after controlling for gender.
+
+```{r test int}
+moding<-lm(int~Gender*inter, gender)
+summary(moding)
+modin<-lm(int~Gender*inter + country, gender)
+summary(modin)
+```
+#interaction is not at all significant.
