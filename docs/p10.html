@@ -311,16 +311,8 @@ in SPSS for my first year project, and then did some data analyses for
 my thesis. R did a great job at visualizing the associations and
 interactions that I aimed to investigate in my thesis.</p>
 <pre class="r"><code>#for the poster presentation, make a graph that show the effect
-library(tidyverse)</code></pre>
-<pre><code>## ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.2 ──
-## ✔ ggplot2 3.4.1     ✔ purrr   1.0.1
-## ✔ tibble  3.1.8     ✔ dplyr   1.1.0
-## ✔ tidyr   1.3.0     ✔ stringr 1.5.0
-## ✔ readr   2.1.4     ✔ forcats 1.0.0
-## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
-## ✖ dplyr::filter() masks stats::filter()
-## ✖ dplyr::lag()    masks stats::lag()</code></pre>
-<pre class="r"><code>library(dplyr)
+library(tidyverse)
+library(dplyr)
 library(haven)
 Mother_and_teen_data &lt;- read_sav(&quot;Mother_and_teen_data.sav&quot;)
 #View(Mother_and_teen_data)
@@ -349,10 +341,8 @@ PAPmoni~~PAPsoli</code></pre>
 <pre class="r"><code>CD_2~~CD_3</code></pre>
 <pre><code>## CD_2 ~ ~CD_3</code></pre>
 <p>the model fits.</p>
-<pre class="r"><code>library(lavaan)</code></pre>
-<pre><code>## This is lavaan 0.6-14
-## lavaan is FREE software! Please report any bugs.</code></pre>
-<pre class="r"><code>library(readxl)
+<pre class="r"><code>library(lavaan)
+library(readxl)
 library(dplyr)
 library(haven)
 teendata&lt;- Mother_and_teen_data %&gt;% filter( !is.na(PerPW)) 
@@ -1150,9 +1140,6 @@ fit3</code></pre>
 ## 27  EffectP =~     CD_3  0.000 -0.002  -0.001   -0.002   -0.002
 ## 21    AdolD =~  PAPmoni  0.000  0.000   0.000    0.000    0.000</code></pre>
 <pre class="r"><code>semPaths(fit3, what=&quot;paths&quot;, whatLables=&quot;par&quot;, rotation=2)</code></pre>
-<pre><code>## Warning in qgraph::qgraph(Edgelist, labels = nLab, bidirectional = Bidir, : The
-## following arguments are not documented and likely not arguments of qgraph and
-## thus ignored: whatLables</code></pre>
 <p><img src="p10_files/figure-html/test%20model%203-1.png" width="672" /></p>
 <pre class="r"><code>fitmeasures(fit3)</code></pre>
 <pre><code>##                  npar                  fmin                 chisq 
@@ -1193,11 +1180,11 @@ fit3</code></pre>
 
 compare_means(PSE ~ Race3,  data = mt)</code></pre>
 <pre><code>## # A tibble: 3 × 8
-##   .y.   group1 group2          p    p.adj p.format p.signif method  
-##   &lt;chr&gt; &lt;chr&gt;  &lt;chr&gt;       &lt;dbl&gt;    &lt;dbl&gt; &lt;chr&gt;    &lt;chr&gt;    &lt;chr&gt;   
-## 1 PSE   1      2      0.00000460 0.000014 4.6e-06  ****     Wilcoxon
-## 2 PSE   1      3      0.0884     0.088    0.088    ns       Wilcoxon
-## 3 PSE   2      3      0.0125     0.025    0.013    *        Wilcoxon</code></pre>
+##   .y.   group1 group2          p    p.adj p.format  p.signif method  
+##   &lt;chr&gt; &lt;chr&gt;  &lt;chr&gt;       &lt;dbl&gt;    &lt;dbl&gt; &lt;chr&gt;     &lt;chr&gt;    &lt;chr&gt;   
+## 1 PSE   1      2      0.00000460 0.000014 0.0000046 ****     Wilcoxon
+## 2 PSE   1      3      0.0884     0.088    0.088     ns       Wilcoxon
+## 3 PSE   2      3      0.0125     0.025    0.013     *        Wilcoxon</code></pre>
 <pre class="r"><code>my_comparisons &lt;- list( c(&quot;1&quot;, &quot;2&quot;), c(&quot;1&quot;, &quot;3&quot;), c(&quot;2&quot;, &quot;3&quot;) )
 ggboxplot(mt, x = &quot;Race3&quot;, y = &quot;PSE&quot;,
           color = &quot;Race3&quot;, palette = &quot;jco&quot;)+ 
@@ -1205,9 +1192,6 @@ ggboxplot(mt, x = &quot;Race3&quot;, y = &quot;PSE&quot;,
   scale_x_discrete(labels=c(&#39;White&#39;, &#39;Latina&#39;, &#39;African American&#39;))+
   stat_compare_means(comparisons = my_comparisons)+ 
   stat_compare_means(label.y = 7)    </code></pre>
-<pre><code>## Warning: Removed 1 rows containing non-finite values (`stat_boxplot()`).</code></pre>
-<pre><code>## Warning: Removed 1 rows containing non-finite values (`stat_signif()`).</code></pre>
-<pre><code>## Warning: Removed 1 rows containing non-finite values (`stat_compare_means()`).</code></pre>
 <p><img src="p10_files/figure-html/comparison-1.png" width="672" /></p>
 <pre class="r"><code>#VERY SATISFIED WITH THIS PLOT!</code></pre>
 <pre class="r"><code>test_model1&lt;-&quot;AdolD=~CD_1 +CD_2 +CD_3
@@ -1558,9 +1542,6 @@ fit1</code></pre>
 ## 27  EffectP =~     CD_3  0.000 -0.002  -0.001   -0.002   -0.002
 ## 21    AdolD =~  PAPmoni  0.000  0.000   0.000    0.000    0.000</code></pre>
 <pre class="r"><code>semPaths(fit1, what=&quot;paths&quot;, whatLables=&quot;par&quot;, rotation=2)</code></pre>
-<pre><code>## Warning in qgraph::qgraph(Edgelist, labels = nLab, bidirectional = Bidir, : The
-## following arguments are not documented and likely not arguments of qgraph and
-## thus ignored: whatLables</code></pre>
 <p><img src="p10_files/figure-html/model%20greenish-1.png" width="672" /></p>
 <pre class="r"><code>fitmeasures(fit1)</code></pre>
 <pre><code>##                  npar                  fmin                 chisq 
@@ -1601,24 +1582,8 @@ fit1</code></pre>
 <pre class="r"><code>library(tidyverse)
 library(knitr)
 library(lavaan)
-library(psych)</code></pre>
-<pre><code>## 
-## Attaching package: &#39;psych&#39;</code></pre>
-<pre><code>## The following object is masked from &#39;package:lavaan&#39;:
-## 
-##     cor2cov</code></pre>
-<pre><code>## The following objects are masked from &#39;package:ggplot2&#39;:
-## 
-##     %+%, alpha</code></pre>
-<pre class="r"><code>library(MBESS)</code></pre>
-<pre><code>## 
-## Attaching package: &#39;MBESS&#39;</code></pre>
-<pre><code>## The following object is masked from &#39;package:psych&#39;:
-## 
-##     cor2cov</code></pre>
-<pre><code>## The following object is masked from &#39;package:lavaan&#39;:
-## 
-##     cor2cov</code></pre>
+library(psych)
+library(MBESS)</code></pre>
 <pre class="r"><code>library(tidyverse)
 library(dplyr)
 library(haven)
@@ -1685,8 +1650,6 @@ summary(moddp)</code></pre>
   labs(x=&quot;PSE&quot;, y=&quot;Disobeying Parents&quot;) +
   theme_classic()</code></pre>
 <pre><code>## `geom_smooth()` using formula = &#39;y ~ x&#39;</code></pre>
-<pre><code>## Warning: Removed 52 rows containing non-finite values (`stat_smooth()`).</code></pre>
-<pre><code>## Warning: Removed 52 rows containing missing values (`geom_point()`).</code></pre>
 <p><img src="p10_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
 <pre class="r"><code># try to test whether race/ethnicity moderates the association between PSE and Disobeying parents (CD_1)
 moddp &lt;- lm(CD_1 ~ Race3 * PSE, mt)
@@ -1721,8 +1684,6 @@ summary(moddp)</code></pre>
   labs(x=&quot;PSE&quot;, y=&quot;Disobeying Parents&quot;) +
   theme_classic()</code></pre>
 <pre><code>## `geom_smooth()` using formula = &#39;y ~ x&#39;</code></pre>
-<pre><code>## Warning: Removed 52 rows containing non-finite values (`stat_smooth()`).</code></pre>
-<pre><code>## Warning: Removed 52 rows containing missing values (`geom_point()`).</code></pre>
 <p><img src="p10_files/figure-html/disobeying%20parents-1.png" width="672" /></p>
 <pre class="r"><code>#non-significant as well.</code></pre>
 <pre class="r"><code># try to test whether race/ethnicity moderates the association between PSE and school misconduct (CD_2)
@@ -1758,8 +1719,6 @@ summary(modsm)</code></pre>
   labs(x=&quot;PSE&quot;, y=&quot;School Misconduct&quot;) +
   theme_classic()</code></pre>
 <pre><code>## `geom_smooth()` using formula = &#39;y ~ x&#39;</code></pre>
-<pre><code>## Warning: Removed 52 rows containing non-finite values (`stat_smooth()`).</code></pre>
-<pre><code>## Warning: Removed 52 rows containing missing values (`geom_point()`).</code></pre>
 <p><img src="p10_files/figure-html/school%20misconduct-1.png" width="672" /></p>
 <pre class="r"><code>#non-significant as well.</code></pre>
 <pre class="r"><code># try to test whether race/ethnicity moderates the association between PSE and substance uses (CD_3)
@@ -1795,8 +1754,6 @@ summary(modsu)</code></pre>
   labs(x=&quot;PSE&quot;, y=&quot;Substance Use&quot;) +
   theme_classic()</code></pre>
 <pre><code>## `geom_smooth()` using formula = &#39;y ~ x&#39;</code></pre>
-<pre><code>## Warning: Removed 52 rows containing non-finite values (`stat_smooth()`).</code></pre>
-<pre><code>## Warning: Removed 52 rows containing missing values (`geom_point()`).</code></pre>
 <p><img src="p10_files/figure-html/substance%20use-1.png" width="672" /></p>
 <pre class="r"><code>#Race/ethnicity significantly moderates the association between PSE and substance use. PSE negatively associates with substance use for European Americans, but not for the Latinx.
 #same results as what I got from SPSS.</code></pre>
@@ -1840,33 +1797,6 @@ teen_survey$gen&lt;- rowMeans(teen_survey[,c(&quot;Q32_1&quot;, &quot;Q32_2&quot
 <pre class="r"><code>teen_survey$country &lt;- as.factor(teen_survey$country)
 teen_survey$Gender &lt;- as.factor(teen_survey$Gender)</code></pre>
 <pre class="r"><code>library(lessR)</code></pre>
-<pre><code>## 
-## lessR 4.2.6                         feedback: gerbing@pdx.edu 
-## --------------------------------------------------------------
-## &gt; d &lt;- Read(&quot;&quot;)   Read text, Excel, SPSS, SAS, or R data file
-##   d is default data frame, data= in analysis routines optional
-## 
-## Learn about reading, writing, and manipulating data, graphics,
-## testing means and proportions, regression, factor analysis,
-## customization, and descriptive statistics from pivot tables.
-##   Enter:  browseVignettes(&quot;lessR&quot;)
-## 
-## View changes in this and recent versions of lessR.
-##   Enter: news(package=&quot;lessR&quot;)
-## 
-## **Newly Revised**: Interactive data analysis.
-##   Enter: interact()</code></pre>
-<pre><code>## 
-## Attaching package: &#39;lessR&#39;</code></pre>
-<pre><code>## The following objects are masked from &#39;package:psych&#39;:
-## 
-##     reflect, rescale, scree, skew</code></pre>
-<pre><code>## The following objects are masked from &#39;package:lavaan&#39;:
-## 
-##     cfa, efa</code></pre>
-<pre><code>## The following objects are masked from &#39;package:dplyr&#39;:
-## 
-##     recode, rename</code></pre>
 <pre class="r"><code>ts &lt;- teen_survey %&gt;%
   filter(Gender %in% c(&quot;1&quot;, &quot;2&quot;))</code></pre>
 <p>#try to use multilevel but it was not correct. the coding was correct
@@ -1876,45 +1806,17 @@ library(dplyr)
 library(haven)
 teen_survey&lt;- read_sav(&quot;teen_survey.sav&quot;)
 tss&lt;- read_sav(&quot;tss.sav&quot;)
-library(lme4)</code></pre>
-<pre><code>## Loading required package: Matrix</code></pre>
-<pre><code>## 
-## Attaching package: &#39;Matrix&#39;</code></pre>
-<pre><code>## The following objects are masked from &#39;package:tidyr&#39;:
-## 
-##     expand, pack, unpack</code></pre>
-<pre class="r"><code>library(merTools)</code></pre>
-<pre><code>## Loading required package: arm</code></pre>
-<pre><code>## Loading required package: MASS</code></pre>
-<pre><code>## 
-## Attaching package: &#39;MASS&#39;</code></pre>
-<pre><code>## The following object is masked from &#39;package:dplyr&#39;:
-## 
-##     select</code></pre>
-<pre><code>## 
-## arm (Version 1.13-1, built: 2022-8-25)</code></pre>
-<pre><code>## Working directory is C:/Users/zheqi/OneDrive/Documents/portifolio</code></pre>
-<pre><code>## 
-## Attaching package: &#39;arm&#39;</code></pre>
-<pre><code>## The following object is masked from &#39;package:lessR&#39;:
-## 
-##     rescale</code></pre>
-<pre><code>## The following objects are masked from &#39;package:psych&#39;:
-## 
-##     logit, rescale, sim</code></pre>
-<pre><code>## 
-## Attaching package: &#39;merTools&#39;</code></pre>
-<pre><code>## The following object is masked from &#39;package:psych&#39;:
-## 
-##     ICC</code></pre>
-<pre class="r"><code>library(semPlot)
+library(lme4)
+library(merTools)
+library(semPlot)
 library(lavaan)
 library(readxl)
 library(dplyr)
 library(haven)
 model1&lt;-lmer(ex~1+(1|exter),REML = FALSE, data=tss)
 summary(model1)</code></pre>
-<pre><code>## Linear mixed model fit by maximum likelihood  [&#39;lmerMod&#39;]
+<pre><code>## Linear mixed model fit by maximum likelihood . t-tests use Satterthwaite&#39;s
+##   method [lmerModLmerTest]
 ## Formula: ex ~ 1 + (1 | exter)
 ##    Data: tss
 ## 
@@ -1932,8 +1834,10 @@ summary(model1)</code></pre>
 ## Number of obs: 159, groups:  exter, 50
 ## 
 ## Fixed effects:
-##             Estimate Std. Error t value
-## (Intercept)   2.1347     0.1179   18.11</code></pre>
+##             Estimate Std. Error      df t value            Pr(&gt;|t|)    
+## (Intercept)   2.1347     0.1179 41.3810   18.11 &lt;0.0000000000000002 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 <pre class="r"><code>confint(model1)</code></pre>
 <pre><code>## Computing profile confidence intervals ...</code></pre>
 <pre><code>##                 2.5 %    97.5 %
@@ -1945,7 +1849,8 @@ summary(model1)</code></pre>
 <pre class="r"><code>#add level 1 predictor
 model2&lt;-lmer(ex~1+Gender+(1|exter), REML= FALSE, data= tss)
 summary(model2)</code></pre>
-<pre><code>## Linear mixed model fit by maximum likelihood  [&#39;lmerMod&#39;]
+<pre><code>## Linear mixed model fit by maximum likelihood . t-tests use Satterthwaite&#39;s
+##   method [lmerModLmerTest]
 ## Formula: ex ~ 1 + Gender + (1 | exter)
 ##    Data: tss
 ## 
@@ -1963,9 +1868,11 @@ summary(model2)</code></pre>
 ## Number of obs: 159, groups:  exter, 50
 ## 
 ## Fixed effects:
-##             Estimate Std. Error t value
-## (Intercept)   1.9206     0.2102   9.138
-## Gender        0.1540     0.1272   1.211
+##             Estimate Std. Error       df t value             Pr(&gt;|t|)    
+## (Intercept)   1.9206     0.2102 143.2247   9.138 0.000000000000000562 ***
+## Gender        0.1540     0.1272 142.5789   1.211                0.228    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
 ## Correlation of Fixed Effects:
 ##        (Intr)
@@ -1987,7 +1894,8 @@ summary(model2)</code></pre>
 ## Gender      -0.09814078 0.4090035</code></pre>
 <pre class="r"><code>model3&lt;-lmer(ex~1+Gender+(1|exter)+country, REML= FALSE, data= tss)
 summary(model3)</code></pre>
-<pre><code>## Linear mixed model fit by maximum likelihood  [&#39;lmerMod&#39;]
+<pre><code>## Linear mixed model fit by maximum likelihood . t-tests use Satterthwaite&#39;s
+##   method [lmerModLmerTest]
 ## Formula: ex ~ 1 + Gender + (1 | exter) + country
 ##    Data: tss
 ## 
@@ -2005,10 +1913,12 @@ summary(model3)</code></pre>
 ## Number of obs: 159, groups:  exter, 50
 ## 
 ## Fixed effects:
-##             Estimate Std. Error t value
-## (Intercept)  2.16573    0.25660   8.440
-## Gender       0.08067    0.13498   0.598
-## country     -0.22994    0.13590  -1.692
+##              Estimate Std. Error        df t value           Pr(&gt;|t|)    
+## (Intercept)   2.16573    0.25660 157.25349   8.440 0.0000000000000196 ***
+## Gender        0.08067    0.13498 145.31447   0.598             0.5510    
+## country      -0.22994    0.13590 141.09018  -1.692             0.0929 .  
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
 ## Correlation of Fixed Effects:
 ##         (Intr) Gender
