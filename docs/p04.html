@@ -296,16 +296,8 @@ $(document).ready(function () {
 
 
 <p>test moderation in this piece of portfolio.</p>
-<pre class="r"><code>library(tidyverse)</code></pre>
-<pre><code>## ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.2 ──
-## ✔ ggplot2 3.4.1     ✔ purrr   1.0.1
-## ✔ tibble  3.1.8     ✔ dplyr   1.1.0
-## ✔ tidyr   1.3.0     ✔ stringr 1.5.0
-## ✔ readr   2.1.4     ✔ forcats 1.0.0
-## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
-## ✖ dplyr::filter() masks stats::filter()
-## ✖ dplyr::lag()    masks stats::lag()</code></pre>
-<pre class="r"><code>library(dplyr)
+<pre class="r"><code>library(tidyverse)
+library(dplyr)
 library(haven)
 Mother_and_teen_data &lt;- read_sav(&quot;Mother_and_teen_data.sav&quot;)
 #View(Mother_and_teen_data)
@@ -346,8 +338,10 @@ ggplot(mt, aes(PSE, ad_deviance, color = factor(Race3))) +
   scale_color_manual(name = &quot;Race/Ethnicity&quot;, labels = c(&quot;European Americans&quot;, &quot;Latinx&quot;, &quot;African Americans&quot;), values = c(&quot;#FF6666&quot;, &quot;#6666FF&quot;, &quot;green&quot;)) +
   theme_classic()</code></pre>
 <pre><code>## `geom_smooth()` using formula = &#39;y ~ x&#39;</code></pre>
-<pre><code>## Warning: Removed 52 rows containing non-finite values (`stat_smooth()`).</code></pre>
-<pre><code>## Warning: Removed 52 rows containing missing values (`geom_point()`).</code></pre>
+<pre><code>## Warning: Removed 52 rows containing non-finite values
+## (`stat_smooth()`).</code></pre>
+<pre><code>## Warning: Removed 52 rows containing missing values
+## (`geom_point()`).</code></pre>
 <p><img src="p04_files/figure-html/graph-1.png" width="672" /></p>
 <pre class="r"><code># try to test whether race/ethnicity moderates the association between PSE and Disobeying parents (CD_1)
 moddp &lt;- lm(CD_1 ~ Race3 * PSE, mt)
@@ -382,8 +376,10 @@ summary(moddp)</code></pre>
   labs(x=&quot;PSE&quot;, y=&quot;Disobeying Parents&quot;) +
   theme_classic()</code></pre>
 <pre><code>## `geom_smooth()` using formula = &#39;y ~ x&#39;</code></pre>
-<pre><code>## Warning: Removed 52 rows containing non-finite values (`stat_smooth()`).</code></pre>
-<pre><code>## Warning: Removed 52 rows containing missing values (`geom_point()`).</code></pre>
+<pre><code>## Warning: Removed 52 rows containing non-finite values
+## (`stat_smooth()`).</code></pre>
+<pre><code>## Warning: Removed 52 rows containing missing values
+## (`geom_point()`).</code></pre>
 <p><img src="p04_files/figure-html/disobeying%20parents-1.png" width="672" /></p>
 <pre class="r"><code>#non-significant as well.</code></pre>
 <pre class="r"><code># try to test whether race/ethnicity moderates the association between PSE and school misconduct (CD_2)
@@ -419,8 +415,10 @@ summary(modsm)</code></pre>
   labs(x=&quot;PSE&quot;, y=&quot;School Misconduct&quot;) +
   theme_classic()</code></pre>
 <pre><code>## `geom_smooth()` using formula = &#39;y ~ x&#39;</code></pre>
-<pre><code>## Warning: Removed 52 rows containing non-finite values (`stat_smooth()`).</code></pre>
-<pre><code>## Warning: Removed 52 rows containing missing values (`geom_point()`).</code></pre>
+<pre><code>## Warning: Removed 52 rows containing non-finite values
+## (`stat_smooth()`).</code></pre>
+<pre><code>## Warning: Removed 52 rows containing missing values
+## (`geom_point()`).</code></pre>
 <p><img src="p04_files/figure-html/school%20misconduct-1.png" width="672" /></p>
 <pre class="r"><code>#non-significant as well.</code></pre>
 <pre class="r"><code># try to test whether race/ethnicity moderates the association between PSE and substance uses (CD_3)
@@ -456,8 +454,10 @@ summary(modsu)</code></pre>
   labs(x=&quot;PSE&quot;, y=&quot;Substance Use&quot;) +
   theme_classic()</code></pre>
 <pre><code>## `geom_smooth()` using formula = &#39;y ~ x&#39;</code></pre>
-<pre><code>## Warning: Removed 52 rows containing non-finite values (`stat_smooth()`).</code></pre>
-<pre><code>## Warning: Removed 52 rows containing missing values (`geom_point()`).</code></pre>
+<pre><code>## Warning: Removed 52 rows containing non-finite values
+## (`stat_smooth()`).</code></pre>
+<pre><code>## Warning: Removed 52 rows containing missing values
+## (`geom_point()`).</code></pre>
 <p><img src="p04_files/figure-html/substance%20use-1.png" width="672" /></p>
 <pre class="r"><code>#Race/ethnicity significantly moderates the association between PSE and substance use. PSE negatively associates with substance use for European Americans, but not for the Latinx.
 #same results as what I got from SPSS.</code></pre>
@@ -465,10 +465,8 @@ summary(modsu)</code></pre>
 MOD=~Race3
 DV=~Adolescent_deviance=~CD_1 +CD_2 +CD_3&#39;
 
-library(lavaan)</code></pre>
-<pre><code>## This is lavaan 0.6-14
-## lavaan is FREE software! Please report any bugs.</code></pre>
-<pre class="r"><code>#testfit&lt;-cfa(testmod, data=mt, estimator=&#39;MLM&#39;)
+library(lavaan)
+#testfit&lt;-cfa(testmod, data=mt, estimator=&#39;MLM&#39;)
 
 #unable to conduct in this model because the race/ethnicity factor is a non-numerical factor.</code></pre>
 <pre class="r"><code>#mt$Race12 &lt;- recode(mt$Race3, &quot;c(&#39;1&#39;)=&#39;0&#39;; c(&#39;2&#39;)=&#39;1&#39;&quot;)
@@ -487,9 +485,12 @@ contrasts(mt$Race3) &lt;- contr.treatment(3)
 
 mt$dummy1 &lt;- ifelse(mt$Race3 == &quot;1&quot;, 1, 0)
 mt$dummy2 &lt;- ifelse(mt$Race3 == &quot;2&quot;, 1, 0)
+mt$dummy3 &lt;- ifelse(mt$Race3 == &quot;3&quot;, 1, 0)
+
 ### SEM Model One: ###
+library(lavaan)
 testmod&lt;-&#39;IV=~PSE
-MOD=~dummy1+dummy2
+MOD=~dummy1+dummy2+dummy3
 Adolescent_deviance=~CD_1 +CD_2 +CD_3
 &#39;
 CD_1~~CD_2</code></pre>
@@ -510,7 +511,7 @@ CD_1~~CD_2</code></pre>
 ## 
 ##   Estimator                                         ML
 ##   Optimization method                           NLMINB
-##   Number of model parameters                        26
+##   Number of model parameters                        29
 ##   Number of equality constraints                     6
 ## 
 ##                                                   Used       Total
@@ -529,7 +530,8 @@ CD_1~~CD_2</code></pre>
 ##     PSE                     1.000       NA                  
 ##   MOD =~                                                    
 ##     dummy1                  1.000       NA                  
-##     dummy2                 -0.476       NA                  
+##     dummy2                  1.000       NA                  
+##     dummy3                  1.000       NA                  
 ##   Adolescent_deviance =~                                    
 ##     CD_1                    1.000       NA                  
 ##     CD_2                    1.156       NA                  
@@ -548,6 +550,7 @@ CD_1~~CD_2</code></pre>
 ##    .PSE               4.978       NA                  
 ##    .dummy1            0.282       NA                  
 ##    .dummy2            0.366       NA                  
+##    .dummy3            0.351       NA                  
 ##    .CD_1              2.357       NA                  
 ##    .CD_2              1.734       NA                  
 ##    .CD_3              1.227       NA                  
@@ -560,6 +563,7 @@ CD_1~~CD_2</code></pre>
 ##    .PSE               0.000                           
 ##    .dummy1            0.101       NA                  
 ##    .dummy2            0.116       NA                  
+##    .dummy3            0.114       NA                  
 ##    .CD_1              0.289       NA                  
 ##    .CD_2              0.197       NA                  
 ##    .CD_3              0.123       NA                  

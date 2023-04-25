@@ -13,7 +13,7 @@
 
 <title>Portfolio 8</title>
 
-<script src="site_libs/header-attrs-2.13/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
@@ -141,11 +141,15 @@ $(document).ready(function () {
     href = "index.html";
   var menuAnchor = $('a[href="' + href + '"]');
 
-  // mark it active
-  menuAnchor.tab('show');
-
-  // if it's got a parent navbar menu mark it active as well
-  menuAnchor.closest('li.dropdown').addClass('active');
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
 
   // Navbar adjustments
   var navHeight = $(".navbar").first().height() + 15;
@@ -174,8 +178,8 @@ $(document).ready(function () {
   border-radius: 4px;
 }
 
-.tabset-dropdown > .nav-tabs > li.active:before {
-  content: "";
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
   font-family: 'Glyphicons Halflings';
   display: inline-block;
   padding: 10px;
@@ -183,16 +187,9 @@ $(document).ready(function () {
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-  content: "&#xe258;";
-  border: none;
-}
-
-.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-  content: "";
+  content: "\e258";
   font-family: 'Glyphicons Halflings';
-  display: inline-block;
-  padding: 10px;
-  border-right: 1px solid #ddd;
+  border: none;
 }
 
 .tabset-dropdown > .nav-tabs > li.active {
@@ -298,13 +295,162 @@ $(document).ready(function () {
 </div>
 
 
-<blockquote>
-<p>The projects should be numbered consecutively (i.e., in the order in
-which you began them), and should include for each project a description
-of the goal, the product (computer program, hand graph, computer graph,
-etc.), the data, and some interpretation. Reports must be reproducible
-and of high quality in terms of writing, grammar, presentation, etc.</p>
-</blockquote>
+<pre class="r"><code>library(tidyverse)
+library(dplyr)
+library(haven)
+teen_survey_1&lt;- read_sav(&quot;teen_survey_1.sav&quot;)
+gender&lt;-read_sav(&quot;gender.sav&quot;)
+library(lme4)
+library(merTools)
+library(semPlot)
+library(lavaan)
+library(readxl)
+library(dplyr)
+library(haven)</code></pre>
+<pre class="r"><code>#visualize gender difference
+ggplot(gender, aes(x=exter, y=ex, color = factor(Gender))) +
+  geom_point() +
+  geom_smooth(method = &quot;lm&quot;, se = FALSE) +
+  scale_color_manual(name = &quot;Gender&quot;, labels = c(&quot;Girls&quot;, &quot;Boys&quot;), values = c(&quot;#FF6666&quot;, &quot;#6666FF&quot;)) + 
+  labs(x=&quot;Perceived Expectations for externalizing&quot;, y=&quot;externalizing&quot;) +
+  theme_classic()</code></pre>
+<pre><code>## `geom_smooth()` using formula = &#39;y ~ x&#39;</code></pre>
+<p><img src="p08_files/figure-html/ex-1.png" width="672" /></p>
+<pre class="r"><code>ggplot(gender, aes(x=inter, y=int, color = factor(Gender))) +
+  geom_point() +
+  geom_smooth(method = &quot;lm&quot;, se = FALSE) +
+  scale_color_manual(name = &quot;Gender&quot;, labels = c(&quot;Girls&quot;, &quot;Boys&quot;), values = c(&quot;#FF6666&quot;, &quot;#6666FF&quot;)) + 
+  labs(x=&quot;Perceived Expectations for internalizing&quot;, y=&quot;internalizing&quot;) +
+  theme_classic()</code></pre>
+<pre><code>## `geom_smooth()` using formula = &#39;y ~ x&#39;</code></pre>
+<p><img src="p08_files/figure-html/internalizing-1.png" width="672" /></p>
+<pre class="r"><code>ggplot(gender, aes(x=pros, y=pr, color = factor(Gender))) +
+  geom_point() +
+  geom_smooth(method = &quot;lm&quot;, se = FALSE) +
+  scale_color_manual(name = &quot;Gender&quot;, labels = c(&quot;Girls&quot;, &quot;Boys&quot;), values = c(&quot;#FF6666&quot;, &quot;#6666FF&quot;)) + 
+  labs(x=&quot;Perceived Expectations for prosocial behaviors&quot;, y=&quot;prosocial behaviors&quot;) +
+  theme_classic()</code></pre>
+<pre><code>## `geom_smooth()` using formula = &#39;y ~ x&#39;</code></pre>
+<p><img src="p08_files/figure-html/prosocial-1.png" width="672" /></p>
+<pre class="r"><code>ggplot(gender, aes(x=stem, y=st, color = factor(Gender))) +
+  geom_point() +
+  geom_smooth(method = &quot;lm&quot;, se = FALSE) +
+  scale_color_manual(name = &quot;Gender&quot;, labels = c(&quot;Females&quot;, &quot;Males&quot;), values = c(&quot;#FF6666&quot;, &quot;#6666FF&quot;)) + 
+  labs(x=&quot;Perceived Expectations for STEM&quot;, y=&quot;STEM&quot;) +
+  theme_classic()</code></pre>
+<pre><code>## `geom_smooth()` using formula = &#39;y ~ x&#39;</code></pre>
+<p><img src="p08_files/figure-html/stem-1.png" width="672" /></p>
+<pre class="r"><code>ggplot(gender, aes(x=APPE, y=st, color = factor(Gender))) +
+  geom_point() +
+  geom_smooth(method = &quot;lm&quot;, se = FALSE) +
+  scale_color_manual(name = &quot;Gender&quot;, labels = c(&quot;Females&quot;, &quot;Males&quot;), values = c(&quot;#FF6666&quot;, &quot;#6666FF&quot;)) + 
+  labs(x=&quot;Perceived parental efficacy&quot;, y=&quot;STEM motivations&quot;) +
+  theme_classic()</code></pre>
+<pre><code>## `geom_smooth()` using formula = &#39;y ~ x&#39;</code></pre>
+<p><img src="p08_files/figure-html/viausalize%20appe-1.png" width="672" /></p>
+<pre class="r"><code>ggplot(gender, aes(x=APPE, y=ex, color = factor(Gender))) +
+  geom_point() +
+  geom_smooth(method = &quot;lm&quot;, se = FALSE) +
+  scale_color_manual(name = &quot;Gender&quot;, labels = c(&quot;Females&quot;, &quot;Males&quot;), values = c(&quot;#FF6666&quot;, &quot;#6666FF&quot;)) + 
+  labs(x=&quot;Perceived parental efficacy&quot;, y=&quot;externalizing&quot;) +
+  theme_classic()</code></pre>
+<pre><code>## `geom_smooth()` using formula = &#39;y ~ x&#39;</code></pre>
+<p><img src="p08_files/figure-html/viausalize%20appe-2.png" width="672" /></p>
+<pre class="r"><code>ggplot(gender, aes(x=APPE, y=int, color = factor(Gender))) +
+  geom_point() +
+  geom_smooth(method = &quot;lm&quot;, se = FALSE) +
+  scale_color_manual(name = &quot;Gender&quot;, labels = c(&quot;Females&quot;, &quot;Males&quot;), values = c(&quot;#FF6666&quot;, &quot;#6666FF&quot;)) + 
+  labs(x=&quot;Perceived parental efficacy&quot;, y=&quot;internalizing&quot;) +
+  theme_classic()</code></pre>
+<pre><code>## `geom_smooth()` using formula = &#39;y ~ x&#39;</code></pre>
+<p><img src="p08_files/figure-html/viausalize%20appe-3.png" width="672" /></p>
+<pre class="r"><code>ggplot(gender, aes(x=APPE, y=pr, color = factor(Gender))) +
+  geom_point() +
+  geom_smooth(method = &quot;lm&quot;, se = FALSE) +
+  scale_color_manual(name = &quot;Gender&quot;, labels = c(&quot;Females&quot;, &quot;Males&quot;), values = c(&quot;#FF6666&quot;, &quot;#6666FF&quot;)) + 
+  labs(x=&quot;Perceived parental efficacy&quot;, y=&quot;prosocial behaviors&quot;) +
+  theme_classic()</code></pre>
+<pre><code>## `geom_smooth()` using formula = &#39;y ~ x&#39;</code></pre>
+<p><img src="p08_files/figure-html/viausalize%20appe-4.png" width="672" /></p>
+<pre class="r"><code>#seems like there were interactions between APPE and gender in intenalizing, externalizing, and prosocial behaviors. 
+#girls internalizing and prosocial behavirs were all negatively impacted by APPE, which is interesting. I wonder why that is the case.</code></pre>
+<pre class="r"><code>library(ggpubr)
+
+compare_means(APPE ~ Gender,  data = gender)</code></pre>
+<pre><code>## # A tibble: 1 × 8
+##   .y.   group1 group2      p p.adj p.format p.signif method  
+##   &lt;chr&gt; &lt;chr&gt;  &lt;chr&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;    &lt;chr&gt;    &lt;chr&gt;   
+## 1 APPE  2      1      0.0217 0.022 0.022    *        Wilcoxon</code></pre>
+<pre class="r"><code>my_comparisons &lt;- list( c(&quot;1&quot;, &quot;2&quot;) )
+ggboxplot(gender, x = &quot;Gender&quot;, y = &quot;APPE&quot;,
+          color = &quot;Gender&quot;, palette = &quot;jco&quot;)+ 
+  labs(title= &quot;Gender difference in APPE&quot;, x=&quot;Gender&quot;, y=&quot;APPE&quot;, color=&quot;Gender&quot;) + 
+  scale_x_discrete(labels=c(&#39;Females&#39;, &#39;Males&#39;))+
+  stat_compare_means(comparisons = my_comparisons)+ 
+  stat_compare_means(label.y = 7)   </code></pre>
+<p><img src="p08_files/figure-html/test-1.png" width="672" /></p>
+<pre class="r"><code>#significant gender difference in APPE
+compare_means(APPE ~ country,  data = teen_survey_1)</code></pre>
+<pre><code>## # A tibble: 1 × 8
+##   .y.   group1 group2         p    p.adj p.format p.signif method  
+##   &lt;chr&gt; &lt;chr&gt;  &lt;chr&gt;      &lt;dbl&gt;    &lt;dbl&gt; &lt;chr&gt;    &lt;chr&gt;    &lt;chr&gt;   
+## 1 APPE  0      1      0.0000315 0.000031 0.000031 ****     Wilcoxon</code></pre>
+<pre class="r"><code>my_comparisons &lt;- list( c(&quot;0&quot;, &quot;1&quot;) )
+ggboxplot(gender, x = &quot;country&quot;, y = &quot;APPE&quot;,
+          color = &quot;country&quot;, palette = &quot;jco&quot;)+ 
+  labs(title= &quot;country difference in APPE&quot;, x=&quot;country&quot;, y=&quot;APPE&quot;, color=&quot;country&quot;) + 
+  scale_x_discrete(labels=c(&#39;U.S.&#39;, &#39;China&#39;))+
+  stat_compare_means(comparisons = my_comparisons)+ 
+  stat_compare_means(label.y = 7) </code></pre>
+<p><img src="p08_files/figure-html/test-2.png" width="672" /></p>
+<pre class="r"><code>#significant country difference in APPE</code></pre>
+<pre class="r"><code>compare_means(APPE ~ Gender,  data = gender)</code></pre>
+<pre><code>## # A tibble: 1 × 8
+##   .y.   group1 group2      p p.adj p.format p.signif method  
+##   &lt;chr&gt; &lt;chr&gt;  &lt;chr&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;    &lt;chr&gt;    &lt;chr&gt;   
+## 1 APPE  2      1      0.0217 0.022 0.022    *        Wilcoxon</code></pre>
+<pre class="r"><code>my_comparisons &lt;- list( c(&quot;1&quot;, &quot;2&quot;) )
+ggboxplot(gender, x = &quot;Gender&quot;, y = &quot;APPE&quot;,
+          color = &quot;Gender&quot;, palette = &quot;jco&quot;)+ 
+  labs(title= &quot;Gender difference in APPE&quot;, x=&quot;Gender&quot;, y=&quot;APPE&quot;, color=&quot;Gender&quot;) + 
+  scale_x_discrete(labels=c(&#39;Females&#39;, &#39;Males&#39;))+
+  stat_compare_means(comparisons = my_comparisons)+ 
+  stat_compare_means(label.y = 7)+
+  scale_color_manual(name = &quot;Gender&quot;, labels = c(&quot;Females&quot;, &quot;Males&quot;), values = c(&quot;#FF6666&quot;, &quot;#6666FF&quot;)) </code></pre>
+<pre><code>## Scale for colour is already present.
+## Adding another scale for colour, which will replace
+## the existing scale.</code></pre>
+<p><img src="p08_files/figure-html/fix%20the%20lable-1.png" width="672" /></p>
+<pre class="r"><code>library(tidyverse)
+library(dplyr)
+library(haven)
+Mother_and_teen_data &lt;- read_sav(&quot;Mother_and_teen_data.sav&quot;)
+#delete the NA from Race3
+library(tidyverse)
+library(dplyr)
+library(haven)
+mt &lt;- Mother_and_teen_data %&gt;% 
+ filter(!is.na(Race3)) %&gt;% 
+  mutate(ad_deviance=CD_1 + CD_2 + CD_3)</code></pre>
+<pre class="r"><code>compare_means(PSE ~ Race3,  data = mt)</code></pre>
+<pre><code>## # A tibble: 3 × 8
+##   .y.   group1 group2          p    p.adj p.format  p.signif method  
+##   &lt;chr&gt; &lt;chr&gt;  &lt;chr&gt;       &lt;dbl&gt;    &lt;dbl&gt; &lt;chr&gt;     &lt;chr&gt;    &lt;chr&gt;   
+## 1 PSE   1      2      0.00000460 0.000014 0.0000046 ****     Wilcoxon
+## 2 PSE   1      3      0.0884     0.088    0.088     ns       Wilcoxon
+## 3 PSE   2      3      0.0125     0.025    0.013     *        Wilcoxon</code></pre>
+<pre class="r"><code>my_comparisons &lt;- list( c(&quot;1&quot;, &quot;2&quot;), c(&quot;1&quot;, &quot;3&quot;), c(&quot;2&quot;, &quot;3&quot;) )
+ggboxplot(mt, x = &quot;Race3&quot;, y = &quot;PSE&quot;,
+          color = &quot;Race3&quot;, palette = &quot;jco&quot;)+ 
+  labs(title= &quot;Cultural Difference in PSE&quot;, x=&quot;Race/Ethnicity&quot;, y=&quot;PSE&quot;, color=&quot;Race/Ethnicity&quot;) + 
+  scale_x_discrete(labels=c(&#39;White&#39;, &#39;Latina&#39;, &#39;African American&#39;))+
+  stat_compare_means(comparisons = my_comparisons)+ 
+  stat_compare_means(label.y = 7)+
+  scale_color_manual(name = &quot;Race/Ethnicity&quot;, labels = c(&quot;European American&quot;, &quot;Latinx&quot;, &quot;African American&quot;), values = c(&quot;#FF6666&quot;, &quot;#6666FF&quot;, &quot;#137735&quot;)) </code></pre>
+<pre><code>## Scale for colour is already present.
+## Adding another scale for colour, which will replace
+## the existing scale.</code></pre>
+<p><img src="p08_files/figure-html/fix%20the%20graph%20of%20previous%20graph-1.png" width="672" /></p>
 
 
 

@@ -13,7 +13,7 @@
 
 <title>Portfolio 1</title>
 
-<script src="site_libs/header-attrs-2.19/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
@@ -328,25 +328,35 @@ select(Mother_and_teen_data, PSE, CD_1, CD_2, CD_3, PAPWARM, PAPmoni, PAPsolic, 
 <pre class="r"><code>ggplot(Mother_and_teen_data, aes(x=PSE, y=CD_1, fill = Race3)) +  geom_smooth(size=1, alpha=0.4) +
  geom_point(aes(color=Race3))+
   labs(title=&quot;PSE and adolescents&#39; disobeying parents&quot;, x=&quot;Parental self-efficacy&quot;, y=&quot;Disobeying parents among adolescents&quot; ) </code></pre>
-<pre><code>## Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
+<pre><code>## Warning: Using `size` aesthetic for lines was deprecated in
+## ggplot2 3.4.0.
 ## ℹ Please use `linewidth` instead.</code></pre>
-<pre><code>## `geom_smooth()` using method = &#39;loess&#39; and formula = &#39;y ~ x&#39;</code></pre>
-<pre><code>## Warning: Removed 52 rows containing non-finite values (`stat_smooth()`).</code></pre>
-<pre><code>## Warning: Removed 52 rows containing missing values (`geom_point()`).</code></pre>
+<pre><code>## `geom_smooth()` using method = &#39;loess&#39; and formula =
+## &#39;y ~ x&#39;</code></pre>
+<pre><code>## Warning: Removed 52 rows containing non-finite values
+## (`stat_smooth()`).</code></pre>
+<pre><code>## Warning: Removed 52 rows containing missing values
+## (`geom_point()`).</code></pre>
 <p><img src="p01_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
 <pre class="r"><code>ggplot(Mother_and_teen_data, aes(x=PSE, y=CD_2, fill = Race3)) +  geom_smooth(size=1, alpha=0.4) +
  geom_point(aes(color=Race3))+
   labs(title=&quot;PSE and adolescents&#39; school misconduct&quot;, x=&quot;Parental self-efficacy&quot;, y=&quot;school misconduct among adolescents&quot; ) </code></pre>
-<pre><code>## `geom_smooth()` using method = &#39;loess&#39; and formula = &#39;y ~ x&#39;</code></pre>
-<pre><code>## Warning: Removed 52 rows containing non-finite values (`stat_smooth()`).</code></pre>
-<pre><code>## Warning: Removed 52 rows containing missing values (`geom_point()`).</code></pre>
+<pre><code>## `geom_smooth()` using method = &#39;loess&#39; and formula =
+## &#39;y ~ x&#39;</code></pre>
+<pre><code>## Warning: Removed 52 rows containing non-finite values
+## (`stat_smooth()`).</code></pre>
+<pre><code>## Warning: Removed 52 rows containing missing values
+## (`geom_point()`).</code></pre>
 <p><img src="p01_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
 <pre class="r"><code>ggplot(Mother_and_teen_data, aes(x=PSE, y=CD_3, fill = Race3)) +  geom_smooth(size=1, alpha=0.4) +
  geom_point(aes(color=Race3))+
   labs(title=&quot;PSE and adolescents&#39; substance use&quot;, x=&quot;Parental self-efficacy&quot;, y=&quot;substance use among adolescents&quot; ) </code></pre>
-<pre><code>## `geom_smooth()` using method = &#39;loess&#39; and formula = &#39;y ~ x&#39;</code></pre>
-<pre><code>## Warning: Removed 52 rows containing non-finite values (`stat_smooth()`).</code></pre>
-<pre><code>## Warning: Removed 52 rows containing missing values (`geom_point()`).</code></pre>
+<pre><code>## `geom_smooth()` using method = &#39;loess&#39; and formula =
+## &#39;y ~ x&#39;</code></pre>
+<pre><code>## Warning: Removed 52 rows containing non-finite values
+## (`stat_smooth()`).</code></pre>
+<pre><code>## Warning: Removed 52 rows containing missing values
+## (`geom_point()`).</code></pre>
 <p><img src="p01_files/figure-html/unnamed-chunk-3-1.png" width="672" />
 Trying to combine three type of adolescent deviance</p>
 <pre class="r"><code>Mother_and_teen_data$Race3 &lt;- as.factor(Mother_and_teen_data$Race3) 
@@ -355,9 +365,12 @@ mutate(ad_deviance=CD_1 + CD_2 + CD_3)
 ggplot(Mother_and_teen_data, aes(x=PSE, y=ad_deviance)) +  geom_smooth(size=1, alpha=0.4) +
  geom_point(aes(color=Race3)) +
   labs(title=&quot;PSE and adolescents&#39; substance use&quot;, x=&quot;Parental self-efficacy&quot;, y=&quot;adolescent deviance&quot; ) </code></pre>
-<pre><code>## `geom_smooth()` using method = &#39;loess&#39; and formula = &#39;y ~ x&#39;</code></pre>
-<pre><code>## Warning: Removed 52 rows containing non-finite values (`stat_smooth()`).</code></pre>
-<pre><code>## Warning: Removed 52 rows containing missing values (`geom_point()`).</code></pre>
+<pre><code>## `geom_smooth()` using method = &#39;loess&#39; and formula =
+## &#39;y ~ x&#39;</code></pre>
+<pre><code>## Warning: Removed 52 rows containing non-finite values
+## (`stat_smooth()`).</code></pre>
+<pre><code>## Warning: Removed 52 rows containing missing values
+## (`geom_point()`).</code></pre>
 <p><img src="p01_files/figure-html/unnamed-chunk-4-1.png" width="672" />
 SEM to test the model and its fits</p>
 <pre class="r"><code>model1&lt;-&quot;AdolD=~CD_1 +CD_2 +CD_3
@@ -379,7 +392,7 @@ PAPmoni~~PAPsoli</code></pre>
 <pre><code>## CD_2 ~ ~CD_3</code></pre>
 <p>the model fits.</p>
 <pre class="r"><code>library(lavaan)</code></pre>
-<pre><code>## This is lavaan 0.6-13
+<pre><code>## This is lavaan 0.6-14
 ## lavaan is FREE software! Please report any bugs.</code></pre>
 <pre class="r"><code>library(readxl)
 library(dplyr)
@@ -387,7 +400,7 @@ library(haven)
 teendata&lt;- Mother_and_teen_data %&gt;% filter( !is.na(PerPW)) 
 fit1&lt;- sem(model1, data=Mother_and_teen_data)
 fit1</code></pre>
-<pre><code>## lavaan 0.6.13 ended normally after 36 iterations
+<pre><code>## lavaan 0.6.14 ended normally after 36 iterations
 ## 
 ##   Estimator                                         ML
 ##   Optimization method                           NLMINB
@@ -402,7 +415,7 @@ fit1</code></pre>
 ##   Degrees of freedom                                18
 ##   P-value (Chi-square)                           0.040</code></pre>
 <pre class="r"><code>summary(fit1, standardized=TRUE, ci=TRUE, fit.measures=TRUE)</code></pre>
-<pre><code>## lavaan 0.6.13 ended normally after 36 iterations
+<pre><code>## lavaan 0.6.14 ended normally after 36 iterations
 ## 
 ##   Estimator                                         ML
 ##   Optimization method                           NLMINB
@@ -516,39 +529,32 @@ fit1</code></pre>
 ##     1.000    1.000</code></pre>
 <pre class="r"><code>modindices(fit1, sort.=TRUE)</code></pre>
 <pre><code>##         lhs op      rhs     mi    epc sepc.lv sepc.all sepc.nox
-## 48  PAPmoni ~~  PAPrule 17.031  0.091   0.091    0.414    0.414
-## 50  PAPWARM ~~ PAPsolic  5.606  0.061   0.061    0.719    0.719
-## 51  PAPWARM ~~  PAPrule  5.538 -0.037  -0.037   -0.251   -0.251
+## 45  PAPmoni ~~  PAPrule 17.031  0.091   0.091    0.414    0.414
+## 46  PAPWARM ~~ PAPsolic  5.606  0.061   0.061    0.719    0.719
+## 47  PAPWARM ~~  PAPrule  5.538 -0.037  -0.037   -0.251   -0.251
 ## 30     CD_1 ~~  PAPmoni  3.035  0.047   0.047    0.164    0.164
-## 46  PAPmoni ~~  PAPWARM  2.681 -0.037  -0.037   -0.191   -0.191
-## 52  PAPWARM ~~      PSE  2.309  0.033   0.033    0.151    0.151
+## 43  PAPmoni ~~  PAPWARM  2.681 -0.037  -0.037   -0.191   -0.191
 ## 31     CD_1 ~~  PAPWARM  2.081 -0.027  -0.027   -0.138   -0.138
-## 47  PAPmoni ~~ PAPsolic  1.712 -0.041  -0.041   -0.326   -0.326
-## 43     CD_3 ~~ PAPsolic  1.634  0.015   0.015    0.168    0.168
+## 44  PAPmoni ~~ PAPsolic  1.712 -0.041  -0.041   -0.326   -0.326
+## 41     CD_3 ~~ PAPsolic  1.634  0.015   0.015    0.168    0.168
 ## 22    AdolD =~  PAPWARM  1.603 -0.090  -0.048   -0.108   -0.108
-## 42     CD_3 ~~  PAPWARM  1.255 -0.014  -0.014   -0.106   -0.106
-## 36     CD_2 ~~  PAPmoni  1.088 -0.020  -0.020   -0.212   -0.212
-## 37     CD_2 ~~  PAPWARM  0.985  0.013   0.013    0.206    0.206
-## 55  PAPrule ~~      PSE  0.823 -0.021  -0.021   -0.084   -0.084
-## 44     CD_3 ~~  PAPrule  0.784 -0.012  -0.012   -0.081   -0.081
-## 35     CD_2 ~~     CD_3  0.676  0.037   0.037    0.561    0.561
+## 40     CD_3 ~~  PAPWARM  1.255 -0.014  -0.014   -0.106   -0.106
+## 35     CD_2 ~~  PAPmoni  1.088 -0.020  -0.020   -0.212   -0.212
+## 36     CD_2 ~~  PAPWARM  0.985  0.013   0.013    0.206    0.206
+## 42     CD_3 ~~  PAPrule  0.784 -0.012  -0.012   -0.081   -0.081
+## 34     CD_2 ~~     CD_3  0.676  0.037   0.037    0.561    0.561
 ## 24    AdolD =~  PAPrule  0.627  0.059   0.032    0.070    0.070
 ## 33     CD_1 ~~  PAPrule  0.603  0.016   0.016    0.072    0.072
 ## 32     CD_1 ~~ PAPsolic  0.586 -0.013  -0.013   -0.102   -0.102
 ## 29     CD_1 ~~     CD_3  0.518 -0.024  -0.024   -0.123   -0.123
-## 49  PAPmoni ~~      PSE  0.416 -0.020  -0.020   -0.062   -0.062
 ## 25  EffectP =~     CD_1  0.409 -0.112  -0.038   -0.050   -0.050
-## 53 PAPsolic ~~  PAPrule  0.355 -0.012  -0.012   -0.124   -0.124
+## 48 PAPsolic ~~  PAPrule  0.355 -0.012  -0.012   -0.124   -0.124
 ## 26  EffectP =~     CD_2  0.280  0.083   0.028    0.045    0.045
 ## 23    AdolD =~ PAPsolic  0.279  0.042   0.023    0.050    0.050
-## 34     CD_1 ~~      PSE  0.225 -0.015  -0.015   -0.047   -0.047
-## 40     CD_2 ~~      PSE  0.164  0.012   0.012    0.111    0.111
-## 41     CD_3 ~~  PAPmoni  0.137 -0.007  -0.007   -0.034   -0.034
-## 39     CD_2 ~~  PAPrule  0.125  0.005   0.005    0.071    0.071
-## 54 PAPsolic ~~      PSE  0.049 -0.006  -0.006   -0.039   -0.039
-## 38     CD_2 ~~ PAPsolic  0.002  0.000   0.000    0.012    0.012
+## 39     CD_3 ~~  PAPmoni  0.137 -0.007  -0.007   -0.034   -0.034
+## 38     CD_2 ~~  PAPrule  0.125  0.005   0.005    0.071    0.071
+## 37     CD_2 ~~ PAPsolic  0.002  0.000   0.000    0.012    0.012
 ## 28     CD_1 ~~     CD_2  0.001  0.003   0.003    0.031    0.031
-## 45     CD_3 ~~      PSE  0.001 -0.001  -0.001   -0.003   -0.003
 ## 27  EffectP =~     CD_3  0.000 -0.002  -0.001   -0.002   -0.002
 ## 21    AdolD =~  PAPmoni  0.000  0.000   0.000    0.000    0.000</code></pre>
 <pre class="r"><code>inspect(fit1, what=&quot;std&quot;)</code></pre>

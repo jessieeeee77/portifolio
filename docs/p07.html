@@ -13,7 +13,7 @@
 
 <title>Portfolio 7</title>
 
-<script src="site_libs/header-attrs-2.13/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
@@ -141,11 +141,15 @@ $(document).ready(function () {
     href = "index.html";
   var menuAnchor = $('a[href="' + href + '"]');
 
-  // mark it active
-  menuAnchor.tab('show');
-
-  // if it's got a parent navbar menu mark it active as well
-  menuAnchor.closest('li.dropdown').addClass('active');
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
 
   // Navbar adjustments
   var navHeight = $(".navbar").first().height() + 15;
@@ -174,8 +178,8 @@ $(document).ready(function () {
   border-radius: 4px;
 }
 
-.tabset-dropdown > .nav-tabs > li.active:before {
-  content: "";
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
   font-family: 'Glyphicons Halflings';
   display: inline-block;
   padding: 10px;
@@ -183,16 +187,9 @@ $(document).ready(function () {
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-  content: "&#xe258;";
-  border: none;
-}
-
-.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-  content: "";
+  content: "\e258";
   font-family: 'Glyphicons Halflings';
-  display: inline-block;
-  padding: 10px;
-  border-right: 1px solid #ddd;
+  border: none;
 }
 
 .tabset-dropdown > .nav-tabs > li.active {
@@ -298,13 +295,599 @@ $(document).ready(function () {
 </div>
 
 
-<blockquote>
-<p>The projects should be numbered consecutively (i.e., in the order in
-which you began them), and should include for each project a description
-of the goal, the product (computer program, hand graph, computer graph,
-etc.), the data, and some interpretation. Reports must be reproducible
-and of high quality in terms of writing, grammar, presentation, etc.</p>
-</blockquote>
+<pre class="r"><code>library(tidyverse)
+library(dplyr)
+library(haven)
+teen_survey&lt;- read_sav(&quot;teen_survey.sav&quot;)
+tss&lt;- read_sav(&quot;tss.sav&quot;)</code></pre>
+<pre class="r"><code>library(lme4)
+library(merTools)
+library(semPlot)
+library(lavaan)
+library(readxl)
+library(dplyr)
+library(haven)</code></pre>
+<pre class="r"><code>library(haven)
+teen_survey_1 &lt;- read_sav(&quot;teen_survey_1.sav&quot;)</code></pre>
+<pre class="r"><code>#rerun model with the updated dataset
+model4&lt;-&quot;Parents_expectations=~exter +inter+ pros+ stem
+Adolescents_behaviors=~int+ex+pr+st
+Parents_expectations~Adolescents_behaviors&quot;
+#residual correlations
+exter~~inter</code></pre>
+<pre><code>## exter ~ ~inter</code></pre>
+<pre class="r"><code>pros~~stem</code></pre>
+<pre><code>## pros ~ ~stem</code></pre>
+<pre class="r"><code>int~~ex</code></pre>
+<pre><code>## int ~ ~ex</code></pre>
+<pre class="r"><code>pr~~int</code></pre>
+<pre><code>## pr ~ ~int</code></pre>
+<pre class="r"><code>pr~~ex</code></pre>
+<pre><code>## pr ~ ~ex</code></pre>
+<pre class="r"><code>st~~pr</code></pre>
+<pre><code>## st ~ ~pr</code></pre>
+<pre class="r"><code>st~~ex</code></pre>
+<pre><code>## st ~ ~ex</code></pre>
+<pre class="r"><code>st~~int</code></pre>
+<pre><code>## st ~ ~int</code></pre>
+<pre class="r"><code>library(lavaan)
+library(readxl)
+library(dplyr)
+library(haven)
+
+fit4&lt;- sem(model4, data=teen_survey_1)
+
+summary(fit4, standardized=TRUE, ci=TRUE, fit.measures=TRUE)</code></pre>
+<pre><code>## lavaan 0.6.14 ended normally after 35 iterations
+## 
+##   Estimator                                         ML
+##   Optimization method                           NLMINB
+##   Number of model parameters                        17
+## 
+##                                                   Used       Total
+##   Number of observations                           230         255
+## 
+## Model Test User Model:
+##                                                       
+##   Test statistic                               338.757
+##   Degrees of freedom                                19
+##   P-value (Chi-square)                           0.000
+## 
+## Model Test Baseline Model:
+## 
+##   Test statistic                               739.134
+##   Degrees of freedom                                28
+##   P-value                                        0.000
+## 
+## User Model versus Baseline Model:
+## 
+##   Comparative Fit Index (CFI)                    0.550
+##   Tucker-Lewis Index (TLI)                       0.337
+## 
+## Loglikelihood and Information Criteria:
+## 
+##   Loglikelihood user model (H0)              -2755.501
+##   Loglikelihood unrestricted model (H1)      -2586.123
+##                                                       
+##   Akaike (AIC)                                5545.002
+##   Bayesian (BIC)                              5603.450
+##   Sample-size adjusted Bayesian (SABIC)       5549.570
+## 
+## Root Mean Square Error of Approximation:
+## 
+##   RMSEA                                          0.271
+##   90 Percent confidence interval - lower         0.246
+##   90 Percent confidence interval - upper         0.296
+##   P-value H_0: RMSEA &lt;= 0.050                    0.000
+##   P-value H_0: RMSEA &gt;= 0.080                    1.000
+## 
+## Standardized Root Mean Square Residual:
+## 
+##   SRMR                                           0.150
+## 
+## Parameter Estimates:
+## 
+##   Standard errors                             Standard
+##   Information                                 Expected
+##   Information saturated (h1) model          Structured
+## 
+## Latent Variables:
+##                            Estimate  Std.Err  z-value  P(&gt;|z|) ci.lower
+##   Parents_expectations =~                                              
+##     exter                     1.000                               1.000
+##     inter                     0.870    0.075   11.554    0.000    0.723
+##     pros                      0.083    0.078    1.071    0.284   -0.069
+##     stem                      0.379    0.090    4.202    0.000    0.202
+##   Adolescents_behaviors =~                                             
+##     int                       1.000                               1.000
+##     ex                        1.557    0.187    8.318    0.000    1.190
+##     pr                        0.354    0.174    2.039    0.041    0.014
+##     st                        1.046    0.273    3.836    0.000    0.511
+##  ci.upper   Std.lv  Std.all
+##                            
+##     1.000    1.172    0.853
+##     1.018    1.019    0.716
+##     0.236    0.098    0.075
+##     0.556    0.444    0.290
+##                            
+##     1.000    0.433    0.549
+##     1.924    0.674    0.791
+##     0.694    0.153    0.144
+##     1.580    0.452    0.280
+## 
+## Regressions:
+##                          Estimate  Std.Err  z-value  P(&gt;|z|) ci.lower ci.upper
+##   Parents_expectations ~                                                      
+##     Adlscnts_bhvrs          2.846    0.367    7.759    0.000    2.127    3.565
+##    Std.lv  Std.all
+##                   
+##     1.051    1.051
+## 
+## Variances:
+##                    Estimate  Std.Err  z-value  P(&gt;|z|) ci.lower ci.upper
+##    .exter             0.513    0.090    5.679    0.000    0.336    0.690
+##    .inter             0.986    0.110    9.000    0.000    0.771    1.200
+##    .pros              1.668    0.156   10.715    0.000    1.363    1.973
+##    .stem              2.140    0.202   10.582    0.000    1.743    2.536
+##    .int               0.435    0.043    9.999    0.000    0.350    0.520
+##    .ex                0.272    0.044    6.185    0.000    0.186    0.358
+##    .pr                1.115    0.104   10.699    0.000    0.911    1.319
+##    .st                2.403    0.226   10.616    0.000    1.960    2.847
+##    .Parnts_xpcttns   -0.143    0.129   -1.112    0.266   -0.396    0.109
+##     Adlscnts_bhvrs    0.187    0.044    4.220    0.000    0.100    0.274
+##    Std.lv  Std.all
+##     0.513    0.272
+##     0.986    0.487
+##     1.668    0.994
+##     2.140    0.916
+##     0.435    0.699
+##     0.272    0.375
+##     1.115    0.979
+##     2.403    0.922
+##    -0.104   -0.104
+##     1.000    1.000</code></pre>
+<pre class="r"><code>modindices(fit4, sort.=TRUE)</code></pre>
+<pre><code>##                      lhs op   rhs      mi    epc sepc.lv sepc.all sepc.nox
+## 49                  stem ~~    st 139.302  1.791   1.791    0.790    0.790
+## 37                 inter ~~   int  59.367  0.425   0.425    0.649    0.649
+## 31                 exter ~~   int  35.623 -0.345  -0.345   -0.730   -0.730
+## 44                  pros ~~    pr  26.438  0.463   0.463    0.340    0.340
+## 32                 exter ~~    ex  23.050  0.400   0.400    1.070    1.070
+## 38                 inter ~~    ex  22.435 -0.343  -0.343   -0.663   -0.663
+## 40                 inter ~~    st  11.614 -0.390  -0.390   -0.253   -0.253
+## 46                  stem ~~   int  10.199 -0.212  -0.212   -0.220   -0.220
+## 36                 inter ~~  stem   8.817 -0.313  -0.313   -0.215   -0.215
+## 41                  pros ~~  stem   6.703  0.325   0.325    0.172    0.172
+## 24 Adolescents_behaviors =~ exter   5.330 14.203   6.144    4.474    4.474
+## 52                   int ~~    st   4.315 -0.146  -0.146   -0.142   -0.142
+## 51                   int ~~    pr   3.741  0.091   0.091    0.131    0.131
+## 29                 exter ~~  pros   3.389 -0.143  -0.143   -0.155   -0.155
+## 33                 exter ~~    pr   2.679 -0.109  -0.109   -0.144   -0.144
+## 45                  pros ~~    st   2.278  0.200   0.200    0.100    0.100
+## 35                 inter ~~  pros   2.270  0.138   0.138    0.108    0.108
+## 30                 exter ~~  stem   1.884  0.126   0.126    0.120    0.120
+## 39                 inter ~~    pr   1.725  0.100   0.100    0.096    0.096
+## 21  Parents_expectations =~    ex   1.203  2.012   2.358    2.767    2.767
+## 48                  stem ~~    pr   1.108  0.108   0.108    0.070    0.070
+## 25 Adolescents_behaviors =~ inter   1.051 -4.168  -1.803   -1.267   -1.267
+## 28                 exter ~~ inter   0.748  0.173   0.173    0.244    0.244
+## 53                    ex ~~    pr   0.729 -0.035  -0.035   -0.063   -0.063
+## 23  Parents_expectations =~    st   0.648 -0.610  -0.714   -0.442   -0.442
+## 27 Adolescents_behaviors =~  stem   0.495 -1.255  -0.543   -0.355   -0.355
+## 42                  pros ~~   int   0.425 -0.038  -0.038   -0.044   -0.044
+## 50                   int ~~    ex   0.412  0.034   0.034    0.098    0.098
+## 47                  stem ~~    ex   0.402 -0.037  -0.037   -0.049   -0.049
+## 55                    pr ~~    st   0.342 -0.064  -0.064   -0.039   -0.039
+## 43                  pros ~~    ex   0.295 -0.027  -0.027   -0.041   -0.041
+## 54                    ex ~~    st   0.181  0.027   0.027    0.034    0.034
+## 34                 exter ~~    st   0.089  0.030   0.030    0.027    0.027
+## 26 Adolescents_behaviors =~  pros   0.014 -0.179  -0.077   -0.060   -0.060
+## 20  Parents_expectations =~   int   0.009  0.066   0.078    0.098    0.098
+## 22  Parents_expectations =~    pr   0.004  0.032   0.037    0.035    0.035</code></pre>
+<pre class="r"><code>inspect(fit4, what=&quot;std&quot;)</code></pre>
+<pre><code>## $lambda
+##       Prnts_ Adlsc_
+## exter  0.853  0.000
+## inter  0.716  0.000
+## pros   0.075  0.000
+## stem   0.290  0.000
+## int    0.000  0.549
+## ex     0.000  0.791
+## pr     0.000  0.144
+## st     0.000  0.280
+## 
+## $theta
+##       exter inter  pros  stem   int    ex    pr    st
+## exter 0.272                                          
+## inter 0.000 0.487                                    
+## pros  0.000 0.000 0.994                              
+## stem  0.000 0.000 0.000 0.916                        
+## int   0.000 0.000 0.000 0.000 0.699                  
+## ex    0.000 0.000 0.000 0.000 0.000 0.375            
+## pr    0.000 0.000 0.000 0.000 0.000 0.000 0.979      
+## st    0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.922
+## 
+## $psi
+##                       Prnts_ Adlsc_
+## Parents_expectations  -0.104       
+## Adolescents_behaviors  0.000  1.000
+## 
+## $beta
+##                       Prnts_ Adlsc_
+## Parents_expectations       0  1.051
+## Adolescents_behaviors      0  0.000</code></pre>
+<pre class="r"><code>fitmeasures(fit4)</code></pre>
+<pre><code>##                  npar                  fmin                 chisq 
+##                17.000                 0.736               338.757 
+##                    df                pvalue        baseline.chisq 
+##                19.000                 0.000               739.134 
+##           baseline.df       baseline.pvalue                   cfi 
+##                28.000                 0.000                 0.550 
+##                   tli                  nnfi                   rfi 
+##                 0.337                 0.337                 0.325 
+##                   nfi                  pnfi                   ifi 
+##                 0.542                 0.368                 0.556 
+##                   rni                  logl     unrestricted.logl 
+##                 0.550             -2755.501             -2586.123 
+##                   aic                   bic                ntotal 
+##              5545.002              5603.450               230.000 
+##                  bic2                 rmsea        rmsea.ci.lower 
+##              5549.570                 0.271                 0.246 
+##        rmsea.ci.upper        rmsea.ci.level          rmsea.pvalue 
+##                 0.296                 0.900                 0.000 
+##        rmsea.close.h0 rmsea.notclose.pvalue     rmsea.notclose.h0 
+##                 0.050                 1.000                 0.080 
+##                   rmr            rmr_nomean                  srmr 
+##                 0.322                 0.322                 0.150 
+##          srmr_bentler   srmr_bentler_nomean                  crmr 
+##                 0.150                 0.150                 0.170 
+##           crmr_nomean            srmr_mplus     srmr_mplus_nomean 
+##                 0.170                 0.150                 0.150 
+##                 cn_05                 cn_01                   gfi 
+##                21.466                25.572                 0.774 
+##                  agfi                  pgfi                   mfi 
+##                 0.572                 0.409                 0.499 
+##                  ecvi 
+##                 1.621</code></pre>
+<pre class="r"><code>parameterestimates(fit4, standardized = TRUE)</code></pre>
+<pre><code>##                      lhs op                   rhs    est    se      z pvalue
+## 1   Parents_expectations =~                 exter  1.000 0.000     NA     NA
+## 2   Parents_expectations =~                 inter  0.870 0.075 11.554  0.000
+## 3   Parents_expectations =~                  pros  0.083 0.078  1.071  0.284
+## 4   Parents_expectations =~                  stem  0.379 0.090  4.202  0.000
+## 5  Adolescents_behaviors =~                   int  1.000 0.000     NA     NA
+## 6  Adolescents_behaviors =~                    ex  1.557 0.187  8.318  0.000
+## 7  Adolescents_behaviors =~                    pr  0.354 0.174  2.039  0.041
+## 8  Adolescents_behaviors =~                    st  1.046 0.273  3.836  0.000
+## 9   Parents_expectations  ~ Adolescents_behaviors  2.846 0.367  7.759  0.000
+## 10                 exter ~~                 exter  0.513 0.090  5.679  0.000
+## 11                 inter ~~                 inter  0.986 0.110  9.000  0.000
+## 12                  pros ~~                  pros  1.668 0.156 10.715  0.000
+## 13                  stem ~~                  stem  2.140 0.202 10.582  0.000
+## 14                   int ~~                   int  0.435 0.043  9.999  0.000
+## 15                    ex ~~                    ex  0.272 0.044  6.185  0.000
+## 16                    pr ~~                    pr  1.115 0.104 10.699  0.000
+## 17                    st ~~                    st  2.403 0.226 10.616  0.000
+## 18  Parents_expectations ~~  Parents_expectations -0.143 0.129 -1.112  0.266
+## 19 Adolescents_behaviors ~~ Adolescents_behaviors  0.187 0.044  4.220  0.000
+##    ci.lower ci.upper std.lv std.all std.nox
+## 1     1.000    1.000  1.172   0.853   0.853
+## 2     0.723    1.018  1.019   0.716   0.716
+## 3    -0.069    0.236  0.098   0.075   0.075
+## 4     0.202    0.556  0.444   0.290   0.290
+## 5     1.000    1.000  0.433   0.549   0.549
+## 6     1.190    1.924  0.674   0.791   0.791
+## 7     0.014    0.694  0.153   0.144   0.144
+## 8     0.511    1.580  0.452   0.280   0.280
+## 9     2.127    3.565  1.051   1.051   1.051
+## 10    0.336    0.690  0.513   0.272   0.272
+## 11    0.771    1.200  0.986   0.487   0.487
+## 12    1.363    1.973  1.668   0.994   0.994
+## 13    1.743    2.536  2.140   0.916   0.916
+## 14    0.350    0.520  0.435   0.699   0.699
+## 15    0.186    0.358  0.272   0.375   0.375
+## 16    0.911    1.319  1.115   0.979   0.979
+## 17    1.960    2.847  2.403   0.922   0.922
+## 18   -0.396    0.109 -0.104  -0.104  -0.104
+## 19    0.100    0.274  1.000   1.000   1.000</code></pre>
+<pre class="r"><code>fitted(fit4)</code></pre>
+<pre><code>## $cov
+##       exter inter  pros  stem   int    ex    pr    st
+## exter 1.885                                          
+## inter 1.194 2.025                                    
+## pros  0.114 0.100 1.677                              
+## stem  0.520 0.453 0.043 2.337                        
+## int   0.533 0.463 0.044 0.202 0.622                  
+## ex    0.829 0.722 0.069 0.314 0.291 0.726            
+## pr    0.189 0.164 0.016 0.071 0.066 0.103 1.139      
+## st    0.557 0.485 0.046 0.211 0.196 0.305 0.069 2.608</code></pre>
+<pre class="r"><code>residuals(fit4)</code></pre>
+<pre><code>## $type
+## [1] &quot;raw&quot;
+## 
+## $cov
+##        exter  inter   pros   stem    int     ex     pr     st
+## exter  0.000                                                 
+## inter  0.009  0.000                                          
+## pros  -0.088  0.117  0.000                                   
+## stem   0.072 -0.259  0.320  0.000                            
+## int   -0.099  0.259 -0.036 -0.198  0.000                     
+## ex     0.037 -0.077 -0.022 -0.033  0.006  0.000              
+## pr    -0.060  0.083  0.461  0.105  0.086 -0.028  0.000       
+## st     0.005 -0.318  0.196  1.731 -0.135  0.019 -0.063  0.000</code></pre>
+<pre class="r"><code>fitmeasures(fit4)</code></pre>
+<pre><code>##                  npar                  fmin                 chisq 
+##                17.000                 0.736               338.757 
+##                    df                pvalue        baseline.chisq 
+##                19.000                 0.000               739.134 
+##           baseline.df       baseline.pvalue                   cfi 
+##                28.000                 0.000                 0.550 
+##                   tli                  nnfi                   rfi 
+##                 0.337                 0.337                 0.325 
+##                   nfi                  pnfi                   ifi 
+##                 0.542                 0.368                 0.556 
+##                   rni                  logl     unrestricted.logl 
+##                 0.550             -2755.501             -2586.123 
+##                   aic                   bic                ntotal 
+##              5545.002              5603.450               230.000 
+##                  bic2                 rmsea        rmsea.ci.lower 
+##              5549.570                 0.271                 0.246 
+##        rmsea.ci.upper        rmsea.ci.level          rmsea.pvalue 
+##                 0.296                 0.900                 0.000 
+##        rmsea.close.h0 rmsea.notclose.pvalue     rmsea.notclose.h0 
+##                 0.050                 1.000                 0.080 
+##                   rmr            rmr_nomean                  srmr 
+##                 0.322                 0.322                 0.150 
+##          srmr_bentler   srmr_bentler_nomean                  crmr 
+##                 0.150                 0.150                 0.170 
+##           crmr_nomean            srmr_mplus     srmr_mplus_nomean 
+##                 0.170                 0.150                 0.150 
+##                 cn_05                 cn_01                   gfi 
+##                21.466                25.572                 0.774 
+##                  agfi                  pgfi                   mfi 
+##                 0.572                 0.409                 0.499 
+##                  ecvi 
+##                 1.621</code></pre>
+<pre class="r"><code>modificationindices(fit4, sort. = TRUE)</code></pre>
+<pre><code>##                      lhs op   rhs      mi    epc sepc.lv sepc.all sepc.nox
+## 49                  stem ~~    st 139.302  1.791   1.791    0.790    0.790
+## 37                 inter ~~   int  59.367  0.425   0.425    0.649    0.649
+## 31                 exter ~~   int  35.623 -0.345  -0.345   -0.730   -0.730
+## 44                  pros ~~    pr  26.438  0.463   0.463    0.340    0.340
+## 32                 exter ~~    ex  23.050  0.400   0.400    1.070    1.070
+## 38                 inter ~~    ex  22.435 -0.343  -0.343   -0.663   -0.663
+## 40                 inter ~~    st  11.614 -0.390  -0.390   -0.253   -0.253
+## 46                  stem ~~   int  10.199 -0.212  -0.212   -0.220   -0.220
+## 36                 inter ~~  stem   8.817 -0.313  -0.313   -0.215   -0.215
+## 41                  pros ~~  stem   6.703  0.325   0.325    0.172    0.172
+## 24 Adolescents_behaviors =~ exter   5.330 14.203   6.144    4.474    4.474
+## 52                   int ~~    st   4.315 -0.146  -0.146   -0.142   -0.142
+## 51                   int ~~    pr   3.741  0.091   0.091    0.131    0.131
+## 29                 exter ~~  pros   3.389 -0.143  -0.143   -0.155   -0.155
+## 33                 exter ~~    pr   2.679 -0.109  -0.109   -0.144   -0.144
+## 45                  pros ~~    st   2.278  0.200   0.200    0.100    0.100
+## 35                 inter ~~  pros   2.270  0.138   0.138    0.108    0.108
+## 30                 exter ~~  stem   1.884  0.126   0.126    0.120    0.120
+## 39                 inter ~~    pr   1.725  0.100   0.100    0.096    0.096
+## 21  Parents_expectations =~    ex   1.203  2.012   2.358    2.767    2.767
+## 48                  stem ~~    pr   1.108  0.108   0.108    0.070    0.070
+## 25 Adolescents_behaviors =~ inter   1.051 -4.168  -1.803   -1.267   -1.267
+## 28                 exter ~~ inter   0.748  0.173   0.173    0.244    0.244
+## 53                    ex ~~    pr   0.729 -0.035  -0.035   -0.063   -0.063
+## 23  Parents_expectations =~    st   0.648 -0.610  -0.714   -0.442   -0.442
+## 27 Adolescents_behaviors =~  stem   0.495 -1.255  -0.543   -0.355   -0.355
+## 42                  pros ~~   int   0.425 -0.038  -0.038   -0.044   -0.044
+## 50                   int ~~    ex   0.412  0.034   0.034    0.098    0.098
+## 47                  stem ~~    ex   0.402 -0.037  -0.037   -0.049   -0.049
+## 55                    pr ~~    st   0.342 -0.064  -0.064   -0.039   -0.039
+## 43                  pros ~~    ex   0.295 -0.027  -0.027   -0.041   -0.041
+## 54                    ex ~~    st   0.181  0.027   0.027    0.034    0.034
+## 34                 exter ~~    st   0.089  0.030   0.030    0.027    0.027
+## 26 Adolescents_behaviors =~  pros   0.014 -0.179  -0.077   -0.060   -0.060
+## 20  Parents_expectations =~   int   0.009  0.066   0.078    0.098    0.098
+## 22  Parents_expectations =~    pr   0.004  0.032   0.037    0.035    0.035</code></pre>
+<pre class="r"><code>semPaths(fit4, what=&quot;paths&quot;, whatLables=&quot;par&quot;, rotation=2)</code></pre>
+<p><img src="p07_files/figure-html/1-1.png" width="672" /></p>
+<pre class="r"><code>fitmeasures(fit4)</code></pre>
+<pre><code>##                  npar                  fmin                 chisq 
+##                17.000                 0.736               338.757 
+##                    df                pvalue        baseline.chisq 
+##                19.000                 0.000               739.134 
+##           baseline.df       baseline.pvalue                   cfi 
+##                28.000                 0.000                 0.550 
+##                   tli                  nnfi                   rfi 
+##                 0.337                 0.337                 0.325 
+##                   nfi                  pnfi                   ifi 
+##                 0.542                 0.368                 0.556 
+##                   rni                  logl     unrestricted.logl 
+##                 0.550             -2755.501             -2586.123 
+##                   aic                   bic                ntotal 
+##              5545.002              5603.450               230.000 
+##                  bic2                 rmsea        rmsea.ci.lower 
+##              5549.570                 0.271                 0.246 
+##        rmsea.ci.upper        rmsea.ci.level          rmsea.pvalue 
+##                 0.296                 0.900                 0.000 
+##        rmsea.close.h0 rmsea.notclose.pvalue     rmsea.notclose.h0 
+##                 0.050                 1.000                 0.080 
+##                   rmr            rmr_nomean                  srmr 
+##                 0.322                 0.322                 0.150 
+##          srmr_bentler   srmr_bentler_nomean                  crmr 
+##                 0.150                 0.150                 0.170 
+##           crmr_nomean            srmr_mplus     srmr_mplus_nomean 
+##                 0.170                 0.150                 0.150 
+##                 cn_05                 cn_01                   gfi 
+##                21.466                25.572                 0.774 
+##                  agfi                  pgfi                   mfi 
+##                 0.572                 0.409                 0.499 
+##                  ecvi 
+##                 1.621</code></pre>
+<pre class="r"><code>#still not a good fit</code></pre>
+<p>Loading Required Packages Now, let’s load the required packages.</p>
+<pre class="r"><code>library(tidyverse)
+library(lme4)
+library(lmerTest)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;lmerTest&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:lme4&#39;:
+## 
+##     lmer</code></pre>
+<pre><code>## The following object is masked from &#39;package:stats&#39;:
+## 
+##     step</code></pre>
+<p>Loading the Dataset For this lab, we will use a built-in dataset from
+the lme4 package called sleepstudy. This dataset contains information
+about the reaction times of subjects who participated in a sleep
+deprivation study.</p>
+<pre class="r"><code>data(&quot;sleepstudy&quot;)
+head(sleepstudy)</code></pre>
+<pre><code>##   Reaction Days Subject
+## 1 249.5600    0     308
+## 2 258.7047    1     308
+## 3 250.8006    2     308
+## 4 321.4398    3     308
+## 5 356.8519    4     308
+## 6 414.6901    5     308</code></pre>
+<p>Data Exploration Let’s explore the structure of the dataset.</p>
+<pre class="r"><code>glimpse(sleepstudy)</code></pre>
+<pre><code>## Rows: 180
+## Columns: 3
+## $ Reaction &lt;dbl&gt; 249.5600, 258.7047, 250.8006, 321.4398, 356.8519, 414.6901, 3…
+## $ Days     &lt;dbl&gt; 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0…
+## $ Subject  &lt;fct&gt; 308, 308, 308, 308, 308, 308, 308, 308, 308, 308, 309, 309, 3…</code></pre>
+<p>Visualizing the Data Before building the multilevel model, it’s
+helpful to visualize the data. Let’s plot the reaction times against the
+days of sleep deprivation, with each subject represented by a different
+color.</p>
+<pre class="r"><code>sleepstudy %&gt;%
+  ggplot(aes(x = Days, y = Reaction, group = Subject, color = factor(Subject))) +
+  geom_line() +
+  labs(title = &quot;Reaction Time vs Days of Sleep Deprivation&quot;,
+       x = &quot;Days of Sleep Deprivation&quot;,
+       y = &quot;Reaction Time (ms)&quot;,
+       color = &quot;Subject&quot;)</code></pre>
+<p><img src="p07_files/figure-html/m3-1.png" width="672" /></p>
+<p>Building the Multilevel Model Now we will build a multilevel model
+using the lmer() function from the lme4 package. The model will predict
+the reaction time based on the number of days of sleep deprivation,
+while accounting for the random effects of subjects.</p>
+<pre class="r"><code>multilevel_model &lt;- lmer(Reaction ~ Days + (1|Subject), data = sleepstudy)
+summary(multilevel_model)</code></pre>
+<pre><code>## Linear mixed model fit by REML. t-tests use Satterthwaite&#39;s method [
+## lmerModLmerTest]
+## Formula: Reaction ~ Days + (1 | Subject)
+##    Data: sleepstudy
+## 
+## REML criterion at convergence: 1786.5
+## 
+## Scaled residuals: 
+##     Min      1Q  Median      3Q     Max 
+## -3.2257 -0.5529  0.0109  0.5188  4.2506 
+## 
+## Random effects:
+##  Groups   Name        Variance Std.Dev.
+##  Subject  (Intercept) 1378.2   37.12   
+##  Residual              960.5   30.99   
+## Number of obs: 180, groups:  Subject, 18
+## 
+## Fixed effects:
+##             Estimate Std. Error       df t value            Pr(&gt;|t|)    
+## (Intercept) 251.4051     9.7467  22.8102   25.79 &lt;0.0000000000000002 ***
+## Days         10.4673     0.8042 161.0000   13.02 &lt;0.0000000000000002 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Correlation of Fixed Effects:
+##      (Intr)
+## Days -0.371</code></pre>
+<p>Model Interpretation The output provides information on the fixed
+effects, random effects, and model fit. We can interpret the fixed
+effects coefficients and significance levels to understand the
+relationship between reaction time and days of sleep deprivation.</p>
+<p>Model Diagnostics We can perform model diagnostics using the plot()
+function, which will generate residual plots.</p>
+<pre class="r"><code>plot(multilevel_model)</code></pre>
+<p><img src="p07_files/figure-html/4-1.png" width="672" /></p>
+<p>Conclusion In this lab, you learned how to perform multilevel
+modeling using R and the Tidyverse package. You explored a real dataset,
+visualized the data, built a multilevel model, and interpreted the
+results.</p>
+<pre class="r"><code>#does not feel like my data can conduct a multilevel modeling test.
+teen_survey_1$country &lt;- as.factor(teen_survey_1$country)</code></pre>
+<pre class="r"><code>modex &lt;- lm(ex ~ exter * country, teen_survey_1)
+summary(modex)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = ex ~ exter * country, data = teen_survey_1)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -2.40508 -0.27304 -0.06482  0.28909  1.91533 
+## 
+## Coefficients:
+##                Estimate Std. Error t value             Pr(&gt;|t|)    
+## (Intercept)     0.82111    0.16805   4.886           0.00000187 ***
+## exter           0.46511    0.04275  10.879 &lt; 0.0000000000000002 ***
+## country1       -0.06886    0.19507  -0.353                0.724    
+## exter:country1 -0.04424    0.05766  -0.767                0.444    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.5595 on 242 degrees of freedom
+##   (9 observations deleted due to missingness)
+## Multiple R-squared:  0.5737, Adjusted R-squared:  0.5684 
+## F-statistic: 108.5 on 3 and 242 DF,  p-value: &lt; 0.00000000000000022</code></pre>
+<pre class="r"><code>#ggplot(teen_survey_1, aes(ex ~ exter * country, color = factor(country))) +
+#  geom_point() +
+#  geom_smooth(method = &quot;lm&quot;, se = FALSE) +
+#  scale_color_manual(name = &quot;Country&quot;, labels = c(&quot;Americans&quot;, &quot;Chineses&quot;), values = c(&quot;#FF6666&quot;, &quot;#6666FF&quot;)) + 
+#  labs(x=&quot;Perceived Expectations for Externalizing&quot;, y=&quot;Externalizing&quot;) +
+#  theme_classic()
+
+# warning showed: Did you mistype the name of a data column or forget to add `after_stat()`? --don&#39;t know how to solve it.</code></pre>
+<pre class="r"><code>teen_survey_1 %&gt;% group_by(country) %&gt;%
+summarize(n = n()) %&gt;%
+ggplot(aes(n)) +
+geom_histogram(fill = &quot;rosybrown2&quot;, color = &quot;black&quot;, bins = 10) +
+scale_x_log10() +
+ggtitle(&quot;total number of participants in two countries&quot;)</code></pre>
+<p><img src="p07_files/figure-html/test-1.png" width="672" /></p>
+<pre class="r"><code>#okay, kind of weird but the &quot;country can use as a factor)</code></pre>
+<pre class="r"><code>ggplot(teen_survey_1, aes(x=exter, y=ex, color = factor(country))) +
+  geom_point() +
+  geom_smooth(method = &quot;lm&quot;, se = FALSE) +
+  scale_color_manual(name = &quot;Country&quot;, labels = c(&quot;Americans&quot;, &quot;Chineses&quot;), values = c(&quot;#FF6666&quot;, &quot;#6666FF&quot;)) + 
+  labs(x=&quot;Perceived Expectations for Externalizing&quot;, y=&quot;Externalizing&quot;) +
+  theme_classic()</code></pre>
+<pre><code>## `geom_smooth()` using formula = &#39;y ~ x&#39;</code></pre>
+<p><img src="p07_files/figure-html/test%202-1.png" width="672" /></p>
+<pre class="r"><code>#yeah pretty stupid mistake...</code></pre>
+<pre class="r"><code>ggplot(teen_survey_1, aes(x=inter, y=int, color = factor(country))) +
+  geom_point() +
+  geom_smooth(method = &quot;lm&quot;, se = FALSE) +
+  scale_color_manual(name = &quot;Country&quot;, labels = c(&quot;Americans&quot;, &quot;Chineses&quot;), values = c(&quot;#FF6666&quot;, &quot;#6666FF&quot;)) + 
+  labs(x=&quot;Perceived Expectations for Internalizing&quot;, y=&quot;Internalizing&quot;) +
+  theme_classic()</code></pre>
+<pre><code>## `geom_smooth()` using formula = &#39;y ~ x&#39;</code></pre>
+<p><img src="p07_files/figure-html/inter-1.png" width="672" /></p>
+<pre class="r"><code>#looks like the perceived parents&#39; expectations for internalizing predict actual internalizing for Chinese more compared to U.S. adolescents.</code></pre>
+<pre class="r"><code>ggplot(teen_survey_1, aes(x=stem, y=st, color = factor(country))) +
+  geom_point() +
+  geom_smooth(method = &quot;lm&quot;, se = FALSE) +
+  scale_color_manual(name = &quot;Country&quot;, labels = c(&quot;Americans&quot;, &quot;Chineses&quot;), values = c(&quot;#FF6666&quot;, &quot;#6666FF&quot;)) + 
+  labs(x=&quot;Perceived Expectations for STEM&quot;, y=&quot;STEM&quot;) +
+  theme_classic()</code></pre>
+<pre><code>## `geom_smooth()` using formula = &#39;y ~ x&#39;</code></pre>
+<p><img src="p07_files/figure-html/stem-1.png" width="672" /></p>
+<pre class="r"><code>#looks like the perceived parents&#39; expectations for STEM motivations predict actual STEM motivations for Chinese more compared to U.S. adolescents.
+#also, the Chinese reported lower perceived expectations for STEM motivations and adolescents&#39; actual STEM motivations.</code></pre>
+<pre class="r"><code>ggplot(teen_survey_1, aes(x=pros, y=pr, color = factor(country))) +
+  geom_point() +
+  geom_smooth(method = &quot;lm&quot;, se = FALSE) +
+  scale_color_manual(name = &quot;Country&quot;, labels = c(&quot;Americans&quot;, &quot;Chineses&quot;), values = c(&quot;#FF6666&quot;, &quot;#6666FF&quot;)) + 
+  labs(x=&quot;Perceived Expectations for prosocial behaviors&quot;, y=&quot;Prosocial behaviors&quot;) +
+  theme_classic()</code></pre>
+<pre><code>## `geom_smooth()` using formula = &#39;y ~ x&#39;</code></pre>
+<p><img src="p07_files/figure-html/prosocial-1.png" width="672" /></p>
 
 
 
