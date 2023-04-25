@@ -295,16 +295,46 @@ $(document).ready(function () {
 </div>
 
 
-<pre class="r"><code>library(tidyverse)
-library(dplyr)
+<pre class="r"><code>library(tidyverse)</code></pre>
+<pre><code>## ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.2 ──
+## ✔ ggplot2 3.4.1     ✔ purrr   1.0.1
+## ✔ tibble  3.1.8     ✔ dplyr   1.1.0
+## ✔ tidyr   1.3.0     ✔ stringr 1.5.0
+## ✔ readr   2.1.4     ✔ forcats 1.0.0
+## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+## ✖ dplyr::filter() masks stats::filter()
+## ✖ dplyr::lag()    masks stats::lag()</code></pre>
+<pre class="r"><code>library(dplyr)
 library(haven)
 teen_survey_1&lt;- read_sav(&quot;teen_survey_1.sav&quot;)
 gender&lt;-read_sav(&quot;gender.sav&quot;)
-library(lme4)
-library(merTools)
-library(semPlot)
-library(lavaan)
-library(readxl)
+library(lme4)</code></pre>
+<pre><code>## Loading required package: Matrix
+## 
+## Attaching package: &#39;Matrix&#39;
+## 
+## The following objects are masked from &#39;package:tidyr&#39;:
+## 
+##     expand, pack, unpack</code></pre>
+<pre class="r"><code>library(merTools)</code></pre>
+<pre><code>## Loading required package: arm
+## Loading required package: MASS
+## 
+## Attaching package: &#39;MASS&#39;
+## 
+## The following object is masked from &#39;package:dplyr&#39;:
+## 
+##     select
+## 
+## 
+## arm (Version 1.13-1, built: 2022-8-25)
+## 
+## Working directory is C:/Users/zheqi/OneDrive/Documents/portifolio</code></pre>
+<pre class="r"><code>library(semPlot)
+library(lavaan)</code></pre>
+<pre><code>## This is lavaan 0.6-14
+## lavaan is FREE software! Please report any bugs.</code></pre>
+<pre class="r"><code>library(readxl)
 library(dplyr)
 library(haven)</code></pre>
 <pre class="r"><code>table(gender$Gender,gender$country)</code></pre>
@@ -317,7 +347,7 @@ library(haven)</code></pre>
 ##  Pearson&#39;s Chi-squared test
 ## 
 ## data:  gender$Gender and gender$country
-## X-squared = 17.209, df = 1, p-value = 0.00003349</code></pre>
+## X-squared = 17.209, df = 1, p-value = 3.349e-05</code></pre>
 <p>#two variables are in fact dependent.</p>
 <pre class="r"><code>#try to figure out whether gender covariates with country.
 ancova_model &lt;- lm(ex ~ country*exter + Gender, gender)
@@ -331,19 +361,19 @@ summary(ancova_model)</code></pre>
 ## -2.40822 -0.26066 -0.06046  0.27842  1.95062 
 ## 
 ## Coefficients:
-##                Estimate Std. Error t value             Pr(&gt;|t|)    
-## (Intercept)    0.762730   0.204564   3.729             0.000241 ***
-## country       -0.022525   0.200356  -0.112             0.910582    
-## exter          0.474985   0.043756  10.855 &lt; 0.0000000000000002 ***
-## Gender         0.003343   0.079394   0.042             0.966450    
-## country:exter -0.052509   0.058372  -0.900             0.369273    
+##                Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)    0.762730   0.204564   3.729 0.000241 ***
+## country       -0.022525   0.200356  -0.112 0.910582    
+## exter          0.474985   0.043756  10.855  &lt; 2e-16 ***
+## Gender         0.003343   0.079394   0.042 0.966450    
+## country:exter -0.052509   0.058372  -0.900 0.369273    
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
 ## Residual standard error: 0.5604 on 235 degrees of freedom
 ##   (9 observations deleted due to missingness)
 ## Multiple R-squared:  0.5813, Adjusted R-squared:  0.5742 
-## F-statistic: 81.57 on 4 and 235 DF,  p-value: &lt; 0.00000000000000022</code></pre>
+## F-statistic: 81.57 on 4 and 235 DF,  p-value: &lt; 2.2e-16</code></pre>
 <pre class="r"><code>modex&lt;-lm(ex~country*exter, gender)
 summary(modex)</code></pre>
 <pre><code>## 
@@ -355,18 +385,18 @@ summary(modex)</code></pre>
 ## -2.40710 -0.26149 -0.06126  0.27770  1.94903 
 ## 
 ## Coefficients:
-##               Estimate Std. Error t value             Pr(&gt;|t|)    
-## (Intercept)    0.76731    0.17284   4.439            0.0000139 ***
-## country       -0.02318    0.19933  -0.116                0.908    
-## exter          0.47516    0.04346  10.932 &lt; 0.0000000000000002 ***
-## country:exter -0.05254    0.05824  -0.902                0.368    
+##               Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)    0.76731    0.17284   4.439 1.39e-05 ***
+## country       -0.02318    0.19933  -0.116    0.908    
+## exter          0.47516    0.04346  10.932  &lt; 2e-16 ***
+## country:exter -0.05254    0.05824  -0.902    0.368    
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
 ## Residual standard error: 0.5592 on 236 degrees of freedom
 ##   (9 observations deleted due to missingness)
 ## Multiple R-squared:  0.5813, Adjusted R-squared:  0.576 
-## F-statistic: 109.2 on 3 and 236 DF,  p-value: &lt; 0.00000000000000022</code></pre>
+## F-statistic: 109.2 on 3 and 236 DF,  p-value: &lt; 2.2e-16</code></pre>
 <pre class="r"><code>modstemg&lt;-lm(st~Gender*stem, gender)
 summary(modstemg)</code></pre>
 <pre><code>## 
@@ -378,18 +408,18 @@ summary(modstemg)</code></pre>
 ## -3.1850 -0.5075  0.0599  0.5960  5.0577 
 ## 
 ## Coefficients:
-##             Estimate Std. Error t value  Pr(&gt;|t|)    
-## (Intercept)  0.75562    0.53661   1.408    0.1604    
-## Gender      -0.56208    0.39940  -1.407    0.1607    
-## stem         0.57115    0.12778   4.470 0.0000122 ***
-## Gender:stem  0.17762    0.08924   1.990    0.0477 *  
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  0.75562    0.53661   1.408   0.1604    
+## Gender      -0.56208    0.39940  -1.407   0.1607    
+## stem         0.57115    0.12778   4.470 1.22e-05 ***
+## Gender:stem  0.17762    0.08924   1.990   0.0477 *  
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
 ## Residual standard error: 0.9871 on 233 degrees of freedom
 ##   (12 observations deleted due to missingness)
 ## Multiple R-squared:  0.6391, Adjusted R-squared:  0.6344 
-## F-statistic: 137.5 on 3 and 233 DF,  p-value: &lt; 0.00000000000000022</code></pre>
+## F-statistic: 137.5 on 3 and 233 DF,  p-value: &lt; 2.2e-16</code></pre>
 <pre class="r"><code>modstem&lt;-lm(st~Gender*stem + country, gender)
 summary(modstem)</code></pre>
 <pre><code>## 
@@ -401,19 +431,19 @@ summary(modstem)</code></pre>
 ## -2.6621 -0.4852  0.0443  0.5400  4.9344 
 ## 
 ## Coefficients:
-##             Estimate Std. Error t value    Pr(&gt;|t|)    
-## (Intercept)  1.73373    0.54261   3.195     0.00159 ** 
-## Gender      -0.44382    0.37949  -1.170     0.24340    
-## stem         0.51557    0.12166   4.238 0.000032605 ***
-## country     -0.86545    0.16649  -5.198 0.000000441 ***
-## Gender:stem  0.12552    0.08523   1.473     0.14219    
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  1.73373    0.54261   3.195  0.00159 ** 
+## Gender      -0.44382    0.37949  -1.170  0.24340    
+## stem         0.51557    0.12166   4.238 3.26e-05 ***
+## country     -0.86545    0.16649  -5.198 4.41e-07 ***
+## Gender:stem  0.12552    0.08523   1.473  0.14219    
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
 ## Residual standard error: 0.9362 on 232 degrees of freedom
 ##   (12 observations deleted due to missingness)
 ## Multiple R-squared:  0.6767, Adjusted R-squared:  0.6712 
-## F-statistic: 121.4 on 4 and 232 DF,  p-value: &lt; 0.00000000000000022</code></pre>
+## F-statistic: 121.4 on 4 and 232 DF,  p-value: &lt; 2.2e-16</code></pre>
 <p>#seems like gender is no longer significantly interacting with
 expectations for stem motivations to predict stem motivations after
 controlling for the country.</p>
@@ -428,18 +458,18 @@ summary(modpro)</code></pre>
 ## -2.64169 -0.29525  0.05348  0.61554  2.33535 
 ## 
 ## Coefficients:
-##              Estimate Std. Error t value   Pr(&gt;|t|)    
-## (Intercept)    0.7102     0.4724   1.504    0.13406    
-## country        1.5636     0.5537   2.824    0.00516 ** 
-## pros           0.5172     0.1006   5.141 0.00000058 ***
-## country:pros  -0.3217     0.1164  -2.763    0.00618 ** 
+##              Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)    0.7102     0.4724   1.504  0.13406    
+## country        1.5636     0.5537   2.824  0.00516 ** 
+## pros           0.5172     0.1006   5.141  5.8e-07 ***
+## country:pros  -0.3217     0.1164  -2.763  0.00618 ** 
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
 ## Residual standard error: 1.017 on 232 degrees of freedom
 ##   (13 observations deleted due to missingness)
 ## Multiple R-squared:  0.1426, Adjusted R-squared:  0.1315 
-## F-statistic: 12.86 on 3 and 232 DF,  p-value: 0.00000008364</code></pre>
+## F-statistic: 12.86 on 3 and 232 DF,  p-value: 8.364e-08</code></pre>
 <pre class="r"><code>modpr&lt;-lm(pr~country*pros + Gender, gender)
 summary(modpr)</code></pre>
 <pre><code>## 
@@ -451,19 +481,19 @@ summary(modpr)</code></pre>
 ## -2.62439 -0.29158  0.05981  0.64292  2.28433 
 ## 
 ## Coefficients:
-##              Estimate Std. Error t value    Pr(&gt;|t|)    
-## (Intercept)    0.6112     0.5070   1.206     0.22921    
-## country        1.5524     0.5549   2.797     0.00559 ** 
-## pros           0.5119     0.1012   5.058 0.000000864 ***
-## Gender         0.0786     0.1445   0.544     0.58704    
-## country:pros  -0.3144     0.1174  -2.679     0.00792 ** 
+##              Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)    0.6112     0.5070   1.206  0.22921    
+## country        1.5524     0.5549   2.797  0.00559 ** 
+## pros           0.5119     0.1012   5.058 8.64e-07 ***
+## Gender         0.0786     0.1445   0.544  0.58704    
+## country:pros  -0.3144     0.1174  -2.679  0.00792 ** 
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
 ## Residual standard error: 1.019 on 231 degrees of freedom
 ##   (13 observations deleted due to missingness)
 ## Multiple R-squared:  0.1437, Adjusted R-squared:  0.1289 
-## F-statistic: 9.692 on 4 and 231 DF,  p-value: 0.0000002905</code></pre>
+## F-statistic: 9.692 on 4 and 231 DF,  p-value: 2.905e-07</code></pre>
 <p>#expectations for prosocial behaviors still interact with country
 after controlling for gender.</p>
 <pre class="r"><code>moding&lt;-lm(int~Gender*inter, gender)
@@ -477,18 +507,18 @@ summary(moding)</code></pre>
 ## -1.47733 -0.34111 -0.07099  0.20262  2.56570 
 ## 
 ## Coefficients:
-##              Estimate Std. Error t value    Pr(&gt;|t|)    
-## (Intercept)   0.50779    0.30111   1.686      0.0931 .  
-## Gender        0.12149    0.20850   0.583      0.5607    
-## inter         0.44301    0.08640   5.127 0.000000623 ***
-## Gender:inter -0.06656    0.05938  -1.121      0.2635    
+##              Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)   0.50779    0.30111   1.686   0.0931 .  
+## Gender        0.12149    0.20850   0.583   0.5607    
+## inter         0.44301    0.08640   5.127 6.23e-07 ***
+## Gender:inter -0.06656    0.05938  -1.121   0.2635    
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
 ## Residual standard error: 0.6217 on 230 degrees of freedom
 ##   (15 observations deleted due to missingness)
 ## Multiple R-squared:  0.3979, Adjusted R-squared:   0.39 
-## F-statistic: 50.66 on 3 and 230 DF,  p-value: &lt; 0.00000000000000022</code></pre>
+## F-statistic: 50.66 on 3 and 230 DF,  p-value: &lt; 2.2e-16</code></pre>
 <pre class="r"><code>modin&lt;-lm(int~Gender*inter + country, gender)
 summary(modin)</code></pre>
 <pre><code>## 
@@ -500,19 +530,19 @@ summary(modin)</code></pre>
 ## -1.54015 -0.33545 -0.08642  0.22039  2.59766 
 ## 
 ## Coefficients:
-##              Estimate Std. Error t value  Pr(&gt;|t|)    
-## (Intercept)   0.67774    0.30785   2.202    0.0287 *  
-## Gender        0.14134    0.20687   0.683    0.4952    
-## inter         0.46135    0.08603   5.363 0.0000002 ***
-## country      -0.21775    0.09661  -2.254    0.0251 *  
-## Gender:inter -0.08890    0.05969  -1.489    0.1378    
+##              Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)   0.67774    0.30785   2.202   0.0287 *  
+## Gender        0.14134    0.20687   0.683   0.4952    
+## inter         0.46135    0.08603   5.363    2e-07 ***
+## country      -0.21775    0.09661  -2.254   0.0251 *  
+## Gender:inter -0.08890    0.05969  -1.489   0.1378    
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
 ## Residual standard error: 0.6163 on 229 degrees of freedom
 ##   (15 observations deleted due to missingness)
 ## Multiple R-squared:  0.4109, Adjusted R-squared:  0.4006 
-## F-statistic: 39.94 on 4 and 229 DF,  p-value: &lt; 0.00000000000000022</code></pre>
+## F-statistic: 39.94 on 4 and 229 DF,  p-value: &lt; 2.2e-16</code></pre>
 <p>#interaction is not at all significant.</p>
 
 
