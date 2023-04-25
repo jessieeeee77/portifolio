@@ -313,8 +313,8 @@ ggplot(data=mt, mapping = aes(x = PSE, y = ad_deviance)) +
   geom_smooth(size=1, alpha=0.4) +
  geom_point(aes(color=Race3)) +
   theme_bw()</code></pre>
-<pre><code>## `geom_smooth()` using method = &#39;loess&#39; and formula =
-## &#39;y ~ x&#39;</code></pre>
+<pre><code>## `geom_smooth()` using method = &#39;loess&#39; and formula = &#39;y ~
+## x&#39;</code></pre>
 <pre><code>## Warning: Removed 52 rows containing non-finite values
 ## (`stat_smooth()`).</code></pre>
 <pre><code>## Warning: Removed 52 rows containing missing values
@@ -326,8 +326,8 @@ ggplot(data=mt, mapping = aes(x = PSE, y = ad_deviance)) +
   facet_wrap(~Race3) +
   theme_bw() +
   labs(y=&quot;adolescent_deviance&quot;, fill=&quot;race/ethnicity&quot;)</code></pre>
-<pre><code>## `geom_smooth()` using method = &#39;loess&#39; and formula =
-## &#39;y ~ x&#39;</code></pre>
+<pre><code>## `geom_smooth()` using method = &#39;loess&#39; and formula = &#39;y ~
+## x&#39;</code></pre>
 <pre><code>## Warning: Removed 52 rows containing non-finite values
 ## (`stat_smooth()`).</code></pre>
 <pre><code>## Warning: Removed 52 rows containing missing values
@@ -339,8 +339,8 @@ ggplot(data=mt, mapping = aes(x = PSE, y = ad_deviance)) +
   theme_light() +
   theme(legend.position = &quot;bottom&quot;, legend.title=element_blank()) +
   scale_color_discrete(labels = c(&quot;White&quot;, &quot;Latina&quot;, &quot;African American&quot;)) </code></pre>
-<pre><code>## `geom_smooth()` using method = &#39;loess&#39; and formula =
-## &#39;y ~ x&#39;</code></pre>
+<pre><code>## `geom_smooth()` using method = &#39;loess&#39; and formula = &#39;y ~
+## x&#39;</code></pre>
 <pre><code>## Warning: Removed 52 rows containing non-finite values
 ## (`stat_smooth()`).</code></pre>
 <pre><code>## Warning: Removed 52 rows containing missing values
@@ -365,22 +365,22 @@ ggplot(mt, aes(y = PSE_cat, fill = ad_deviance)) +
   labs(title = &quot;Adolescent deviance by parental self-efficacy and race&quot;,
        x = NULL, y = NULL, fill = NULL) +
   theme(legend.position = &quot;bottom&quot;)</code></pre>
-<pre><code>## Warning: The following aesthetics were dropped during
-## statistical transformation: fill
-## ℹ This can happen when ggplot fails to infer the
-##   correct grouping structure in the data.
+<pre><code>## Warning: The following aesthetics were dropped during statistical
+## transformation: fill
+## ℹ This can happen when ggplot fails to infer the correct
+##   grouping structure in the data.
 ## ℹ Did you forget to specify a `group` aesthetic or to
 ##   convert a numerical variable into a factor?
-## The following aesthetics were dropped during
-## statistical transformation: fill
-## ℹ This can happen when ggplot fails to infer the
-##   correct grouping structure in the data.
+## The following aesthetics were dropped during statistical
+## transformation: fill
+## ℹ This can happen when ggplot fails to infer the correct
+##   grouping structure in the data.
 ## ℹ Did you forget to specify a `group` aesthetic or to
 ##   convert a numerical variable into a factor?
-## The following aesthetics were dropped during
-## statistical transformation: fill
-## ℹ This can happen when ggplot fails to infer the
-##   correct grouping structure in the data.
+## The following aesthetics were dropped during statistical
+## transformation: fill
+## ℹ This can happen when ggplot fails to infer the correct
+##   grouping structure in the data.
 ## ℹ Did you forget to specify a `group` aesthetic or to
 ##   convert a numerical variable into a factor?</code></pre>
 <p><img src="p03_files/figure-html/plot1.1-1.png" width="672" /></p>
