@@ -2,7 +2,7 @@
 title: "Portfolio 3"
 
 #try to make prettier plots
-#& finalize the model
+#& finalize the model, and visualize the model.
 ---
 
 ```{r data}

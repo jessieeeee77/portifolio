@@ -2,5 +2,25 @@
 title: "About This Website"
 ---
 
-The ten portifolios concentrated on building up graphs and data analyses for my first year and thesis project. I used SEM, ggplot, multigroup modeling, t-test, and ANOVA tests, chisq test. Basically I try to redo the data analyses that I used in SPSS for my first year project, and then do some data analyses for my thesis. R did a great job at visualizing the associations and interactions that I aimed to investigate in my thesis.
-The following codes represent the major task or accomplished goals of each of my portifolio. 
+The ten portfolios concentrated on building up graphs and data analyses for my first year and thesis projects. I used SEM, ggplot, multigroup modeling, t-test, and ANOVA tests, chi-square tests to analyze my data and build up graphs for my presentations on the conference. Basically I tried to redo the data analyses that I used in SPSS for my first year project, and then do some data analyses for my thesis. R did a great job at visualizing the associations and interactions that I aimed to investigate in my thesis.
+The following codes represent the major task or accomplished goals of each of my portfolio. 
+
+Portfolio 1: data cleaning, visualization for my first year project.The data for the mother and teen project was cleaned to use for analysis and visualization. The model was built, and the model fits.
+
+Portfolio 2: tried to make better graphs with ggplot that might capture interaction between race/ethnicity and PSE to predict adolescent deviance.But the graph was not ideal. Also tried to make some variations of my models and see if there would be better fit. The best fit was the model 1, which would be continued to be used.
+
+Portfolio 3: tried to make prettier plots for my poster presentation. I successfully made plots that both represent the distribution and embed the statistic results with ggplot. Also finalize the model, and visualize the model.
+
+Portfolio 4:I tested the moderation effect of race/ethnicity on the association between mother reported PSE and adolescent deviance in this section. I made a great graph for my poster presentation in the portfolio. Also made some attempts to conduct analysis with dummy coded variables.
+
+Portfolio 5: From this portfolio, my thesis data was ready to use. And I cleaned the data in this section, to make composites. Then I tested the moderating effects of country and gender on the associations between adolescents' perceptions and adolescents' motivations and behaviors in each of the four domains. I also interpreted the results I had.
+
+Portfolio 6: tried to conduct multigroup modeling and interpret the results. It turned out that the data I collected was not suitable for conducting multigroup modeling tests. Then I build up models to test the fits. As I expected the model was hard to fit with one path. Desperately tried other models and all failed. Accepted the facts.
+
+Portfolio 7: Rechecked the model fit with new coming data. It still did not fit well. also learnt how to properly use multigroup modeling in R with the example from Chatgpt. Used ggplot to visualize the interaction between perceived parental expectations in each domain and country of origin.
+
+Portfolio 8:Used ggplot to visualize the interaction between perceived parental expectations in each domain and gender. Used ggpubr to graph the country and gender differences in adolescents' perception of parental efficacy (APPE), and also embedded the statistic results onto the graphs. Planned to use the graphs for next conference presentation.
+
+Portfolio 9: found out that country and gender interacted with each other in my samples. In order to control for gender or country, I re-run all the moderation and add gender or country as the co-variate for the moderator. The results slightly differed and now gender was not longer a moderator for the association between perceived parental expectations and adolescents' motivations and behaviors after controlling for country.
+
+Portfolio 10: This portfolio included all the successful and noticeable pieces of the previous nine sections, in order to present the progress I made to analyze data and build graphs for my first year and thesis projects. 

@@ -3,7 +3,7 @@ title: "Portfolio 1"
 ---
 
 > This piece of the portfolio includes data cleaning, model tests for my first year project.
-summary:The data for the mother and teen project was cleaned to use for analysis and visualization. The model was built, and the model fits.
+The data for the mother and teen project was cleaned to use for analysis and visualization. The model was built, and the model fits.
 
 ```{r load-packages, message=FALSE}
 library(tidyverse) 
