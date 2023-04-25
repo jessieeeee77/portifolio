@@ -1,5 +1,5 @@
 ---
 title: "My Portfolio"
 ---
-#This website hosts my portfolio and accompanying documentation that I developed as part of Data Science for Psychologists. You can find the links to individual portfolio pieces in the header. Each piece has a description of the goal, the product (computer program, hand graph, computer graph, etc.), the data, and some interpretation. I encourage you to explore them.
+This website hosts my portfolio and accompanying documentation that I developed as part of Data Science for Psychologists. You can find the links to individual portfolio pieces in the header. Each piece has a description of the goal, the product (models, graphs, and data analyses.), the data, and some interpretation. I encourage you to explore them.
 
